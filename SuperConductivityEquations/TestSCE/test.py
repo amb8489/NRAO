@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 # make data
 
 lim = 1000
-x = [SCE.conductivityN(2, .2, i) for i in range(1,lim)]
+x = [SCE.conductivityN(.8, 3, i) for i in range(1,lim)]
 y = [i for i in range(1,lim)]
 
 # plot

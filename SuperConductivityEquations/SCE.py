@@ -16,7 +16,7 @@ def e1(e, delta):
 
 
 def e2(e, delta, hf):
-    return math.sqrt((e + hf) ** 2 - delta ** 2)
+    return math.sqrt(((e + hf) ** 2) - delta ** 2)
 
 
 def e3(e, delta, hf):
@@ -44,7 +44,7 @@ def ff(e, hf, kT):
 
 
 def f2(e, hf, kT):
-    return 1 - 2 * fd(e + hf, kT)
+    return 1 - (2 * fd(e + hf, kT))
 
 
 def int1(e, delta, hf, kT):
@@ -91,7 +91,6 @@ def sigma2NL(delta, hf, kT):
     f1 = lambda x: int2(delta - hf + x ** 2, delta, hf, kT) * 2 * x
     f2 = lambda x: int2(delta - x ** 2, delta, hf, kT) * 2 * x
 
-
     return (1 / hf) * (quad(f1, lower, upper)[0] + quad(f2, lower, upper)[0])
 
 
@@ -110,8 +109,6 @@ def sigma2N(delta, hf, kT):
     if hf <= 2 * delta:
         return sigma2NL(delta, hf, kT)
     return sigma2NU(delta, hf, kT)
-
-
 
 
 def conductivityN(delta, hf, kT):
