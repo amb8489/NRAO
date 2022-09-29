@@ -2,9 +2,9 @@ import time
 from SuperConductivityEquations.SCE import conductivity
 import matplotlib.pyplot as plt
 
-StartFreq, EndFreq = .001, 20
+StartFreq, EndFreq = .001, 50
 Tc = 14
-tempK = 2
+tempK = 0.5
 
 
 

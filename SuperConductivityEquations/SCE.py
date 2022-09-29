@@ -7,7 +7,7 @@ import math
 
 import numpy
 from scipy.integrate import quad
-from constants import BOLTZMANN_CONSTev, PLANCKC_CONST
+from constants import BOLTZMANN_CONSTev, PLANCK_CONST
 
 '''
 ------------------------------definitions------------------------------
@@ -120,7 +120,6 @@ def sigma_2_N_U(delta, freq, tempK):
 
 def sigma_2_N(delta, freq, tempK):
     if freq <= 2 * delta:
-        print("Here")
         return sigma_2_N_L(delta, freq, tempK)
     return sigma_2_N_U(delta, freq, tempK)
 
@@ -134,39 +133,35 @@ def calc_delta(temperature, critical_temp):
     PiDiv2 = math.pi / 2
     TempDiv = temperature / critical_temp
 
-    # TODO careful of units of boltzsman const
+    # TODO careful of units of boltzsman const (if temp is 0 then just Delta_O)
 
     return Delta_O(critical_temp) * math.sqrt(math.cos(PiDiv2 * (TempDiv ** 2)))
 
 
 def sigma_N(delta, freq, tempK):
-    # s11 = lambda e: int1(e,delta,freq,tempK)
-    #
-    # s12 = lambda e: int11(e,delta,freq,tempK)
-    #
-    # s21 = lambda e: int2(e,delta,freq,tempK)
-    #
-    # sig1 = ((2/freq) * quad(s11, delta, numpy.inf)[0]) + ((1/freq) * quad(s12, delta-freq, -delta)[0])
-    # sig2 = (1/freq) * quad(s21,delta-freq,delta)
-    # return sig1 - 1j * sig2
-    #
-
 
     return sigma_1_N(delta, freq, tempK)  - 1j * sigma_2_N(delta, freq, tempK)
 
 
 def gap_freq(delta):
-    return (2 * delta) / PLANCKC_CONST
+    return (2 * delta) / PLANCK_CONST
 
 
-def conductivity(freq, temperatureK, critical_temp):
+def conductivity(freq, Operation_temperatureK, critical_temp):
 
-    delta = calc_delta(temperatureK, critical_temp)
-    return sigma_N(delta, freq, temperatureK)
+    delta = calc_delta(Operation_temperatureK, critical_temp)
+    return sigma_N(delta, freq, Operation_temperatureK)
 
 
 delta = calc_delta(0, 14.1)
 
 print("delta:  ", delta)
 print("fgap : ", gap_freq(delta))
+
+"""
+fgap is massive number (h is plan)
+
+I in sigma N is the img i
+
+"""
 

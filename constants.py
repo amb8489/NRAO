@@ -7,7 +7,7 @@ SPEED_OF_LIGHT = scipy.constants.speed_of_light
 
 
 #PlanckConst
-PLANCKC_CONST = scipy.constants.h
+PLANCK_CONST = scipy.constants.h
 
 
 # Boltzmann constant in eV/K
