@@ -1,27 +1,27 @@
 import time
-from SuperConductivityEquations import SCE
-
-
-# speed test
-s = time.time()
-
-for i in range(100):
-    SCE.conductivityN(1, 1, 1)
-print(time.time() - s)
-
+from SuperConductivityEquations.SCE import conductivity
 import matplotlib.pyplot as plt
 
+StartFreq, EndFreq = .001, 30
+Tc = 14.1
+tempK = 0
 
-# make data
 
-lim = 1000
-x = [SCE.conductivityN(.8, 3, i) for i in range(1,lim)]
-y = [i for i in range(1,lim)]
+
+
+step = .1
+freq = StartFreq
+x, freqs = [], []
+while freq < EndFreq:
+
+    val = conductivity(freq, tempK, Tc)
+
+    # print(val)
+    x.append(val)
+    freqs.append(freq)
+    freq += step
 
 # plot
 fig, ax = plt.subplots()
-
-ax.plot(x, y, linewidth=1.0)
-
-
+ax.plot(freqs, x, linewidth=1.0)
 plt.show()
