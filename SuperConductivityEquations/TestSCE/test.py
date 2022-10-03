@@ -1,31 +1,54 @@
 import time
-from SuperConductivityEquations.SCE import conductivity
+
+import scipy.constants
+
+from SuperConductivityEquations.SCE import conductivity, calc_delta, gap_freq
 import matplotlib.pyplot as plt
 
-StartFreq, EndFreq = .001, 50
-Tc = 14
-tempK = 0.5
+
+
+
+StartFreq, EndFreq = 0, 10
+temp = 3
+tc = 14
+
+step = .05
 
 
 
 
-step = .1
-freq = StartFreq
+D = calc_delta(0, 14.1)
+print("delta:  ", D)
+print("fgap : ", gap_freq(D))
+
+
+
+
+
+
+
+
+
 x, freqs = [], []
+freq = StartFreq
 while freq < EndFreq:
 
-    val = conductivity(freq, tempK, Tc)
+
+    val = conductivity(freq, temp, tc)
 
     # print(val)
     x.append(val)
     freqs.append(freq)
     freq += step
 
+
+
+
 # plot
 fig, ax = plt.subplots()
-ax.plot(freqs, x, linewidth=1.0)
+ax.plot(freqs, x, linewidth=1.0,label='{} Kelvin'.format(temp))
 ax.set_ylabel('conductivity')
 ax.set_xlabel('frequency')
-# ax.axvline(x = Tc)
-
+# plt.ylim([0, 1])
+plt.legend()
 plt.show()

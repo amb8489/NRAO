@@ -2,16 +2,13 @@
 
 import scipy.constants
 
-# speed of light
-SPEED_OF_LIGHT = scipy.constants.speed_of_light
 
 
-#PlanckConst
-PLANCK_CONST = scipy.constants.h
-
+#PlanckConst in eV units
+PLANCK_CONSTev  =4.1357*(10**-15)
 
 # Boltzmann constant in eV/K
-BOLTZMANN_CONSTev = 8.617333262e-05
-BOLTZMANN_CONSTj = scipy.constants.Boltzmann
+BOLTZMANN_CONSTev = 8.617333262*(10**-5)
+
 
 
