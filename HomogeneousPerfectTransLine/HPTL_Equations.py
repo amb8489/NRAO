@@ -11,6 +11,7 @@ def penitration_depth(sigma_Normilized, delta_O):
     return math.sqrt(hr / (math.pi * MU_0 * sigma_Normilized * delta_O))
 
 
+# todo what is t used for
 def z_slow(f, y0, t):
     return 1j * PI2 * f * MU_0 * y0
 
@@ -28,7 +29,7 @@ def y(zs, f, t):
 
 # ----------  schneider   t = 0  ----------
 def Fs(w, h):
-    return math.sqrt(1 + 10 * (h / w))
+    return math.sqrt(1 + (10 * (h / w)))
 
 
 def epsilon_effs(epsilon_r, w, h):
@@ -36,16 +37,19 @@ def epsilon_effs(epsilon_r, w, h):
 
 
 def zmss(epsilon_r, w, h):
-    #TODO
-    pass
+    z0eff = z0 / (math.sqrt(epsilon_effs(epsilon_r, w, h)))
+
+    if w / h <= 1:
+        return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
+
+    return z0eff / ((w / h) + 2.42 - (.44 * (h / w)) + pow(1 - (h / w), 6))
+
 
 # ----------  schneider   t > 0  ----------
 
 
 def epsilon_effst(epsilon_r, w, h, t):
     u = w / h
-
-    delta_w = None
 
     if u <= (1 / PI2):
         delta_w = (t / PI) * (1 + math.log((PI4 * w) / t))
@@ -55,11 +59,8 @@ def epsilon_effst(epsilon_r, w, h, t):
     return epsilon_effs(epsilon_r, w + delta_w, h)
 
 
-
 def zmsst(epsilon_r, w, h, t):
     u = w / h
-
-    delta_w = None
 
     if u <= (1 / PI2):
         delta_w = (t / PI) * (1 + math.log((PI4 * w) / t))
