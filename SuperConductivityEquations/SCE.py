@@ -47,18 +47,19 @@ def g2(e, delta, freq):
 # fermiDistrib E             -> fermiDistrib(E, 0)
 # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0)
 
-def fermiDistrib(E, tempK, freq = 0):
+def fermiDistrib(E, tempK, freq=0):
     # special case for temp = 0
     if tempK == 0:
-        if E - freq >= freq:
+
+        if (E - freq) >= -freq:
             return 0
         return 1
+    # normal case for temp > 0
     return 1 / (1 + math.exp(E / tempK))
 
 
 def ff(e, freq, tempK):
-
-    return fermiDistrib(e, tempK,0) - fermiDistrib(e + freq, tempK, freq)
+    return fermiDistrib(e, tempK, 0) - fermiDistrib(e + freq, tempK, freq)
 
 
 def f2(e, freq, tempK):
@@ -80,10 +81,6 @@ def int2(e, delta, freq, tempK):
 # --------------integrals-------------
 
 def sigma_1_N_L(delta, freq, tempK):
-
-    if freq == 0:
-        return 0
-
     f = lambda x: int1(delta + x ** 2, delta, freq, tempK) * 2 * x
 
     lower_bound = 0
@@ -92,8 +89,6 @@ def sigma_1_N_L(delta, freq, tempK):
 
 
 def sigma_1_N_U(delta, freq, tempK):
-    if freq == 0:
-        return 0
     f1 = lambda x: int11(delta - freq + x ** 2, delta, freq, tempK) * 2 * x
     f2 = lambda x: int11(-delta - x ** 2, delta, freq, tempK) * 2 * x
 
@@ -109,20 +104,15 @@ def sigma_1_N(delta, freq, tempK):
 
 
 def sigma_2_N_L(delta, freq, tempK):
-    if freq == 0:
-        return 0
-
     f1 = lambda x: int2(delta - freq + x ** 2, delta, freq, tempK) * 2 * x
     f2 = lambda x: int2(delta - x ** 2, delta, freq, tempK) * 2 * x
 
     lower_bound = 0
-    upper_bound = math.sqrt((freq / 2))
+    upper_bound = math.sqrt(freq / 2)
     return (1 / freq) * (quad(f1, lower_bound, upper_bound)[0] + quad(f2, lower_bound, upper_bound)[0])
 
 
 def sigma_2_N_U(delta, freq, tempK):
-    if freq == 0:
-        return 0
     f1 = lambda x: int2(-delta + x ** 2, delta, freq, tempK) * 2 * x
     f2 = lambda x: int2(delta - x ** 2, delta, freq, tempK) * 2 * x
 
@@ -157,6 +147,12 @@ def gap_freq(delta):
     return (2 * delta) / PLANCK_CONSTev
 
 
-def conductivity(freq, Operation_temperatureK, critical_temp):
+def conductivityNormilized(freq, Operation_temperatureK, critical_temp):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     return sigma_N(delta, freq, Operation_temperatureK)
+
+
+#TODO WHAT IS multfactor
+def conductivity(freq, Operation_temperatureK, critical_temp,multfactor):
+    return conductivityNormilized(freq, Operation_temperatureK, critical_temp) * multfactor
+

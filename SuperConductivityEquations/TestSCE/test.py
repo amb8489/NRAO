@@ -2,27 +2,17 @@ import time
 
 import scipy.constants
 
-from SuperConductivityEquations.SCE import conductivity, calc_delta, gap_freq
+from SuperConductivityEquations.SCE import conductivityNormilized, calc_delta, gap_freq, fermiDistrib
 import matplotlib.pyplot as plt
 
 
 
 
-StartFreq, EndFreq = 0, 10
-temp = 3
+StartFreq, EndFreq = 0.001, 10
+temp = 1
 tc = 14
 
 step = .05
-
-
-
-
-D = calc_delta(0, 14.1)
-print("delta:  ", D)
-print("fgap : ", gap_freq(D))
-
-
-
 
 
 
@@ -34,7 +24,7 @@ freq = StartFreq
 while freq < EndFreq:
 
 
-    val = conductivity(freq, temp, tc)
+    val = conductivityNormilized(freq, temp, tc)
 
     # print(val)
     x.append(val)
