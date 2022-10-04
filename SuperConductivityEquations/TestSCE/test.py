@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 
 
 
-StartFreq, EndFreq = 0.001, 10
-temp = 1
+StartFreq, EndFreq = .1, 4
+temp = 12
 tc = 14
 
 step = .05
