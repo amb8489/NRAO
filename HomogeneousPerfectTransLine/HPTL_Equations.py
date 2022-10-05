@@ -1,14 +1,23 @@
+"""
+NRAO
+Aaron Berghash
+
+Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
+"""
+
 import math
-from constants import PI, MU_0, PI2, z0, PI4
-from functions import sech, coth
+from constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev
+from Support_Functions import sech, coth
 
 
-# todo name and comment all functions
+def penetration_depth(sigma_Normilized, delta_O):
+    return math.sqrt(PLANCK_CONST_REDUCEDev / (math.pi * MU_0 * sigma_Normilized * delta_O))
 
-# todo what is hr
-def penitration_depth(sigma_Normilized, delta_O):
-    hr = ...
-    return math.sqrt(hr / (math.pi * MU_0 * sigma_Normilized * delta_O))
+
+def Zs(freq, conductivity, ts):
+    a = math.sqrt((1j * PI2 * freq * MU_0) / conductivity)
+    b = coth(math.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
+    return a * b
 
 
 # todo what is t used for
@@ -16,14 +25,8 @@ def z_slow(f, y0, t):
     return 1j * PI2 * f * MU_0 * y0
 
 
-def surface_impedance(freq, conductivity, ts):
-    a = math.sqrt((1j * PI2 * freq * MU_0) / conductivity)
-    b = coth(math.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
-    return a * b
-
-
 # TODO DO WHERE IS THE T USED ??
-def y(zs, f, t):
+def lamda(zs, f, t):
     return (zs / (PI2 * f * MU_0)).imag
 
 
@@ -42,7 +45,7 @@ def zmss(epsilon_r, w, h):
     if w / h <= 1:
         return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
 
-    return z0eff / ((w / h) + 2.42 - (.44 * (h / w)) + pow(1 - (h / w), 6))
+    return z0eff / ((w / h) + 2.42 - (0.44 * (h / w)) + pow(1 - (h / w), 6))
 
 
 # ----------  schneider   t > 0  ----------
@@ -77,12 +80,12 @@ def epsilon_effh(epsilon_r, w, h):
 
     u4 = pow(u, 4)
 
-    firstLog = math.log((u4 + pow(u / 52, 2)) / (u4 + .432))
+    firstLog = math.log((u4 + pow(u / 52, 2)) / (u4 + 0.432))
     secondLog = math.log(1 + pow(u / 18.1, 3))
 
     a = 1 + (1 / 49) * firstLog + (1 / 18.7) * secondLog
 
-    b = .564 * pow((epsilon_r - .9) / (epsilon_r + 3), .053)
+    b = 0.564 * pow((epsilon_r - .9) / (epsilon_r + 3), 0.053)
 
     return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / 2) * pow(1 + (10 / u), -a * b)
 
@@ -90,9 +93,9 @@ def epsilon_effh(epsilon_r, w, h):
 def ZL1(w, h):
     u = w / h
 
-    fu = 6 + (PI2 - 6) * math.exp(-pow(30.666 / u, .7528))
+    fu = 6 + (PI2 - 6) * math.exp(-pow(30.666 / u, 0.7528))
 
-    return (z0 / PI2) * math.log((fu / u) + math.sqrt(1 + pow(u / 2, 2)))
+    return (z0 / PI2) * math.log((fu / u) + math.sqrt(1 + pow(2 / u, 2)))
 
 
 # ----------  Hammerstad   t > 0  ----------
@@ -118,16 +121,14 @@ def epsilon_effht(epsilon_r, w, h, t):
 
     zl1_up = ZL1(w1, h)
     zl1_low = ZL1(wr, h)
-    return epsilon_effh(epsilon_r, wr, h) * (zl1_up / zl1_low) ** 2
+    return epsilon_effh(epsilon_r, wr, h) * pow(zl1_up / zl1_low, 2)
 
 
 def Zmsht(epsilon_r, w, h, t):
     wr = w + delta_wr(epsilon_r, w, h, t)
-    uper = ZL1(wr, h)
+    upper = ZL1(wr, h)
     lower = math.sqrt(epsilon_effht(epsilon_r, wr, h, t))
 
-    return uper / lower
-
-    return
+    return upper / lower
 
 # -------------------

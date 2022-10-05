@@ -1,21 +1,22 @@
-# PlanckConst in eV units
 import math
 
-PLANCK_CONSTev = 4.1357E-15
-
-# Boltzmann constant in eV/K
-BOLTZMANN_CONSTev = 8.61733E-5
-
-
-# differnt Pi consts
+# PI consts
 PI = math.pi
+PI2 = 2 * math.pi
+PI4 = 4 * math.pi
 
-PI2 = 2*math.pi
+# Planck's constant UNITS ev.s
+PLANCK_CONSTev = 4.135667662E-15
 
-PI4 = 4*math.pi
+# PLANCK_CONST REDUCED in ev.s
+PLANCK_CONST_REDUCEDev = PLANCK_CONSTev / PI2
 
-# todo what is MU_0
-MU_0 = ...
+# Boltzmann's constant in eV/K
+BOLTZMANN_CONSTev = 8.6173303E-5
 
-# todo what is Z0
-z0 = ...
+# The vacuum magnetic permeability in UNITS H.m^-1
+MU_0 = PI4 * (10 ** -7)
+
+# characteristic impedance of vacuum in UNITS ohm's
+z0 = 120 * PI
+
