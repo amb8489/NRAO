@@ -20,3 +20,5 @@ MU_0 = PI4 * (10 ** -7)
 # characteristic impedance of vacuum in UNITS ohm's
 z0 = 120 * PI
 
+# Giga hertz
+GHz = 10 ** 9

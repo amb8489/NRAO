@@ -147,12 +147,11 @@ def gap_freq(delta):
     return (2 * delta) / PLANCK_CONSTev
 
 
-def conductivityNormilized(freq, Operation_temperatureK, critical_temp):
+def conductivityNormalized(freq, Operation_temperatureK, critical_temp):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     return sigma_N(delta, freq, Operation_temperatureK)
 
 
-#TODO WHAT IS multfactor
-def conductivity(freq, Operation_temperatureK, critical_temp,multfactor):
-    return conductivityNormilized(freq, Operation_temperatureK, critical_temp) * multfactor
-
+def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
+    # TODO WHAT IS multfactor 1 / Pn ?? CHECK (1/PN IS RIGHT?)
+    return conductivityNormalized(freq, Operation_temperatureK, critical_temp) * (1 / Pn)

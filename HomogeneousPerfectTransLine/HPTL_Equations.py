@@ -6,27 +6,31 @@ Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION0012112000000
 """
 
 import math
+import cmath
 from constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev
-from Support_Functions import sech, coth
+from Support_Functions import sech, coth, ccoth
 
 
-def penetration_depth(sigma_Normilized, delta_O):
-    return math.sqrt(PLANCK_CONST_REDUCEDev / (math.pi * MU_0 * sigma_Normilized * delta_O))
+def Lambda0(sigma_N, delta_O):
+    # TODO ask about the complex square root should just the real part be rooted or both re and im parts
+    # AND sigma_N is 1/ Pn
+    return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_N * delta_O))
 
 
 def Zs(freq, conductivity, ts):
-    a = math.sqrt((1j * PI2 * freq * MU_0) / conductivity)
-    b = coth(math.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
+    # TODO ask about the complex square root should just the real part be rooted or both re and im parts
+    a = cmath.sqrt((1j * PI2 * freq * MU_0) / conductivity)
+    b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
     return a * b
 
 
 # todo what is t used for
-def z_slow(f, y0, t):
-    return 1j * PI2 * f * MU_0 * y0
+def z_slow(f, yO, t):
+    return 1j * PI2 * f * MU_0 * yO
 
 
 # TODO DO WHERE IS THE T USED ??
-def lamda(zs, f, t):
+def Lambda(zs, f, t):
     return (zs / (PI2 * f * MU_0)).imag
 
 
@@ -43,6 +47,7 @@ def zmss(epsilon_r, w, h):
     z0eff = z0 / (math.sqrt(epsilon_effs(epsilon_r, w, h)))
 
     if w / h <= 1:
+
         return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
 
     return z0eff / ((w / h) + 2.42 - (0.44 * (h / w)) + pow(1 - (h / w), 6))
