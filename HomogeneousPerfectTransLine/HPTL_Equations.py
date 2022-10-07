@@ -3,6 +3,8 @@ NRAO
 Aaron Berghash
 
 Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
+
+Penetration depth & Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
 """
 
 import math
@@ -24,12 +26,12 @@ def Zs(freq, conductivity, ts):
     return a * b
 
 
-# todo what is t used for
+# todo what is t used for?
 def z_slow(f, yO, t):
     return 1j * PI2 * f * MU_0 * yO
 
 
-# TODO DO WHERE IS THE T USED ??
+# todo what is t used for?
 def Lambda(zs, f, t):
     return (zs / (PI2 * f * MU_0)).imag
 
@@ -47,7 +49,6 @@ def zmss(epsilon_r, w, h):
     z0eff = z0 / (math.sqrt(epsilon_effs(epsilon_r, w, h)))
 
     if w / h <= 1:
-
         return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
 
     return z0eff / ((w / h) + 2.42 - (0.44 * (h / w)) + pow(1 - (h / w), 6))

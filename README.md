@@ -1,2 +1,6 @@
 # NRAO
-NRAO material modeling
+# Aaron Berghash
+NRAO modeling parametric amplifiers
+
+
+

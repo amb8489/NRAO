@@ -9,7 +9,7 @@ from scipy.integrate import quad
 from constants import BOLTZMANN_CONSTev, PLANCK_CONSTev
 
 '''
-------------------------------definitions------------------------------
+------------------------------functions to support conductivity ------------------------------
 '''
 
 
@@ -55,6 +55,8 @@ def fermiDistrib(E, tempK, freq=0):
             return 0
         return 1
     # normal case for temp > 0
+
+
     return 1 / (1 + math.exp(E / tempK))
 
 
@@ -77,8 +79,6 @@ def int11(e, delta, freq, tempK):
 def int2(e, delta, freq, tempK):
     return f2(e, freq, tempK) * g2(e, delta, freq)
 
-
-# --------------integrals-------------
 
 def sigma_1_N_L(delta, freq, tempK):
     f = lambda x: int1(delta + x ** 2, delta, freq, tempK) * 2 * x
@@ -150,6 +150,21 @@ def gap_freq(delta):
 def conductivityNormalized(freq, Operation_temperatureK, critical_temp):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     return sigma_N(delta, freq, Operation_temperatureK)
+
+
+"""
+-INPUTS-
+
+freq                    : frequency of DC i units of GHz
+Operation_temperatureK  : the temperature of operation in Kelvin
+critical_temp           : the temperature of transition between normal and super conductor in Kelvin
+Pn                      : normal resistivity in micro ohms / cm
+
+
+-OUT-
+ 
+conductivity            : is the conductivity at input conditions
+"""
 
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
