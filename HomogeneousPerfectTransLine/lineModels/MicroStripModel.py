@@ -1,20 +1,23 @@
 import math
 import cmath
-from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev
+
+import Supports.constants
+from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c
 from Supports.Support_Functions import sech, coth, ccoth
 from HomogeneousPerfectTransLine.lineModels.Model import TransmissionLineModel
 
 
 class MicroStripModel(TransmissionLineModel):
 
-    # TODO all things needed for a microstrip
-    # TODO all geometrical dimensions needed
-    def __int__(self, height, width, thickness, epsilon_r):
+    # TODO all geometrical dimensions needed, tan
+    def __int__(self, height, width, thickness, epsilon_r, tan_delta):
 
-        # todo use these in the model
-        height, width, thickness, epsilon_r = height, width, thickness, epsilon_r
-
-    # TODO w,h,epsilon_r,t
+        # todo use these in the model calculations
+        self.height = height
+        self.width = thickness
+        self.thickness = thickness
+        self.epsilon_r = epsilon_r
+        self.tan_delta = tan_delta
 
     """
     NRAO
@@ -26,13 +29,6 @@ class MicroStripModel(TransmissionLineModel):
 
     g1 g2 are model dependent
     """
-
-    # TODO does all of this only for a micro strip model
-
-    import math
-    import cmath
-    from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev
-    from Supports.Support_Functions import sech, coth, ccoth
 
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
@@ -138,9 +134,176 @@ class MicroStripModel(TransmissionLineModel):
     def Lambda(self, zs, f, t):
         return (zs / (PI2 * f * MU_0)).imag
 
-    # TODO geometrical factors
-    def g2(self):
-        pass
+    # -------------- super conducting equations for miro strip ----------------
 
-    def g1(self):
-        pass
+    # Geometrical factors
+
+    def g1(self, w, h, t):
+        return h / (w * self.Kf(w, h, t))
+
+    def g2(self, w, h, t):
+        return self.Kl(w, h, t) / w
+
+    # ------ helper functions ----------
+
+    def b(self, h, t):
+        return 1 + (t / h)
+
+    def p(self, b):
+
+        bsqrd = b ** 2
+
+        return 2 * bsqrd - 1 + 2 * b * math.sqrt(bsqrd - 1)
+
+    def rbo(self, eta, p, detaY):
+        return eta + ((p + 1) / 2) * math.log(detaY)
+
+    def DeltaY(self, eta, p):
+
+        return max(eta, p)
+        # return Eta if Eta > p else p
+
+    def Kf(self, w, h, t):
+
+        bc = b(h, t)
+
+        pc = p(bc)
+
+        rac = ra(w, h, pc)
+
+        EtaC = Eta(w, h, pc)
+
+        DeltaYC = DeltaY(EtaC, pc)
+
+        rboc = rbo(EtaC, pc, DeltaYC)
+
+        rbc = rb(w, h, rboc, pc)
+
+        return (h / w) * (2 / PI) * math.log((2 * rbc) / rac)
+
+    def Kl(self, w, h, t):
+        return self.chi(w, h, t) / self.Kf(w, h, t)
+
+    def Is1(self, p, ra, Ra):
+        return math.log((2 * p - (p + 1) * ra + 2 * math.sqrt(p * Ra)) / (ra * (p - 1)))
+
+    def Ra(self, p, ra):
+        return (1 - ra) * (p - ra)
+
+    def Is2(self, p, rb, Rb):
+        return - math.log(((p + 1) * rb - 2 * p - 2 * math.sqrt(p * Rb)) / (rb * (p - 1)))
+
+    def Rb(self, p, rb):
+        return (rb - 1) * (rb - p)
+
+    def Ig1(self, p, rb, Rb1):
+        return -math.log(((p + 1) * rb + 2 * p + 2 * math.sqrt(p * Rb1)) / (rb * (p - 1)))
+
+    def Rb1(self, p, rb):
+        return (rb + 1) * (rb + p)
+
+    def Ig2(self, p, ra, Ra1):
+        return math.log(((p + 1) * ra + 2 * p + 2 * math.sqrt(p * Ra1)) / (ra * (p - 1)))
+
+    def Ra1(self, p, ra):
+        return (ra + 1) * (ra + p)
+
+    def X(self, zs, f, w, H, ts):
+
+        ChiC = self.Chi(w, H, ts)
+        ko = (PI2 * f) / c
+        return (2 * ChiC * zs) / (ko * z0 * H)
+
+    def ZSy(self, est, zs, f, epsilon_r, w, H, ts):
+        zmst = zt(epsilon_r, w, H, ts)
+        return zmst * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+
+    def beta_Soy(self, est, zs, f, epsilon_r, w, H, ts):
+        epsilon_fm = est(epsilon_r, w, H, ts)
+        return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+
+    def aplha_Sy(self, est, zs, f, epsilon_r, w, H, ts):
+        epsilon_fm = est(epsilon_r, w, H, ts)
+        return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).imag
+
+    def apha_ky(self, est, zs, f, epsilon_r, w, H, ts):
+        CF = (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        return 1 - (1 / CF ** 2)
+
+    def vSy(self, est, zs, f, epsilon_r, w, H, ts):
+        epsilon_fm = est(epsilon_r, w, H, ts)
+        CF = (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        return 1 / (math.sqrt(epsilon_fm) * CF)
+
+    def Beta_Syloss(self, est, zs, f, epsilon_r, tand, w, H, ts):
+        epsilon_fm = est(epsilon_r, w, H, ts)
+
+        epsilon_t = epsilon_fm - 1j * epsilon_r * tand
+
+        return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+
+    def AlphaSyloss(self, est, zs, f, epsilon_r, tand, w, H, ts):
+        epsilon_fm = est(epsilon_r, w, H, ts)
+
+        epsilon_t = epsilon_fm - 1j * epsilon_r * tand
+
+        return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).imag
+
+    def chi(self, w, h, t):
+        bc = self.b(h, t)
+        pc = self.p(bc)
+        rac = self.ra(w, h, pc)
+        EtaC = self.Eta(w, h, pc)
+        DeltaYC = self.DeltaY(EtaC, pc)
+        rboc = self.rbo(EtaC, pc, DeltaYC)
+        rbc = self.rb(w, h, rboc, pc)
+        Rac = self.Ra(pc, rac)
+        Is1c = self.Is1(pc, rac, Rac)
+        Rbc = self.Rb(pc, rbc)
+        Is2c = self.Is2(pc, rbc, Rbc)
+        Rb1c = self.Ra(pc, rbc)
+        Ig1c = self.Ig1(pc, rbc, Rb1c)
+        Ra1c = self.Ra(pc, rac)
+        Ig2c = self.Ig2(pc, rac, Ra1c)
+
+        if (w / h) < 2:
+            return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * math.log(rbc / rac))
+        return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * math.log(2 * rbc / rac))
+
+    """
+    series impedance of a TEM transmission line
+    ko is the free-space wavenumber
+    No is the impedance of free space
+    Zs, is the surface impedance of the conductors
+    g1 and g2 are geometrical factors, which characterize the particular transmission line being used.
+    """
+
+    def series_impedance_Z(self, Zs, g1, g2):
+        return (1j * (K0 * N0) * g1) + (2 * g2 * Zs)
+
+    """
+    shunt admittance of a TEM transmission line
+    ko is the free-space wavenumber
+    No is the impedance of free space
+    epsilon_fm the effective dielectric constant in the modal sense.
+    g1 is a geometrical factor, which characterize the particular transmission line being used.
+    """
+
+    # TODO where does is epsilon_fm come from and is it model dependent
+    def shunt_admittance_Y(self, epsilon_fm, g1):
+        return 1j * (K0 / N0) * (epsilon_fm / g1)
+
+    # Zc
+    def characteristic_impedance(self, Z, Y):
+        return cmath.sqrt(Z / Y)
+
+    def propagation_constant(self, Z, Y):
+        return cmath.sqrt(Y * Z)
+
+        # TOdo what are these used for where do we calc these?
+        # attenuation const
+        # alpha = ...
+        #
+        # # wave number
+        #
+        # beta = ...

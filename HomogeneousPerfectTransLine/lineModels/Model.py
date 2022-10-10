@@ -24,16 +24,18 @@ g2
 
 
 class TransmissionLineModel(ABC):
+    pass
 
     # all models must have a G1 AND G2 METHODS
     # geometrical factors
-    @abstractmethod
-    def g1(self):
-        pass
 
-    @abstractmethod
-    def g2(self):
-        pass
+    # @abstractmethod
+    # def g1(self):
+    #     pass
+    #
+    # @abstractmethod
+    # def g2(self):
+    #     pass
 
     # TODO what is this for micro strip model ??
     # @abstractmethod
@@ -44,7 +46,7 @@ class TransmissionLineModel(ABC):
     # @abstractmethod
     # def impedance(self):
     #     pass
-    
+
     # TODO what is this for micro strip model ??
     # @abstractmethod
     # def propagation_const(self):
