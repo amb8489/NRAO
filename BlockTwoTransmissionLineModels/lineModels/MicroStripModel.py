@@ -1,8 +1,9 @@
 import math
 import cmath
+
+from BlockTwoTransmissionLineModels.lineModels.Model import TransmissionLineModel
 from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c
 from Supports.Support_Functions import sech, coth, ccoth
-from TransmissionLineModels.lineModels.Model import TransmissionLineModel
 
 """
 
@@ -21,6 +22,8 @@ from TransmissionLineModels.lineModels.Model import TransmissionLineModel
 
 
 # TODO COMMENT ALL IMPORTANT FUNCTIONS from mathimatica code AND TEST
+# TODO WHAT IS FUNCTION zt
+
 
 class MicroStripModel(TransmissionLineModel):
 
@@ -190,19 +193,19 @@ class MicroStripModel(TransmissionLineModel):
 
     def Kf(self, w, h, t):
 
-        bc = b(h, t)
+        bc = self.b(h, t)
 
-        pc = p(bc)
+        pc = self.p(bc)
 
-        rac = ra(w, h, pc)
+        rac = self.ra(w, h, pc)
 
-        EtaC = Eta(w, h, pc)
+        EtaC = self.Eta(w, h, pc)
 
-        DeltaYC = DeltaY(EtaC, pc)
+        DeltaYC = self.DeltaY(EtaC, pc)
 
-        rboc = rbo(EtaC, pc, DeltaYC)
+        rboc = self.rbo(EtaC, pc, DeltaYC)
 
-        rbc = rb(w, h, rboc, pc)
+        rbc = self.rb(w, h, rboc, pc)
 
         return (h / w) * (2 / PI) * math.log((2 * rbc) / rac)
 
@@ -240,24 +243,24 @@ class MicroStripModel(TransmissionLineModel):
         return (2 * ChiC * zs) / (ko * z0 * H)
 
     def ZSy(self, est, zs, f, epsilon_r, w, H, ts):
-        zmst = zt(epsilon_r, w, H, ts)
-        return zmst * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        zmst = self.zt(epsilon_r, w, H, ts)
+        return zmst * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     def beta_Soy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     def aplha_Sy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).imag
+        return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
 
     def apha_ky(self, est, zs, f, epsilon_r, w, H, ts):
-        CF = (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 - (1 / CF ** 2)
 
     def vSy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        CF = (cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 / (math.sqrt(epsilon_fm) * CF)
 
     def Beta_Syloss(self, est, zs, f, epsilon_r, tand, w, H, ts):
@@ -265,16 +268,16 @@ class MicroStripModel(TransmissionLineModel):
 
         epsilon_t = epsilon_fm - 1j * epsilon_r * tand
 
-        return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).real
+        return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     def AlphaSyloss(self, est, zs, f, epsilon_r, tand, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
 
         epsilon_t = epsilon_fm - 1j * epsilon_r * tand
 
-        return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * X(zs, f, w, H, ts))).imag
+        return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
 
-    def chi(self, w, h, t):
+    def Chi(self, w, h, t):
         bc = self.b(h, t)
         pc = self.p(bc)
         rac = self.ra(w, h, pc)
