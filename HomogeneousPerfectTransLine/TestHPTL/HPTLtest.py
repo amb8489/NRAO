@@ -1,5 +1,5 @@
-from HomogeneousPerfectTransLine.HPTL_Equations import *
-from SuperConductivityEquations.SCE import conductivityNormalized, Delta_O, conductivity
+from HomogeneousPerfectTransLine.lineModels.HPTL_Equations import *
+from SuperConductivityEquations.SCE import Delta_O
 import matplotlib.pyplot as plt
 
 tempK = .01

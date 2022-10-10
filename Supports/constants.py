@@ -1,5 +1,7 @@
 import math
 
+import scipy.constants
+
 # PI consts
 PI = math.pi
 PI2 = 2 * math.pi
@@ -22,3 +24,16 @@ z0 = 120 * PI
 
 # Giga hertz
 GHz = 10 ** 9
+
+# speed of light m/s
+c = scipy.constants.speed_of_light
+
+# speed of light m/s for GHz freq
+cc = 3
+
+# wave number when freq is in GHz
+#todo is this right
+K0 = (PI2 * 10) / cc
+
+# Impedance of free space
+N0 = 120 * PI

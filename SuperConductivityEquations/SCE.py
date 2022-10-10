@@ -2,11 +2,29 @@
 NRAO
 Aaron Berghash amb8489@g.rit.edu
 """
-
+import cmath
 import math
 
 from scipy.integrate import quad
-from constants import BOLTZMANN_CONSTev, PLANCK_CONSTev
+
+from Supports.Support_Functions import ccoth
+from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0
+
+"""
+---INPUTS---
+
+freq range    : the range of DC frequency to test in units of GHz
+conductivity  : the temperature of operation in Kelvin
+ts            : thickness of super conductor
+Pn            : normal resistivity
+TempK         : temp of operation in kelvin
+
+
+---OUT---
+
+conductivity 
+Zs (surface in impedance)         
+"""
 
 '''
 ------------------------------functions to support conductivity ------------------------------
@@ -55,7 +73,6 @@ def fermiDistrib(E, tempK, freq=0):
             return 0
         return 1
     # normal case for temp > 0
-
 
     return 1 / (1 + math.exp(E / tempK))
 
@@ -128,7 +145,6 @@ def sigma_2_N(delta, freq, tempK):
 
 
 def Delta_O(critical_temp):
-    # todo in units of ev for BOLTZMANN_CONSTev
     return 1.764 * BOLTZMANN_CONSTev * critical_temp
 
 
@@ -168,5 +184,24 @@ conductivity            : is the conductivity at input conditions
 
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
-    # TODO WHAT IS multfactor 1 / Pn ?? CHECK (1/PN IS RIGHT?)
     return conductivityNormalized(freq, Operation_temperatureK, critical_temp) * (1 / Pn)
+
+
+"""
+-INPUTS-
+
+freq          : frequency of DC i units of GHz
+conductivity  : the temperature of operation in Kelvin
+ts            : thickness of super conductor
+
+-OUT-
+
+Zs - surface impenitence          
+"""
+
+
+def Zs(self, freq, conductivity, ts):
+    # TODO ask about the complex square root should just the real part be rooted or both re and im parts
+    a = cmath.sqrt((1j * PI2 * freq * MU_0) / conductivity)
+    b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
+    return a * b
