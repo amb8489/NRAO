@@ -1,11 +1,26 @@
 import math
 import cmath
-
-import Supports.constants
 from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c
 from Supports.Support_Functions import sech, coth, ccoth
-from HomogeneousPerfectTransLine.lineModels.Model import TransmissionLineModel
+from TransmissionLineModels.lineModels.Model import TransmissionLineModel
 
+"""
+
+    MICRO STRIP MODEL FOR TRANSMISSION LINE
+    
+    
+    NRAO
+    Aaron Berghash
+
+    Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
+
+    Penetration depth & Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
+
+    
+"""
+
+
+# TODO COMMENT ALL IMPORTANT FUNCTIONS from mathimatica code AND TEST
 
 class MicroStripModel(TransmissionLineModel):
 
@@ -18,17 +33,6 @@ class MicroStripModel(TransmissionLineModel):
         self.thickness = thickness
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
-
-    """
-    NRAO
-    Aaron Berghash
-
-    Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
-
-    Penetration depth & Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
-
-    g1 g2 are model dependent
-    """
 
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
@@ -145,6 +149,27 @@ class MicroStripModel(TransmissionLineModel):
         return self.Kl(w, h, t) / w
 
     # ------ helper functions ----------
+
+    def ra(self, w, h, p):
+        sqrtP = math.sqrt(p)
+
+        return math.exp(
+            -1 - ((PI * w) / (2 * h)) - ((p + 1) / (sqrtP)) * math.atanh(sqrtP) - math.log((p - 1) / (4 * p)))
+
+    def rb(self, w, h, rbo, p):
+        if (w / h >= 5):
+            return rbo
+        sqrtP = math.sqrt(p)
+        return rbo - (math.sqrt((rbo - 1) * (rbo - p)) + (p + 1) * math.atanh(
+            math.sqrt((rbo - p) / (rbo - 1))) - 2 * sqrtP *
+                      math.atanh((rbo - p) / (p * (rbo - 1))) + ((PI * w) / (2 * h)) * sqrtP
+                      )
+
+    def Eta(self, w, h, p):
+        sqrtP = math.sqrt(p)
+
+        return sqrtP * (((PI * w) / (2 * h)) + ((p + 1) / (2 * sqrtP)) * (1 + math.log(4 / (p - 1))) - 2 * math.atanh(
+            pow(p, -1 / 2)))
 
     def b(self, h, t):
         return 1 + (t / h)

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 
 model specific geometric dimension of transmission line 
 
-Epsilon_R
+Epsilon_R , tand( on some models)
 
 
 
@@ -20,7 +20,13 @@ epsilon_eff
 
 g1
 g2
+
+
+
 """
+
+
+# TODO all models should output these outputs check if this is all after merge of second and third model
 
 
 class TransmissionLineModel(ABC):
@@ -50,4 +56,8 @@ class TransmissionLineModel(ABC):
     # TODO what is this for micro strip model ??
     # @abstractmethod
     # def propagation_const(self):
+    #     pass
+
+    # @abstractmethod
+    # def characteristic_impedance(self):
     #     pass
