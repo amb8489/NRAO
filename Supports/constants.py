@@ -32,7 +32,7 @@ c = scipy.constants.speed_of_light
 cc = 3
 
 # wave number when freq is in GHz
-#todo is this right
+#TODO is this right
 K0 = (PI2 * 10) / cc
 
 # Impedance of free space

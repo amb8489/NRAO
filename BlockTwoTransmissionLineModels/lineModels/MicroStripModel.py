@@ -21,25 +21,36 @@ from Supports.Support_Functions import sech, coth, ccoth
 """
 
 
-# TODO COMMENT ALL IMPORTANT FUNCTIONS from mathimatica code AND TEST
 # TODO WHAT IS FUNCTION zt
-# todo use np to opimize if possible
-# calcualte once things that are beign called alot
-# cache common calcs
+# TODO CHECK ALL FUNCTIONS
+# TODO MAKE SURE WE HAVE ALL THE NEEDED OUTPUTS FOR BOTH BLOCKS THAT WERE MERGED
+# TODO  JUST NEED TO CHECK THAT T IS THICKNESS
+# TODO where does is epsilon_fm come from in shunt_admittance_Y and is it model dependent
+# TODO check K0 in consts
+
+
+#                                  OPTIMIZATIONS
+# TODO use np to opimize if possible
+# TODO optimize when going though a freq range dont remake the entire model obj again
+# just change and recalc whats changed when the freq changed-- for exaple g1 and g2 dont change depending on the freq
+# so they onyl need to be calculated once, but somthing that takes in an argument thats affected by freq then needs to be
+# recalculated
+# TODO optimizations calcualte once things that are beign called alot | cache common calcs
 
 
 class SuperConductingMicroStripModel(TransmissionLineModel):
 
-    # TODO all geometrical dimensions needed, tan
     # TODO where is tan_delta used?
     def __init__(self, height, width, thickness, epsilon_r, tan_delta):
 
-        # todo use these in the model calculations
         self.height = height
         self.width = width
         self.thickness = thickness
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
+
+        self.g1 = self.gg1(width, height, thickness)
+        self.g2 = self.gg2(width, height, thickness)
 
     # ----------  schneider   t = 0  ----------
     def __Fs(self, w, h):
@@ -132,26 +143,35 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # -------------------
 
-    def __Lambda0(self, sigma_N, delta_O):
+    def Lambda0(self, sigma_N, delta_O):
+        # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
         # TODO ask about the complex square root should just the real part be rooted or both re and im parts
         # AND sigma_N is 1/ Pn
         return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_N * delta_O))
 
+    # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
     # todo what is t used for?
-    def __z_slow(self, f, yO, t):
+    def z_slow(self, f, yO, t):
         return 1j * PI2 * f * MU_0 * yO
 
+    # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
     # todo what is t used for?
-    def __Lambda(self, zs, f, t):
+    def Lambda(self, zs, f, t):
         return (zs / (PI2 * f * MU_0)).imag
 
     """
-                    super conducting equations for miro strip
+    
+    
+    
+    
+    
+                    super conducting trans line equations for miro strip
                     
              Implementation of the paper of Yassin
              Electromagnetic models for superconducting millimetre-wave and
              sub-milLimetre-wave microstrip transmission lines
     """
+
     # ------ helper functions ----------
 
     def __ra(self, w, h, p):
@@ -190,11 +210,8 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     def __DeltaY(self, eta, p):
         return eta if eta > p else p
 
-
-
     def __Kl(self, w, h, t):
         return self.__Chi(w, h, t) / self.__Kf(w, h, t)
-
 
     def __Kf(self, w, h, t):
 
@@ -239,7 +256,6 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     def __Ra1(self, p, ra):
         return (ra + 1) * (ra + p)
-
 
     def __Chi(self, w, h, t):
         bc = self.__b(h, t)
@@ -324,10 +340,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).imag
 
-
-
-
-    #------------------  OUTPUTS ------------------
+    # ------------------  OUTPUTS ------------------
 
     """
     series impedance of a TEM transmission line
@@ -338,14 +351,11 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     # Geometrical factors
-     #TODO ADD DEFULTS FOR INPUTS FRO ALL OUTPUT FUCNTIONS EX g1(self, w = WIDTH , h = HEIGHT , t = THICKNESS):
-    # JUST NEED TO CHECK THAT T IS THICKNESS
 
-    def g1(self, w, h, t):
-
+    def gg1(self, w, h, t):
         return h / (w * self.__Kf(w, h, t))
 
-    def g2(self, w, h, t):
+    def gg2(self, w, h, t):
         return self.__Kl(w, h, t) / w
 
     def series_impedance_Z(self, Zs, g1, g2):
@@ -359,7 +369,6 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     g1 is a geometrical factor, which characterize the particular transmission line being used.
     """
 
-    # TODO where does is epsilon_fm come from and is it model dependent
     def shunt_admittance_Y(self, epsilon_fm, g1):
         return 1j * (K0 / N0) * (epsilon_fm / g1)
 
