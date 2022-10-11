@@ -55,16 +55,9 @@ if model_choice == "micro_strip":
     model = SuperConductingMicroStripModel(height, width, thickness, epsilon_r, tan_delta)
     # get inputs for micro strip model
 
+    print("g1: ", model.g1(width, height, thickness))
+    print("g2: ", model.g2(width, height, thickness))
 
-    print("g1: ",model.g1(width, height, thickness))
-    print("g2: ",model.g2(4, 1, thickness))
-
-
-
-
-
-
-
-
+    # todo test other needed outputs and check functions
 
 print("\n\nTime taken: {} s".format(time.time() - startTime))
