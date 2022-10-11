@@ -23,16 +23,20 @@ from Supports.Support_Functions import sech, coth, ccoth
 
 # TODO COMMENT ALL IMPORTANT FUNCTIONS from mathimatica code AND TEST
 # TODO WHAT IS FUNCTION zt
+# todo use np to opimize if possible
+# calcualte once things that are beign called alot
+# cache common calcs
 
 
-class MicroStripModel(TransmissionLineModel):
+class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # TODO all geometrical dimensions needed, tan
-    def __int__(self, height, width, thickness, epsilon_r, tan_delta):
+    # TODO where is tan_delta used?
+    def __init__(self, height, width, thickness, epsilon_r, tan_delta):
 
         # todo use these in the model calculations
         self.height = height
-        self.width = thickness
+        self.width = width
         self.thickness = thickness
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
@@ -146,6 +150,7 @@ class MicroStripModel(TransmissionLineModel):
     # Geometrical factors
 
     def g1(self, w, h, t):
+
         return h / (w * self.Kf(w, h, t))
 
     def g2(self, w, h, t):
@@ -156,23 +161,23 @@ class MicroStripModel(TransmissionLineModel):
     def ra(self, w, h, p):
         sqrtP = math.sqrt(p)
 
-        return math.exp(
-            -1 - ((PI * w) / (2 * h)) - ((p + 1) / (sqrtP)) * math.atanh(sqrtP) - math.log((p - 1) / (4 * p)))
+        return cmath.exp(
+            -1 - ((PI * w) / (2 * h)) - ((p + 1) / sqrtP) * cmath.atanh(1 / sqrtP) - cmath.log((p - 1) / (4 * p)))
 
     def rb(self, w, h, rbo, p):
-        if (w / h >= 5):
+        if w / h >= 5:
             return rbo
+
         sqrtP = math.sqrt(p)
-        return rbo - (math.sqrt((rbo - 1) * (rbo - p)) + (p + 1) * math.atanh(
-            math.sqrt((rbo - p) / (rbo - 1))) - 2 * sqrtP *
-                      math.atanh((rbo - p) / (p * (rbo - 1))) + ((PI * w) / (2 * h)) * sqrtP
-                      )
+        return rbo - math.sqrt((rbo - 1) * (rbo - p)) + (p + 1) * math.atanh(
+            math.sqrt((rbo - p) / (rbo - 1))) - 2 * sqrtP * math.atanh((rbo - p) / (p * (rbo - 1))) + (
+                           (PI * w) / (2 * h)) * sqrtP
 
     def Eta(self, w, h, p):
         sqrtP = math.sqrt(p)
 
         return sqrtP * (((PI * w) / (2 * h)) + ((p + 1) / (2 * sqrtP)) * (1 + math.log(4 / (p - 1))) - 2 * math.atanh(
-            pow(p, -1 / 2)))
+            1 / sqrtP))
 
     def b(self, h, t):
         return 1 + (t / h)
@@ -181,15 +186,13 @@ class MicroStripModel(TransmissionLineModel):
 
         bsqrd = b ** 2
 
-        return 2 * bsqrd - 1 + 2 * b * math.sqrt(bsqrd - 1)
+        return 2 * bsqrd - 1 + (2 * b * math.sqrt(bsqrd - 1))
 
     def rbo(self, eta, p, detaY):
         return eta + ((p + 1) / 2) * math.log(detaY)
 
     def DeltaY(self, eta, p):
-
-        return max(eta, p)
-        # return Eta if Eta > p else p
+        return eta if eta > p else p
 
     def Kf(self, w, h, t):
 
@@ -207,13 +210,13 @@ class MicroStripModel(TransmissionLineModel):
 
         rbc = self.rb(w, h, rboc, pc)
 
-        return (h / w) * (2 / PI) * math.log((2 * rbc) / rac)
+        return (h / w) * (2 / PI) * cmath.log((2 * rbc) / rac)
 
     def Kl(self, w, h, t):
-        return self.chi(w, h, t) / self.Kf(w, h, t)
+        return self.Chi(w, h, t) / self.Kf(w, h, t)
 
     def Is1(self, p, ra, Ra):
-        return math.log((2 * p - (p + 1) * ra + 2 * math.sqrt(p * Ra)) / (ra * (p - 1)))
+        return cmath.log((2 * p - (p + 1) * ra + 2 * cmath.sqrt(p * Ra)) / (ra * (p - 1)))
 
     def Ra(self, p, ra):
         return (1 - ra) * (p - ra)
@@ -225,13 +228,13 @@ class MicroStripModel(TransmissionLineModel):
         return (rb - 1) * (rb - p)
 
     def Ig1(self, p, rb, Rb1):
-        return -math.log(((p + 1) * rb + 2 * p + 2 * math.sqrt(p * Rb1)) / (rb * (p - 1)))
+        return -cmath.log(((p + 1) * rb + 2 * p + 2 * cmath.sqrt(p * Rb1)) / (rb * (p - 1)))
 
     def Rb1(self, p, rb):
         return (rb + 1) * (rb + p)
 
     def Ig2(self, p, ra, Ra1):
-        return math.log(((p + 1) * ra + 2 * p + 2 * math.sqrt(p * Ra1)) / (ra * (p - 1)))
+        return cmath.log(((p + 1) * ra + 2 * p + 2 * cmath.sqrt(p * Ra1)) / (ra * (p - 1)))
 
     def Ra1(self, p, ra):
         return (ra + 1) * (ra + p)
@@ -295,8 +298,8 @@ class MicroStripModel(TransmissionLineModel):
         Ig2c = self.Ig2(pc, rac, Ra1c)
 
         if (w / h) < 2:
-            return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * math.log(rbc / rac))
-        return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * math.log(2 * rbc / rac))
+            return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * cmath.log(rbc / rac))
+        return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * cmath.log(2 * rbc / rac))
 
     """
     series impedance of a TEM transmission line

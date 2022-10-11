@@ -200,7 +200,7 @@ Zs - surface impenitence
 """
 
 
-def Zs(self, freq, conductivity, ts):
+def Zs(freq, conductivity, ts):
     # TODO ask about the complex square root should just the real part be rooted or both re and im parts
     a = cmath.sqrt((1j * PI2 * freq * MU_0) / conductivity)
     b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
