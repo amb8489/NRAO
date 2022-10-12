@@ -31,8 +31,17 @@ c = scipy.constants.speed_of_light
 # speed of light m/s for GHz freq
 cc = 3
 
+# nano meter
+nano_meter = 10 ** -9
+
+micro_meter = 10 ** -6
+
+cm = 10 ** -2
+
+mm = 10 ** -3
+
 # wave number when freq is in GHz
-#TODO is this right
+# TODO is this right
 K0 = (PI2 * 10) / cc
 
 # Impedance of free space

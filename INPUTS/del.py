@@ -1,7 +1,6 @@
 from matplotlib import pyplot as plt
 
 from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperConductingMicroStripModel
-from Supports.test_functions import plot
 
 height = 1
 width = 1

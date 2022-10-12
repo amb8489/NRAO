@@ -50,14 +50,14 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.g2 = self.gg2(width, height, thickness)
 
     # ----------  schneider   t = 0  ----------
-    def __Fs(self, w, h):
+    def Fs(self, w, h):
         return math.sqrt(1 + (10 * (h / w)))
 
-    def __epsilon_effs(self, epsilon_r, w, h):
-        return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / (2 * self.__Fs(w, h)))
+    def epsilon_effs(self, epsilon_r, w, h):
+        return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / (2 * self.Fs(w, h)))
 
-    def __zmss(self, epsilon_r, w, h):
-        z0eff = z0 / (math.sqrt(self.__epsilon_effs(epsilon_r, w, h)))
+    def zmss(self, epsilon_r, w, h):
+        z0eff = z0 / (math.sqrt(self.epsilon_effs(epsilon_r, w, h)))
 
         if w / h <= 1:
             return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
@@ -66,7 +66,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # ----------  schneider   t > 0  ----------
 
-    def __epsilon_effst(self, epsilon_r, w, h, t):
+    def epsilon_effst(self, epsilon_r, w, h, t):
         u = w / h
 
         if u <= (1 / PI2):
@@ -74,9 +74,9 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         else:
             delta_w = (t / PI) * (1 + math.log((2 * h) / t))
 
-        return self.__epsilon_effs(epsilon_r, w + delta_w, h)
+        return self.epsilon_effs(epsilon_r, w + delta_w, h)
 
-    def __zmsst(self, epsilon_r, w, h, t):
+    def zmsst(self, epsilon_r, w, h, t):
         u = w / h
 
         if u <= (1 / PI2):
@@ -84,11 +84,11 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         else:
             delta_w = (t / PI) * (1 + math.log((2 * h) / t))
 
-        return self.__zmss(epsilon_r, w + delta_w, h)
+        return self.zmss(epsilon_r, w + delta_w, h)
 
     # ----------  Hammerstad   t = 0  ----------
 
-    def __epsilon_effh(self, epsilon_r, w, h):
+    def epsilon_effh(self, epsilon_r, w, h):
         u = w / h
 
         u4 = pow(u, 4)
@@ -102,7 +102,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / 2) * pow(1 + (10 / u), -a * b)
 
-    def __ZL1(self, w, h):
+    def ZL1(self, w, h):
         u = w / h
 
         fu = 6 + (PI2 - 6) * math.exp(-pow(30.666 / u, 0.7528))
@@ -111,10 +111,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # ----------  Hammerstad   t > 0  ----------
 
-    def __delta_wr(self, epsilon_r, w, h, t):
-        return (self.__delta_w1(w, h, t) * (1 + sech(math.sqrt(epsilon_r - 1)))) / 2
+    def delta_wr(self, epsilon_r, w, h, t):
+        return (self.delta_w1(w, h, t) * (1 + sech(math.sqrt(epsilon_r - 1)))) / 2
 
-    def __delta_w1(self, w, h, t):
+    def delta_w1(self, w, h, t):
         u = w / h
         th = t / h
 
@@ -123,18 +123,18 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         return (t / PI) * math.log(1 + (upper / lower))
 
-    def __epsilon_effht(self, epsilon_r, w, h, t):
-        w1 = w + self.__delta_w1(w, h, t)
-        wr = w + self.__delta_wr(epsilon_r, w, h, t)
+    def epsilon_effht(self, epsilon_r, w, h, t):
+        w1 = w + self.delta_w1(w, h, t)
+        wr = w + self.delta_wr(epsilon_r, w, h, t)
 
-        zl1_up = self.__ZL1(w1, h)
-        zl1_low = self.__ZL1(wr, h)
-        return self.__epsilon_effh(epsilon_r, wr, h) * pow(zl1_up / zl1_low, 2)
+        zl1_up = self.ZL1(w1, h)
+        zl1_low = self.ZL1(wr, h)
+        return self.epsilon_effh(epsilon_r, wr, h) * pow(zl1_up / zl1_low, 2)
 
-    def __Zmsht(self, epsilon_r, w, h, t):
-        wr = w + self.__delta_wr(epsilon_r, w, h, t)
-        upper = self.__ZL1(wr, h)
-        lower = math.sqrt(self.__epsilon_effht(epsilon_r, wr, h, t))
+    def Zmsht(self, epsilon_r, w, h, t):
+        wr = w + self.delta_wr(epsilon_r, w, h, t)
+        upper = self.ZL1(wr, h)
+        lower = math.sqrt(self.epsilon_effht(epsilon_r, wr, h, t))
 
         return upper / lower
 
@@ -147,12 +147,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_N * delta_O))
 
     # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
-    # todo what is t used for?
     def z_slow(self, f, yO, t):
         return 1j * PI2 * f * MU_0 * yO
 
     # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
-    # todo what is t used for?
     def Lambda(self, zs, f, t):
         return (zs / (PI2 * f * MU_0)).imag
 
@@ -171,13 +169,13 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # ------ helper functions ----------
 
-    def __ra(self, w, h, p):
+    def ra(self, w, h, p):
         sqrtP = math.sqrt(p)
 
         return cmath.exp(
             -1 - ((PI * w) / (2 * h)) - ((p + 1) / sqrtP) * cmath.atanh(1 / sqrtP) - cmath.log((p - 1) / (4 * p)))
 
-    def __rb(self, w, h, rbo, p):
+    def rb(self, w, h, rbo, p):
         if w / h >= 5:
             return rbo
 
@@ -186,90 +184,90 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
             math.sqrt((rbo - p) / (rbo - 1))) - 2 * sqrtP * math.atanh((rbo - p) / (p * (rbo - 1))) + (
                        (PI * w) / (2 * h)) * sqrtP
 
-    def __Eta(self, w, h, p):
+    def Eta(self, w, h, p):
         sqrtP = math.sqrt(p)
 
         return sqrtP * (((PI * w) / (2 * h)) + ((p + 1) / (2 * sqrtP)) * (1 + math.log(4 / (p - 1))) - 2 * math.atanh(
             1 / sqrtP))
 
-    def __b(self, h, t):
+    def b(self, h, t):
         return 1 + (t / h)
 
-    def __p(self, b):
+    def p(self, b):
 
         bsqrd = b ** 2
 
         return 2 * bsqrd - 1 + (2 * b * math.sqrt(bsqrd - 1))
 
-    def __rbo(self, eta, p, detaY):
+    def rbo(self, eta, p, detaY):
         return eta + ((p + 1) / 2) * math.log(detaY)
 
-    def __DeltaY(self, eta, p):
+    def DeltaY(self, eta, p):
         return eta if eta > p else p
 
-    def __Kl(self, w, h, t):
-        return self.__Chi(w, h, t) / self.__Kf(w, h, t)
+    def Kl(self, w, h, t):
+        return self.Chi(w, h, t) / self.Kf(w, h, t)
 
-    def __Kf(self, w, h, t):
+    def Kf(self, w, h, t):
 
-        bc = self.__b(h, t)
+        bc = self.b(h, t)
 
-        pc = self.__p(bc)
+        pc = self.p(bc)
 
-        rac = self.__ra(w, h, pc)
+        rac = self.ra(w, h, pc)
 
-        EtaC = self.__Eta(w, h, pc)
+        EtaC = self.Eta(w, h, pc)
 
-        DeltaYC = self.__DeltaY(EtaC, pc)
+        DeltaYC = self.DeltaY(EtaC, pc)
 
-        rboc = self.__rbo(EtaC, pc, DeltaYC)
+        rboc = self.rbo(EtaC, pc, DeltaYC)
 
-        rbc = self.__rb(w, h, rboc, pc)
+        rbc = self.rb(w, h, rboc, pc)
 
         return (h / w) * (2 / PI) * cmath.log((2 * rbc) / rac)
 
     # Functions to calculate Chi
 
-    def __Is1(self, p, ra, Ra):
+    def Is1(self, p, ra, Ra):
         return cmath.log((2 * p - (p + 1) * ra + 2 * cmath.sqrt(p * Ra)) / (ra * (p - 1)))
 
-    def __Ra(self, p, ra):
+    def Ra(self, p, ra):
         return (1 - ra) * (p - ra)
 
-    def __Is2(self, p, rb, Rb):
+    def Is2(self, p, rb, Rb):
         return - math.log(((p + 1) * rb - 2 * p - 2 * math.sqrt(p * Rb)) / (rb * (p - 1)))
 
-    def __Rb(self, p, rb):
+    def Rb(self, p, rb):
         return (rb - 1) * (rb - p)
 
-    def __Ig1(self, p, rb, Rb1):
+    def Ig1(self, p, rb, Rb1):
         return -cmath.log(((p + 1) * rb + 2 * p + 2 * cmath.sqrt(p * Rb1)) / (rb * (p - 1)))
 
-    def __Rb1(self, p, rb):
+    def Rb1(self, p, rb):
         return (rb + 1) * (rb + p)
 
-    def __Ig2(self, p, ra, Ra1):
+    def Ig2(self, p, ra, Ra1):
         return cmath.log(((p + 1) * ra + 2 * p + 2 * cmath.sqrt(p * Ra1)) / (ra * (p - 1)))
 
-    def __Ra1(self, p, ra):
+    def Ra1(self, p, ra):
         return (ra + 1) * (ra + p)
 
-    def __Chi(self, w, h, t):
-        bc = self.__b(h, t)
-        pc = self.__p(bc)
-        rac = self.__ra(w, h, pc)
-        EtaC = self.__Eta(w, h, pc)
-        DeltaYC = self.__DeltaY(EtaC, pc)
-        rboc = self.__rbo(EtaC, pc, DeltaYC)
-        rbc = self.__rb(w, h, rboc, pc)
-        Rac = self.__Ra(pc, rac)
-        Is1c = self.__Is1(pc, rac, Rac)
-        Rbc = self.__Rb(pc, rbc)
-        Is2c = self.__Is2(pc, rbc, Rbc)
-        Rb1c = self.__Ra(pc, rbc)
-        Ig1c = self.__Ig1(pc, rbc, Rb1c)
-        Ra1c = self.__Ra(pc, rac)
-        Ig2c = self.__Ig2(pc, rac, Ra1c)
+    def Chi(self, w, h, t):
+        bc = self.b(h, t)
+        pc = self.p(bc)
+        rac = self.ra(w, h, pc)
+        EtaC = self.Eta(w, h, pc)
+        DeltaYC = self.DeltaY(EtaC, pc)
+        rboc = self.rbo(EtaC, pc, DeltaYC)
+        rbc = self.rb(w, h, rboc, pc)
+        Rac = self.Ra(pc, rac)
+        Is1c = self.Is1(pc, rac, Rac)
+        Rbc = self.Rb(pc, rbc)
+        Is2c = self.Is2(pc, rbc, Rbc)
+        Rb1c = self.Ra(pc, rbc)
+        Ig1c = self.Ig1(pc, rbc, Rb1c)
+        Ra1c = self.Ra(pc, rac)
+        Ig2c = self.Ig2(pc, rac, Ra1c)
 
         if (w / h) < 2:
             return (Is1c + Is2c + Ig1c + Ig2c + PI) / (2 * cmath.log(rbc / rac))
@@ -277,9 +275,9 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # An important expression for calculating impedance and complex propagation constant
     # defined in this way mainly to calculate tan_Delta from Alpha
-    def __X(self, zs, f, w, H, ts):
+    def X(self, zs, f, w, H, ts):
 
-        ChiC = self.__Chi(w, H, ts)
+        ChiC = self.Chi(w, H, ts)
         ko = (PI2 * f) / c
         return (2 * ChiC * zs) / (ko * z0 * H)
 
@@ -287,33 +285,33 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     # Note that in this version I have used the suface impedance as parameter
     # Surface impedance can be determined with functions Zs and Zslow
     # zt is the expresion to determine the PCE microstip impedance
-    def ZSy(self, __zt, zs, f, epsilon_r, w, H, ts):
-        zmst = self.__zt(epsilon_r, w, H, ts)
-        return zmst * (cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).real
+    def ZSy(self, zt, zs, f, epsilon_r, w, H, ts):
+        zmst = self.zt(epsilon_r, w, H, ts)
+        return zmst * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     # Superconducting wavenumber Beta_S / ko
     # It requires the model for the PCE stripline
     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
     def beta_Soy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).real
+        return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     # Superconducting attenuation Alpha_S ko
     # It requires the model for the PCE stripline
     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
     def aplha_Sy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).imag
+        return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
 
     # Fraction of kinetic inductance
     def apha_ky(self, zs, f, w, H, ts):
-        CF = (cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).real
+        CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 - (1 / CF ** 2)
 
     # Phase velocity respect to vo = c
     def vSy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)
-        CF = (cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).real
+        CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 / (math.sqrt(epsilon_fm) * CF)
 
     # Including losses
@@ -325,7 +323,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         epsilon_t = epsilon_fm - 1j * epsilon_r * tan_d
 
-        return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).real
+        return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     # Attenuation AlphaS / ko due to superconducting strip (negligible) and dielectric
     # It requires the model for the PCE stripline
@@ -335,12 +333,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         epsilon_t = epsilon_fm - 1j * epsilon_r * tan_d
 
-        return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.__X(zs, f, w, H, ts))).imag
-
-
-
-
-
+        return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
 
     # ------------------  OUTPUTS ------------------
 
@@ -355,10 +348,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     # Geometrical factors
 
     def gg1(self, w, h, t):
-        return h / (w * self.__Kf(w, h, t))
+        return h / (w * self.Kf(w, h, t))
 
     def gg2(self, w, h, t):
-        return self.__Kl(w, h, t) / w
+        return self.Kl(w, h, t) / w
 
     def series_impedance_Z(self, Zs, g1, g2):
         return (1j * (K0 * N0) * g1) + (2 * g2 * Zs)
