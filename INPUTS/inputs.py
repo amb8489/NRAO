@@ -10,25 +10,6 @@ from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperCondu
 import time
 
 startTime = time.time()
-"""
-
-
-        BLOCK 1 SUPER CONDUCTIVITY EQUATIONS
-        
-        
-"""
-
-# --- INPUTS ---
-TempK = 1
-Tc = 1
-Pn = 1
-fStart = 1
-fEnd = 1
-Thickness_ts = 1
-
-# --- OUTPUTS ---
-MaterialConductivity = conductivity(fStart, TempK, Tc, Pn)
-surface_impedance_Zs = Zs(fStart, MaterialConductivity, Thickness_ts)
 
 """
 
@@ -55,8 +36,8 @@ if model_choice == "micro_strip":
     model = SuperConductingMicroStripModel(height, width, thickness, epsilon_r, tan_delta)
     # get inputs for micro strip model
 
-    print("g1: ", model.g1(width, height, thickness))
-    print("g2: ", model.g2(width, height, thickness))
+    print("g1: ", model.g1)
+    print("g2: ", model.g2)
 
     # todo test other needed outputs and check functions
 

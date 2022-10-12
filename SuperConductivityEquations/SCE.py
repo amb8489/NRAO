@@ -152,6 +152,7 @@ def calc_delta(temperature, critical_temp):
     PiDiv2 = math.pi / 2
     TempDiv = temperature / critical_temp
 
+
     return Delta_O(critical_temp) * math.sqrt(math.cos(PiDiv2 * (TempDiv ** 2)))
 
 
