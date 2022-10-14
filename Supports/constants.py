@@ -15,7 +15,7 @@ PLANCK_CONST_REDUCEDev = PLANCK_CONSTev / PI2
 
 # Boltzmann's constant in eV/K
 BOLTZMANN_CONSTev = 8.6173303E-5
-
+KB = 8.6173303E-5
 # The vacuum magnetic permeability in UNITS H.m^-1
 MU_0 = PI4 * (10 ** -7)
 

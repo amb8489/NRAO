@@ -74,7 +74,12 @@ def fermiDistrib(E, tempK, freq=0):
         return 1
     # normal case for temp > 0
 
-    return 1 / (1 + math.exp(E / tempK))
+    # math.exp(E / tempK) can be extremely large e^ 2000 +
+    # at very lage math.exp(E / tempK) we just return 0
+    try:
+        return 1 / (1 + math.exp(E / tempK))
+    except OverflowError:
+        return 0
 
 
 def ff(e, freq, tempK):
@@ -151,7 +156,6 @@ def Delta_O(critical_temp):
 def calc_delta(temperature, critical_temp):
     PiDiv2 = math.pi / 2
     TempDiv = temperature / critical_temp
-
 
     return Delta_O(critical_temp) * math.sqrt(math.cos(PiDiv2 * (TempDiv ** 2)))
 

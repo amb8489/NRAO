@@ -1,4 +1,4 @@
-from SuperConductivityEquations.SCE import conductivity, Zs, conductivityNormalized
+from SuperConductivityEquations.SCE import conductivity, Zs, Delta_O
 import time
 
 startTime = time.time()

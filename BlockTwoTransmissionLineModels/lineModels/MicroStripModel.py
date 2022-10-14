@@ -289,10 +289,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     # Superconducting impedance of the microstrip
     # Note that in this version I have used the suface impedance as parameter
     # Surface impedance can be determined with functions Zs and Zslow
-    # zt is the expresion to determine the PCE microstip impedance
+    # zt is the fucntion to determine the PCE microstip impedance
     # checkd
     def ZSy(self, zt, zs, f, epsilon_r, w, H, ts):
-        zmst = self.zt(epsilon_r, w, H, ts)
+        zmst = zt(epsilon_r, w, H, ts)
         return zmst * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
 
     # Superconducting wavenumber Beta_S / ko
@@ -388,7 +388,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Y * Z)
 
-        # TOdo what are these used for where do we calc these?
+        # TODO what are these used for where do we calc these?
         # attenuation const
         # alpha = ...
         #
