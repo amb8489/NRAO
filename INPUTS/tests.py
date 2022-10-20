@@ -25,7 +25,11 @@ EpsiloneffP = model.epsilon_effht
 
 
 
+"""
+tests for first two main blocks 
 
+
+"""
 
 
 

@@ -37,15 +37,7 @@ def isOddInt(n):
     return False
 
 
-def Chop(n, max=9):
-    realPart = abs(n.real)
 
-    return 1
-
-    # out = 0 if realPart <= max else n.real
-    #
-    # if decimalOfReal <= max:
-    #     out = intReal
 
 
 def Chop(number, decimals=6):
@@ -57,3 +49,7 @@ def Chop(number, decimals=6):
 
     factor = 10.0 ** decimals
     return (math.trunc(number.real * factor) / factor) + (1j * math.trunc(number.imag * factor) / factor)
+
+
+
+

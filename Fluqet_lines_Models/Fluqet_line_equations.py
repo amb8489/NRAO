@@ -19,10 +19,28 @@ def ABCD_TL(Z, Gamma, l):
             [(1 / Z) * math.sinh(GL), coshGL]]
 
 
-# TODO
+# Todo test last for loop is weird only runs once what does this function do
 def fpos(maxx, ceros, f):
-    pass
+    j = 0
+    p = None
 
+    while f > ceros[j] and j < len(ceros): j += 1
+
+    if f > ceros[j]:
+        j += 1
+
+    if j == 0:
+        p = 1
+    else:
+        for i in range(j - 1, j):
+            if i > len(maxx):
+                p = i
+                break
+            f1 = maxx[i]
+            p = i
+            if f <= f1:
+                break
+    return [p, j]
 
 
 '''
@@ -31,6 +49,7 @@ The propagation constant is obtained through ArcCosh[(A+D)/2]
 ZB is selected such that Re[ZB] >= 0
 Propagation constant calculated as GammaD
 '''
+
 
 # TODO CHECK FOR CORRECTNESS
 def GammaDZB(ABCD_Mat, maxx, ceros, f):
@@ -61,6 +80,7 @@ def GammaDZB(ABCD_Mat, maxx, ceros, f):
     gd = gd.real + 1j * igd
 
     return [gd, zb]
+
 
 # TODO CHECK FOR CORRECTNESS
 
@@ -103,6 +123,8 @@ ZB is selected such that Re[ZB] >= 0
 Propagation constant calculated as GammaD
 This function sets Im[Gamma] =0 or PI inside the gaps
 '''
+
+
 # TODO CHECK FOR CORRECTNESS
 
 
@@ -145,6 +167,7 @@ Propagation constant calculated as Gamma d
 No unfolding of Gamma
 """
 
+
 # TODO CHECK FOR CORRECTNESS
 
 def GammaDZBN(ABCD_Mat, maxx, f):
@@ -177,4 +200,12 @@ def prodTL(Z, Gamma, L):
 def S21Ncell(n, Zequ1, Zequ2, Gamma_equ, d, Zo):
     return (2 * math.exp(d * n * Gamma_equ) * (Zequ1 - Zequ2) * Zo) / (
             (1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 - Zequ2) * Zo - (
-            -1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 * Zequ2 - Zo ^ 2))
+            -1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 * Zequ2 - (Zo ** 2)))
+
+
+
+
+
+
+
+
