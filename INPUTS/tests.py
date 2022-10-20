@@ -24,6 +24,18 @@ ZP = model.Zmsht  # Zmsst -- Schneider; Zmsht -- Hammerstad;
 EpsiloneffP = model.epsilon_effht
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 def Sigma_scn(f, T):
     return sigma_N(calc_delta(T, Tc), PLANCK_CONSTev * f, KB * T)
 
