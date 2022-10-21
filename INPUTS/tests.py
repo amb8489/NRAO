@@ -27,8 +27,6 @@ EpsiloneffP = model.epsilon_effht
 
 """
 tests for first two main blocks 
-
-
 """
 
 
@@ -68,8 +66,9 @@ def awyas(w, H, f):
     return model.aplha_Sy(EpsiloneffP, zs(f), f, Epsilonr, w, H, tss)
 
 
-def zkwyas(w, H, f):
+def akwyas(w, H, f):
     return model.apha_ky(zs(f), f, w, H, tss)
+
 
 
 # (*Extra funcions to check variation with t strip*)
@@ -99,9 +98,12 @@ def Alphaktwyas(w, H, tss, f):
     return model.apha_ky(zs(f), f, w, H, tss)  # (*Kinetic inductance fraction*);
 
 
-# print("Delta_O: ", Delta_O(8.7))
-# print("Lambda0: ", model.Lambda0(1.6207455429497568E7, Delta_O(8.7)))
-# print("calc_delta: ",calc_delta(T, Tc))
+
+
+
+print("Delta_O: ", Delta_O(8.7))
+print("Lambda0: ", model.Lambda0(1.6207455429497568E7, Delta_O(8.7)))
+print("calc_delta: ",calc_delta(T, Tc))
 
 
 print("Sigma_scn: ", Sigma_scn(f, T))
@@ -118,4 +120,5 @@ print("vwyas: ", vwyas(w, H, f))
 
 print("awyas: ", awyas(w, H, f))
 
-print("zkwyas: ", zkwyas(w, H, f))
+print("akwyas: ", akwyas(w, H, f))
+

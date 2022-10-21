@@ -360,13 +360,14 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     # Geometrical factors #checked
-
+    #TODO TEST
     def gg1(self, w, h, t):
         return h / (w * self.Kf(w, h, t))
-
+    #TODO TEST
     def gg2(self, w, h, t):
         return self.Kl(w, h, t) / w
 
+    #TODO TEST
     def series_impedance_Z(self, Zs, g1, g2):
         return (1j * (K0 * N0) * g1) + (2 * g2 * Zs)
 
@@ -377,21 +378,17 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     epsilon_fm the effective dielectric constant in the modal sense.
     g1 is a geometrical factor, which characterize the particular transmission line being used.
     """
+    #TODO TEST
 
     def shunt_admittance_Y(self, epsilon_fm, g1):
         return 1j * (K0 / N0) * (epsilon_fm / g1)
 
-    # Zc
+    # Zc    #TODO TEST
     def characteristic_impedance(self, Z, Y):
         return cmath.sqrt(Z / Y)
+    #TODO TEST
 
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Y * Z)
 
-        # TODO what are these used for where do we calc these?
-        # attenuation const
-        # alpha = ...
-        #
-        # # wave number
-        #
-        # beta = ...
+
