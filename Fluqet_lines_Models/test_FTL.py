@@ -12,7 +12,8 @@ def Pd(mat):
     A = mat[0][0]
     D = mat[1][1]
 
-    return np.cosh((A + D) / 2)
+    return np.arccosh((A + D) / 2)
+    # return np.arccosh((A + D) / 2)
 
 
 def Zb(mat):
@@ -23,8 +24,10 @@ def Zb(mat):
     ADs2 = cmath.sqrt(pow(A + D, 2) - 4)
 
     B2 = 2 * B
+    ADm = A - D
+
     # return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
-    return - (B2 / ((A + D) + ADs2))
+    return -B2 / (ADm + ADs2)
 
 
 # ---------------------------- unit cell inputs
@@ -50,7 +53,7 @@ op_temp = 1
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-StartFreq, EndFreq, step = 1e9, 20e9, 1e7
+StartFreq, EndFreq, step = 6.99e9, 7.01e9, 1e4
 #
 a, b, r, x, freqs = [], [], [], [], []
 F = StartFreq
@@ -108,29 +111,21 @@ while F < EndFreq:
     # ------------- ABCD UNIT CELL-------------
     ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
-    # print("sub length add to total len: ", Length4+Length3+length3+Length2+length2+Length1+length1 == d)
-    # print("A*D - B*C                  : ", Chop(ABCD_UC[0][0]*ABCD_UC[1][1] - ABCD_UC[0][1] * ABCD_UC[1][0]))
-
-    ZB = Pd(ABCD_UC)
-
+    ZB = Zb(ABCD_UC)
     pb = Pd(ABCD_UC)
 
-    a_ = ZB.real
-    b_ = ZB.imag
+    a.append(pb.real)
+    b.append(pb.imag)
 
-    r_ = pb.real
-    x_ = pb.imag
+    r.append(ZB.real)
+    x.append(ZB.imag)
 
     freqs.append(F)
-    a.append(a_)
-    b.append(b_)
-    r.append(r_)
-    x.append(x_)
 
     F += step
 
 # plt.plot(freqs, a, linewidth=1.0, label='a')
 # plt.plot(freqs, b, linewidth=1.0, label='b')
-plt.plot(freqs, r, linewidth=1.0, label='r')
+# plt.plot(freqs, r, linewidth=1.0, label='r')
 # plt.plot(freqs, x, linewidth=1.0, label='x')
 plt.show()

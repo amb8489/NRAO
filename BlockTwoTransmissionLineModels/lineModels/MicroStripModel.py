@@ -3,7 +3,7 @@ import cmath
 
 from SuperConductivityEquations.SCE import conductivity, Zs
 from BlockTwoTransmissionLineModels.lineModels.Model import TransmissionLineModel
-from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c,Z0
+from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c, Z0
 from Supports.Support_Functions import sech, coth, ccoth
 
 """
@@ -399,31 +399,18 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         return cmath.sqrt(Z * Y)
 
     def characteristic_impedance_auto(self, freq, op_temp, Tc, pn):
-        # calc g1 and g2
+
+        # calc surface impedance
+        zs = Zs(freq, conductivity(freq, op_temp, Tc, pn), self.thickness)
+
+        # calc g1 and g2 and efm
         g1 = self.gg1(self.width, self.height, self.thickness)
         g2 = self.gg2(self.width, self.height, self.thickness)
-
-        # Calc conductivity
-        cond = conductivity(freq, op_temp, Tc, pn)
-
-        # calc surface impedence
-        zs = Zs(freq, cond, self.thickness)
+        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
 
         # calc Z and Y
-        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
         Z = self.series_impedance_Z(zs, g1, g2, freq)
         Y = self.shunt_admittance_Y(epsilon_fm, g1, freq)
 
         # propagation_constant
         return cmath.sqrt(Z / Y)
-
-
-    def propagation_constant_auto2(self, F, op_temp, Tc, pn):
-        X = self.Chi(self.width, self.height, self.thickness)
-        zs = Zs(F, conductivity(F, op_temp, Tc, pn), self.thickness)
-        return cmath.sqrt(1 - ((2j * X * zs) / (K0(F) * Z0 * self.height))).imag
-
-    def characteristic_impedance_auto2(self, F, op_temp, Tc, pn):
-        X = self.Chi(self.width, self.height, self.thickness)
-        zs = Zs(F,conductivity(F,op_temp,Tc,pn),self.thickness)
-        return cmath.sqrt(1- ((2j * X * zs)/(K0(F)*Z0*self.height))).real

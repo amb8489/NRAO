@@ -195,8 +195,9 @@ conductivity            : is the conductivity at input conditions
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
     delta = calc_delta(Operation_temperatureK, critical_temp)
-    # return (1 / Pn) * sigma_N(delta, freq, Operation_temperatureK)
+
     return sigma_N(delta, freq*PLANCK_CONSTev, Operation_temperatureK*KB)
+
 
 
 
