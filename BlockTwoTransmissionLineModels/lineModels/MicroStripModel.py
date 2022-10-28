@@ -3,7 +3,7 @@ import cmath
 
 from SuperConductivityEquations.SCE import conductivity, Zs
 from BlockTwoTransmissionLineModels.lineModels.Model import TransmissionLineModel
-from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c, Z0
+from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c, Z0
 from Supports.Support_Functions import sech, coth, ccoth
 
 """
@@ -17,9 +17,14 @@ from Supports.Support_Functions import sech, coth, ccoth
     Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
 
     Penetration depth & Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
-
+        
+        
+    
     
 """
+
+
+#todo somehwere i use 1/cos for arc cos not sure if thats right ....
 
 
 class SuperConductingMicroStripModel(TransmissionLineModel):
@@ -91,7 +96,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         fu = 6 + (PI2 - 6) * math.exp(-pow(30.666 / u, 0.7528))
 
-        return (z0 / PI2) * math.log((fu / u) + math.sqrt(1 + pow(2 / u, 2)))
+        return (Z0 / PI2) * math.log((fu / u) + math.sqrt(1 + pow(2 / u, 2)))
 
     # ----------  Hammerstad   t > 0  ----------
 

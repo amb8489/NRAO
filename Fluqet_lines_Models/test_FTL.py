@@ -13,7 +13,6 @@ def Pd(mat):
     D = mat[1][1]
 
     return np.arccosh((A + D) / 2)
-    # return np.arccosh((A + D) / 2)
 
 
 def Zb(mat):
@@ -26,8 +25,8 @@ def Zb(mat):
     B2 = 2 * B
     ADm = A - D
 
-    # return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
-    return -B2 / (ADm + ADs2)
+    return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+
 
 
 # ---------------------------- unit cell inputs
@@ -48,12 +47,12 @@ tg = 3e-7
 Tc = 14.28
 pn = 1.008E-6
 tanD = 0
-op_temp = 1
+op_temp = 0
 
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-StartFreq, EndFreq, step = 6.99e9, 7.01e9, 1e4
+StartFreq, EndFreq, step = 1, 20e9, 1e7
 #
 a, b, r, x, freqs = [], [], [], [], []
 F = StartFreq
@@ -68,6 +67,7 @@ while F < EndFreq:
 
     # ------------- ABCD 1 -------------
     Zc1 = loaded_char_imp
+
     propagation1 = loaded_prop
     Length1 = 0.5 * ((d / 3) - l1)
     mat1 = ABCD_TL(Zc1, propagation1, Length1)
@@ -111,7 +111,7 @@ while F < EndFreq:
     # ------------- ABCD UNIT CELL-------------
     ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
-    ZB = Zb(ABCD_UC)
+    ZB = Zb(ABCD_UC)[1]
     pb = Pd(ABCD_UC)
 
     a.append(pb.real)
@@ -124,8 +124,15 @@ while F < EndFreq:
 
     F += step
 
-# plt.plot(freqs, a, linewidth=1.0, label='a')
-# plt.plot(freqs, b, linewidth=1.0, label='b')
-# plt.plot(freqs, r, linewidth=1.0, label='r')
-# plt.plot(freqs, x, linewidth=1.0, label='x')
+fig, axs = plt.subplots(4)
+fig.suptitle('a b r x')
+axs[0].plot(freqs, a)
+axs[1].plot(freqs, b)
+axs[2].plot(freqs, r)
+axs[3].plot(freqs, x)
+
+
+
+
+
 plt.show()

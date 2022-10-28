@@ -59,31 +59,26 @@ def akwyas(w, H, f):
     return model.apha_ky(zs(f), f, w, H, tss)
 
 
-print("Delta_O: good", Delta_O(Tc))
+# print("Delta_O: good", Delta_O(Tc))
+# print("Lambda0: good", model.Lambda0(Sigma, Delta_O(Tc)))
+# print("calc_delta: good", calc_delta(T, Tc))
+# print("Sigma_scn: good ", Sigma_scn(f, T))
 
-print("Lambda0: good", model.Lambda0(Sigma, Delta_O(Tc)))
-
-print("calc_delta: good", calc_delta(T, Tc))
-
-print("Sigma_scn: good ", Sigma_scn(f, T))
-
-print("Sigma_sc: good", Sigma_sc(f, T))
+print("\nSigma_sc: good", Sigma_sc(f, T))
 print("conductivity: ", conductivity(f, T, Tc, Rho))
 
 
-
-
 print("zs: good", zs(f))
-
-print("zwyas: good", zwyas(w, H, f))
-
-print("bwyas:good ", bwyas(w, H, f))
-
-print("vwyas: good", vwyas(w, H, f))
-
-print("awyas: good", awyas(w, H, f))
-
-print("akwyas: good", akwyas(w, H, f))
+#
+# print("zwyas: good", zwyas(w, H, f))
+#
+# print("bwyas:good ", bwyas(w, H, f))
+#
+# print("vwyas: good", vwyas(w, H, f))
+#
+# print("awyas: good", awyas(w, H, f))
+#
+# print("akwyas: good", akwyas(w, H, f))
 
 exit(1)
 

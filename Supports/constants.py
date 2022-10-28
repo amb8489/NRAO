@@ -20,8 +20,11 @@ KB = 8.6173303E-5
 MU_0 = PI4 * (10 ** -7)
 
 # characteristic impedance of vacuum in UNITS ohm's
-z0 = 120 * PI
 Z0 = 120 * PI
+
+# todo why are thses two bevove the same ?????
+# Impedance of free space
+N0 = 120 * PI
 
 
 # Giga hertz
@@ -48,5 +51,3 @@ def K0(f):
     return PI2 / (c / f)
 
 
-# Impedance of free space
-N0 = 120 * PI

@@ -18,7 +18,7 @@ def ABCD_TL(Z, Gamma, L):
     sinhGL = cmath.sinh(GL)
 
     # TODO IN PICTURE THESE IS A J in (0,1) and (1,0)
-    return [[coshGL, Z * sinhGL],
+    return [[coshGL,   Z * sinhGL],
             [(1 / Z) * sinhGL, coshGL]]
 
 
