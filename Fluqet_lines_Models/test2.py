@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 import cmath
 import math
 
@@ -6,13 +15,14 @@ from matplotlib import pyplot as plt
 
 from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperConductingMicroStripModel
 from Fluqet_lines_Models.Fluqet_line_equations import ABCD_TL, GammaDZBN, UnitCellABCD_mats
+from Supports.Support_Functions import Chop
 
 
 def Pd(mat):
     A = mat[0][0]
     D = mat[1][1]
 
-    return np.cosh((A + D) / 2)
+    return cmath.cosh((A + D) / 2)
 
 
 def Zb(mat):
@@ -24,7 +34,7 @@ def Zb(mat):
 
     B2 = 2 * B
     # return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
-    return - (B2 / ((A + D) + ADs2))
+    return (-B2 / ((A - D) + ADs2))
 
 
 # ---------------------------- unit cell inputs
@@ -47,26 +57,28 @@ pn = 1.008E-6
 tanD = 0
 op_temp = 1
 
-model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
-model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
+model_unloaded = SuperConductingMicroStripModel(ts, Wu, H, er, tanD)
+model_loaded = SuperConductingMicroStripModel(ts, Wl, H, er, tanD)
 
-StartFreq, EndFreq, step = 1e9, 20e9, 1e7
+StartFreq, EndFreq, step = 5e9, 8e9,5e5
 #
 a, b, r, x, freqs = [], [], [], [], []
 F = StartFreq
 while F < EndFreq:
     # calc Zc for load and unloaded
-    loaded_char_imp = model_loaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
-    Unloaded_char_imp = model_unloaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
+    loaded_char_imp = model_loaded.characteristic_impedance_auto2(F, op_temp, Tc, pn)
+    Unloaded_char_imp = model_unloaded.characteristic_impedance_auto2(F, op_temp, Tc, pn)
 
     # calc propagation const for loaded and unloaded
-    loaded_prop = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
-    Unloaded_prop = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
+    loaded_prop = model_loaded.propagation_constant_auto2(F, op_temp, Tc, pn)
+    Unloaded_prop = model_loaded.propagation_constant_auto2(F, op_temp, Tc, pn)
 
     # ------------- ABCD 1 -------------
     Zc1 = loaded_char_imp
     propagation1 = loaded_prop
     Length1 = 0.5 * ((d / 3) - l1)
+
+
     mat1 = ABCD_TL(Zc1, propagation1, Length1)
 
     # ------------- ABCD 2 -------------
@@ -111,9 +123,10 @@ while F < EndFreq:
     # print("sub length add to total len: ", Length4+Length3+length3+Length2+length2+Length1+length1 == d)
     # print("A*D - B*C                  : ", Chop(ABCD_UC[0][0]*ABCD_UC[1][1] - ABCD_UC[0][1] * ABCD_UC[1][0]))
 
-    ZB = Pd(ABCD_UC)
-
+    ZB = Zb(ABCD_UC)
     pb = Pd(ABCD_UC)
+
+
 
     a_ = ZB.real
     b_ = ZB.imag
@@ -121,11 +134,12 @@ while F < EndFreq:
     r_ = pb.real
     x_ = pb.imag
 
-    freqs.append(F)
     a.append(a_)
     b.append(b_)
     r.append(r_)
     x.append(x_)
+    freqs.append(F)
+
 
     F += step
 
@@ -134,3 +148,6 @@ while F < EndFreq:
 plt.plot(freqs, r, linewidth=1.0, label='r')
 # plt.plot(freqs, x, linewidth=1.0, label='x')
 plt.show()
+
+
+

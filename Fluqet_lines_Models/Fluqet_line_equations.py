@@ -1,3 +1,4 @@
+import cmath
 import math
 import numpy as np
 
@@ -10,13 +11,15 @@ from Supports.constants import PI
 # TODO WHAT of these formulas are NOT model specific 
 # ( A B )
 # ( C D )
-def ABCD_TL(Z, Gamma, l):
-    GL = Gamma * l
-    coshGL = math.cosh(GL)
+def ABCD_TL(Z, Gamma, L):
+    GL = Gamma * L
+
+    coshGL = cmath.cosh(GL)
+    sinhGL = cmath.sinh(GL)
 
     # TODO IN PICTURE THESE IS A J in (0,1) and (1,0)
-    return [[coshGL, Z * math.sinh(GL)],
-            [(1 / Z) * math.sinh(GL), coshGL]]
+    return [[coshGL, Z * sinhGL],
+            [(1 / Z) * sinhGL, coshGL]]
 
 
 # Todo test last for loop is weird only runs once what does this function do
@@ -177,11 +180,11 @@ def GammaDZBN(ABCD_Mat, maxx, f):
     D = ABCD_Mat[1][1]
 
     ApD = (A + D)
-    ADs2 = math.sqrt(ApD ** 2 - 4)
+    ADs2 = cmath.sqrt(ApD ** 2 - 4)
 
     ADm = A - D
 
-    gd = math.acosh(ApD / 2)
+    gd = cmath.acosh(ApD / 2)
     B2 = 2 * B
     zb1 = - (B2 / (ADm - ADs2))
 
@@ -191,9 +194,24 @@ def GammaDZBN(ABCD_Mat, maxx, f):
 
 
 # Product of matrices TL[Z,Gamma,l]
+# TODO WHERE CAN I GET THIS FILE of vectors
 # Z,Gamma,d are given as vectors
-def prodTL(Z, Gamma, L):
-    return np.multi_dot([ABCD_TL(Z[i], Gamma[i], L[i]) for i in range(len(Z))])
+def UnitCellABCD(Z, Gamma, L):
+    res = [[1, 0],
+           [0, 1]]
+    for i in range(len(Z)):
+        res = np.matmul(res, ABCD_TL(Z[i], Gamma[i], L[i]))
+
+    return res
+
+
+# input is an array of mats
+def UnitCellABCD_mats(mats):
+    res = [[1, 0],
+           [0, 1]]
+    for mat in mats:
+        res = np.matmul(res, mat)
+    return res
 
 
 # Transmission of n identical cells
@@ -201,11 +219,3 @@ def S21Ncell(n, Zequ1, Zequ2, Gamma_equ, d, Zo):
     return (2 * math.exp(d * n * Gamma_equ) * (Zequ1 - Zequ2) * Zo) / (
             (1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 - Zequ2) * Zo - (
             -1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 * Zequ2 - (Zo ** 2)))
-
-
-
-
-
-
-
-

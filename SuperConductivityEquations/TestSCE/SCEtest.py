@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 
 
 
-StartFreq, EndFreq = .01, 15
-temp = 1
+StartFreq, EndFreq = .01, 20
+temp = 10
 tc = 14
 Pn = 52
 
-step = .05
+step = .5
 
 
 re,im, freqs = [], [],[]
@@ -21,7 +21,7 @@ freq = StartFreq
 while freq < EndFreq:
 
 
-    val = conductivityNormalized(freq, temp, tc)
+    val = conductivity(freq, temp, tc,Pn)
 
 
     # print(val)

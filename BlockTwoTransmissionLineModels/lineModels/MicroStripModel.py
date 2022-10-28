@@ -1,8 +1,9 @@
 import math
 import cmath
 
+from SuperConductivityEquations.SCE import conductivity, Zs
 from BlockTwoTransmissionLineModels.lineModels.Model import TransmissionLineModel
-from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c
+from Supports.constants import PI, MU_0, PI2, z0, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c,Z0
 from Supports.Support_Functions import sech, coth, ccoth
 
 """
@@ -21,16 +22,6 @@ from Supports.Support_Functions import sech, coth, ccoth
 """
 
 
-# TODO WHAT IS FUNCTION zt
-#                                  OPTIMIZATIONS
-# TODO use np to opimize if possible
-# TODO optimize when going though a freq range dont remake the entire model obj again
-# just change and recalc whats changed when the freq changed-- for exaple g1 and g2 dont change depending on the freq
-# so they onyl need to be calculated once, but somthing that takes in an argument thats affected by freq then needs to be
-# recalculated
-# TODO optimizations calcualte once things that are beign called alot | cache common calcs
-
-
 class SuperConductingMicroStripModel(TransmissionLineModel):
 
     def __init__(self, height, width, thickness, epsilon_r, tan_delta):
@@ -41,12 +32,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
-        self.g1 = self.gg1(width, height, thickness)
-        self.g2 = self.gg2(width, height, thickness)
-
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
-        return math.sqrt(1 + (10 * (h / w)))
+
+        return cmath.sqrt(1 + (10 * (h / w)))
 
     def epsilon_effs(self, epsilon_r, w, h):
         return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / (2 * self.Fs(w, h)))
@@ -135,11 +124,11 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # -------------------
 
-    def Lambda0(self, sigma_N, delta_O):
+    def Lambda0(self, sigma, delta_O):
         # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
         # TODO ask about the complex square root should just the real part be rooted or both re and im parts
         # AND sigma_N is 1/ Pn
-        return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_N * delta_O))
+        return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma * delta_O))
 
     # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
     def z_slow(self, f, yO, t):
@@ -351,6 +340,13 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # ------------------  OUTPUTS ------------------
 
+    # Geometrical factors #checked
+    def gg1(self, w, h, t):
+        return h / (w * self.Kf(w, h, t))
+
+    def gg2(self, w, h, t):
+        return self.Kl(w, h, t) / w
+
     """
     series impedance of a TEM transmission line
     ko is the free-space wavenumber
@@ -359,36 +355,75 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     g1 and g2 are geometrical factors, which characterize the particular transmission line being used.
     """
 
-    # Geometrical factors #checked
-    #TODO TEST
-    def gg1(self, w, h, t):
-        return h / (w * self.Kf(w, h, t))
-    #TODO TEST
-    def gg2(self, w, h, t):
-        return self.Kl(w, h, t) / w
-
-    #TODO TEST
-    def series_impedance_Z(self, Zs, g1, g2):
-        return (1j * (K0 * N0) * g1) + (2 * g2 * Zs)
+    def series_impedance_Z(self, Zs, g1, g2, f):
+        return (1j * (K0(f) * N0) * g1) + (2 * g2 * Zs)
 
     """
     shunt admittance of a TEM transmission line
     ko is the free-space wavenumber
     No is the impedance of free space
-    epsilon_fm the effective dielectric constant in the modal sense.
+    epsilon_fm the effective dielectric constant -- in the modal sense.
     g1 is a geometrical factor, which characterize the particular transmission line being used.
     """
-    #TODO TEST
 
-    def shunt_admittance_Y(self, epsilon_fm, g1):
-        return 1j * (K0 / N0) * (epsilon_fm / g1)
+    def shunt_admittance_Y(self, epsilon_fm, g1, f):
 
-    # Zc    #TODO TEST
+        return 1j * (K0(f) / N0) * (epsilon_fm / g1)
+
+    # Zc
     def characteristic_impedance(self, Z, Y):
         return cmath.sqrt(Z / Y)
-    #TODO TEST
 
     def propagation_constant(self, Z, Y):
-        return cmath.sqrt(Y * Z)
+        return cmath.sqrt(Z * Y)
+
+    def propagation_constant_auto(self, freq, op_temp, Tc, pn):
+
+        # calc g1 and g2
+        g1 = self.gg1(self.width, self.height, self.thickness)
+        g2 = self.gg2(self.width, self.height, self.thickness)
+
+        # Calc conductivity
+        cond = conductivity(freq, op_temp, Tc, pn)
+
+        # calc surface impedence
+        zs = Zs(freq, cond, self.thickness)
+
+        # calc Z and Y
+        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
+        Z = self.series_impedance_Z(zs, g1, g2, freq)
+        Y = self.shunt_admittance_Y(epsilon_fm, g1, freq)
+
+        # propagation_constant
+
+        return cmath.sqrt(Z * Y)
+
+    def characteristic_impedance_auto(self, freq, op_temp, Tc, pn):
+        # calc g1 and g2
+        g1 = self.gg1(self.width, self.height, self.thickness)
+        g2 = self.gg2(self.width, self.height, self.thickness)
+
+        # Calc conductivity
+        cond = conductivity(freq, op_temp, Tc, pn)
+
+        # calc surface impedence
+        zs = Zs(freq, cond, self.thickness)
+
+        # calc Z and Y
+        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
+        Z = self.series_impedance_Z(zs, g1, g2, freq)
+        Y = self.shunt_admittance_Y(epsilon_fm, g1, freq)
+
+        # propagation_constant
+        return cmath.sqrt(Z / Y)
 
 
+    def propagation_constant_auto2(self, F, op_temp, Tc, pn):
+        X = self.Chi(self.width, self.height, self.thickness)
+        zs = Zs(F, conductivity(F, op_temp, Tc, pn), self.thickness)
+        return cmath.sqrt(1 - ((2j * X * zs) / (K0(F) * Z0 * self.height))).imag
+
+    def characteristic_impedance_auto2(self, F, op_temp, Tc, pn):
+        X = self.Chi(self.width, self.height, self.thickness)
+        zs = Zs(F,conductivity(F,op_temp,Tc,pn),self.thickness)
+        return cmath.sqrt(1- ((2j * X * zs)/(K0(F)*Z0*self.height))).real

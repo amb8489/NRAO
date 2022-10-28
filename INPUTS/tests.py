@@ -1,16 +1,15 @@
 from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import *
 from SuperConductivityEquations.SCE import *
 from Supports.constants import *
-from Supports.Support_Functions import *
 
 Epsilonr = 3.8  # Permitivitty substrate
-tss = 300E-9  # Thickness strip in m
-tgg = 1000E-9  # Thickness ground in m
+tss = 3 / 10_000_000  # Thickness strip in m
+tgg = 1 / 1_000_000  # Thickness ground in m
 Tc = 8.7  # Critical temperature
-Jc = 200000E4  # Critical current
+Jc = 2000000000  # Critical current
 Rho = 6.17E-8  # Resistivity in \[CapitalOmega].m
 Sigma = 1 / Rho  # Normal state conductivity
-fopr = 7E9
+fopr = 7000000000
 Topr = 1
 TanD = 0
 w = .25
@@ -23,27 +22,17 @@ model = SuperConductingMicroStripModel(H, w, tss, Epsilonr, TanD)
 ZP = model.Zmsht  # Zmsst -- Schneider; Zmsht -- Hammerstad;
 EpsiloneffP = model.epsilon_effht
 
-
-
 """
 tests for first two main blocks 
 """
 
 
+def Sigma_scn(FF, TT):
+    return sigma_N(calc_delta(TT, Tc), PLANCK_CONSTev * FF, KB * TT)
 
 
-
-
-
-
-
-
-def Sigma_scn(f, T):
-    return sigma_N(calc_delta(T, Tc), PLANCK_CONSTev * f, KB * T)
-
-
-def Sigma_sc(f, T):
-    return Sigma * Sigma_scn(f, T)
+def Sigma_sc(FF, TT):
+    return Sigma * Sigma_scn(FF, TT)
 
 
 def zs(f):
@@ -70,55 +59,62 @@ def akwyas(w, H, f):
     return model.apha_ky(zs(f), f, w, H, tss)
 
 
+print("Delta_O: good", Delta_O(Tc))
 
-# (*Extra funcions to check variation with t strip*)
+print("Lambda0: good", model.Lambda0(Sigma, Delta_O(Tc)))
 
+print("calc_delta: good", calc_delta(T, Tc))
 
-def zwyasT(w, H, f, tss):
-    return model.ZSy(ZP, zs(f), f, Epsilonr, w, H, tss)
+print("Sigma_scn: good ", Sigma_scn(f, T))
 
-
-def bwyasT(w, H, f, tss):
-    return model.beta_Soy(EpsiloneffP, zs(f), f, Epsilonr, w, H, tss)
-
-
-def vwyasT(w, H, f, tss):
-    return model.vSy(EpsiloneffP, zs(f), f, Epsilonr, w, H, tss)
-
-
-def awyasT(w, H, f, tss):
-    return model.aplha_Sy(EpsiloneffP, zs(f), f, Epsilonr, w, H, tss)
-
-
-def zkwyasT(w, H, f, tss):
-    return model.apha_ky(zs(f), f, w, H, tss)
-
-
-def Alphaktwyas(w, H, tss, f):
-    return model.apha_ky(zs(f), f, w, H, tss)  # (*Kinetic inductance fraction*);
+print("Sigma_sc: good", Sigma_sc(f, T))
+print("conductivity: ", conductivity(f, T, Tc, Rho))
 
 
 
 
+print("zs: good", zs(f))
 
-print("Delta_O: ", Delta_O(8.7))
-print("Lambda0: ", model.Lambda0(1.6207455429497568E7, Delta_O(8.7)))
-print("calc_delta: ",calc_delta(T, Tc))
+print("zwyas: good", zwyas(w, H, f))
+
+print("bwyas:good ", bwyas(w, H, f))
+
+print("vwyas: good", vwyas(w, H, f))
+
+print("awyas: good", awyas(w, H, f))
+
+print("akwyas: good", akwyas(w, H, f))
+
+exit(1)
+
+# testing Geometrical factors #checked
+w = 1
+h = 1
+t = 1
+epsilon_fm = model.epsilon_effst(Epsilonr, w, h, t)
+Zs = zs(f)
+
+g1 = model.gg1(w, h, t)
+g2 = model.gg2(w, h, t)
+Z = model.series_impedance_Z(Zs, g1, g2, f)
+
+print(g1)
+
+print(g2)
+
+print(Z)
+
+Y = model.shunt_admittance_Y(epsilon_fm, g1, f)
+print(Y)
+
+print(model.characteristic_impedance(Z, Y))
+
+print(model.propagation_constant(Z, Y))
 
 
-print("Sigma_scn: ", Sigma_scn(f, T))
 
-print("Sigma_sc: ", Sigma_sc(f, T))
 
-print("zs: ", zs(f))
 
-print("zwyas: ", zwyas(w, H, f))
 
-print("bwyas: ", bwyas(w, H, f))
 
-print("vwyas: ", vwyas(w, H, f))
-
-print("awyas: ", awyas(w, H, f))
-
-print("akwyas: ", akwyas(w, H, f))
 

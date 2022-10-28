@@ -8,7 +8,7 @@ import math
 from scipy.integrate import quad
 
 from Supports.Support_Functions import ccoth
-from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0
+from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0, KB
 
 """
 ---INPUTS---
@@ -52,7 +52,10 @@ def g(e, delta, freq):
 
 
 def g2(e, delta, freq):
-    return e3(e, delta, freq) / (e4(e, delta) * e2(e, delta, freq))
+    bottom = ((e4(e, delta) * e2(e, delta, freq)) )
+    if bottom == 0:
+        bottom = .0000001
+    return e3(e, delta, freq) / bottom
 
 
 # ---- WHEN TEMPK IS 0
@@ -161,6 +164,7 @@ def calc_delta(temperature, critical_temp):
 
 
 def sigma_N(delta, freq, tempK):
+
     return sigma_1_N(delta, freq, tempK) - 1j * sigma_2_N(delta, freq, tempK)
 
 
@@ -171,6 +175,7 @@ def gap_freq(delta):
 def conductivityNormalized(freq, Operation_temperatureK, critical_temp):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     return sigma_N(delta, freq, Operation_temperatureK)
+
 
 
 """
@@ -189,14 +194,20 @@ conductivity            : is the conductivity at input conditions
 
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
-    return conductivityNormalized(freq, Operation_temperatureK, critical_temp) * (1 / Pn)
+    delta = calc_delta(Operation_temperatureK, critical_temp)
+    # return (1 / Pn) * sigma_N(delta, freq, Operation_temperatureK)
+    return sigma_N(delta, freq*PLANCK_CONSTev, Operation_temperatureK*KB)
+
+
+
+
 
 
 """
 -INPUTS-
 
 freq          : frequency of DC i units of GHz
-conductivity  : the temperature of operation in Kelvin
+conductivity  : conductivity
 ts            : thickness of super conductor
 
 -OUT-
@@ -205,8 +216,10 @@ Zs - surface impenitence
 """
 
 
-def Zs(freq, conductivity, ts):
+def Zs(freq, Conductivity, ts):
     # TODO ask about the complex square root should just the real part be rooted or both re and im parts
-    a = cmath.sqrt((1j * PI2 * freq * MU_0) / conductivity)
-    b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * conductivity) * ts)
+
+    a = cmath.sqrt((1j * PI2 * freq * MU_0) / Conductivity)
+    b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * Conductivity) * ts)
+    
     return a * b
