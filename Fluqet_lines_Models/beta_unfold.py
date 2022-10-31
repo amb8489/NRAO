@@ -57,10 +57,20 @@ N = 100
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-StartFreq, EndFreq, step = 1, 20e9, 1e7
+prev = 0
+StartFreq, EndFreq, step = 1, 100e9, 1e7
 #
-s12, FLminusCL, a, b, r, x, freqs = [], [], [], [], [], [], []
+beta ,freqs = [], []
 F = StartFreq
+
+
+region = 0
+PIscaler = 0
+
+
+flipping = True
+searching = True
+
 while F < EndFreq:
     # calc Zc for load and unloaded
     loaded_char_imp = model_loaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
@@ -124,25 +134,38 @@ while F < EndFreq:
     ZB = Zb(ABCD_UC)[1]
     pb = Pd(ABCD_UC)
 
-    a.append(pb.real)
-    b.append(pb.imag)
 
-    r.append(ZB.real)
-    x.append(ZB.imag)
 
-    FLminusCL.append(pb.imag - Pd(central_line).imag)
+    bta = pb.imag
 
+
+    #logic to see what region we are in
+
+
+
+    if searching:
+        if bta > 3.1:
+            print(f" found start of top{F}  flipping: {True if flipping else False }  dist from prev start{F - prev}")
+
+            searching = False
+            flipping = not flipping
+            prev = F
+    else:
+        if bta < 3.1:
+            print(f"found end of top {F}\n")
+
+            searching = True
+
+
+
+
+
+    beta.append(bta)
     freqs.append(F)
 
     F += step
 
-fig, axs = plt.subplots(5)
-fig.suptitle('a  b  r  x  FL-CL')
-axs[0].plot(freqs, a)
-axs[1].plot(freqs, b)
-axs[2].plot(freqs, r)
-axs[3].plot(freqs, x)
-axs[4].plot(freqs, FLminusCL)
 
-
+fig, axs = plt.subplots()
+axs.plot(freqs, beta)
 plt.show()

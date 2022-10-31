@@ -18,7 +18,7 @@ def ABCD_TL(Z, Gamma, L):
     sinhGL = cmath.sinh(GL)
 
     # TODO IN PICTURE THESE IS A J in (0,1) and (1,0)
-    return [[coshGL,   Z * sinhGL],
+    return [[coshGL, Z * sinhGL],
             [(1 / Z) * sinhGL, coshGL]]
 
 
@@ -219,3 +219,12 @@ def S21Ncell(n, Zequ1, Zequ2, Gamma_equ, d, Zo):
     return (2 * math.exp(d * n * Gamma_equ) * (Zequ1 - Zequ2) * Zo) / (
             (1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 - Zequ2) * Zo - (
             -1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 * Zequ2 - (Zo ** 2)))
+
+
+def S12(ABCD_Mat, Z):
+    A = ABCD_Mat[0][0]
+    B = ABCD_Mat[0][1]
+    C = ABCD_Mat[1][0]
+    D = ABCD_Mat[1][1]
+
+    return 10 * cmath.log((2 * ((A * D) - (B * C))) / (A + B / Z + C * Z + D), 10)

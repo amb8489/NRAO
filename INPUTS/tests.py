@@ -5,7 +5,7 @@ from Supports.constants import *
 Epsilonr = 3.8  # Permitivitty substrate
 tss = 3 / 10_000_000  # Thickness strip in m
 tgg = 1 / 1_000_000  # Thickness ground in m
-Tc = 8.7  # Critical temperature
+Tc = 14.28  # Critical temperature
 Jc = 2000000000  # Critical current
 Rho = 6.17E-8  # Resistivity in \[CapitalOmega].m
 Sigma = 1 / Rho  # Normal state conductivity
@@ -28,10 +28,15 @@ tests for first two main blocks
 
 
 def Sigma_scn(FF, TT):
-    return sigma_N(calc_delta(TT, Tc), PLANCK_CONSTev * FF, KB * TT)
+    print(f"delta {calc_delta(TT, Tc)}")
+    return sigma_N(0.00217067, PLANCK_CONSTev * FF, KB * TT)
 
 
 def Sigma_sc(FF, TT):
+
+    print(f"sigma {Sigma}")
+    print(f"f     {FF}")
+    print(f"t     {TT}")
     return Sigma * Sigma_scn(FF, TT)
 
 
@@ -64,11 +69,11 @@ def akwyas(w, H, f):
 # print("calc_delta: good", calc_delta(T, Tc))
 # print("Sigma_scn: good ", Sigma_scn(f, T))
 
-print("\nSigma_sc: good", Sigma_sc(f, T))
+print("\nSigma_sc: ", Sigma_sc(f, T))
 print("conductivity: ", conductivity(f, T, Tc, Rho))
 
 
-print("zs: good", zs(f))
+# print("zs: good", zs(f))
 #
 # print("zwyas: good", zwyas(w, H, f))
 #

@@ -52,7 +52,7 @@ def g(e, delta, freq):
 
 
 def g2(e, delta, freq):
-    bottom = ((e4(e, delta) * e2(e, delta, freq)) )
+    bottom = ((e4(e, delta) * e2(e, delta, freq)))
     if bottom == 0:
         bottom = .0000001
     return e3(e, delta, freq) / bottom
@@ -68,6 +68,7 @@ def g2(e, delta, freq):
 # fermiDistrib E             -> fermiDistrib(E, 0)
 # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0)
 
+#TODO come back to this and maybe just simplify into a try catch thing for over flow
 def fermiDistrib(E, tempK, freq=0):
     # special case for temp = 0
     if tempK == 0:
@@ -77,8 +78,7 @@ def fermiDistrib(E, tempK, freq=0):
         return 1
     # normal case for temp > 0
 
-    # math.exp(E / tempK) can be extremely large e^ 2000 +
-    # at very lage math.exp(E / tempK) we just return 0
+    # math.exp(E / tempK) can be tiny < 1/ e^2000 so just return 0 if overflow
     try:
         return 1 / (1 + math.exp(E / tempK))
     except OverflowError:
@@ -153,7 +153,7 @@ def sigma_2_N(delta, freq, tempK):
 
 
 def Delta_O(critical_temp):
-    return 1.764 * BOLTZMANN_CONSTev * critical_temp
+    return 1.764 * KB * critical_temp
 
 
 def calc_delta(temperature, critical_temp):
@@ -164,7 +164,6 @@ def calc_delta(temperature, critical_temp):
 
 
 def sigma_N(delta, freq, tempK):
-
     return sigma_1_N(delta, freq, tempK) - 1j * sigma_2_N(delta, freq, tempK)
 
 
@@ -175,7 +174,6 @@ def gap_freq(delta):
 def conductivityNormalized(freq, Operation_temperatureK, critical_temp):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     return sigma_N(delta, freq, Operation_temperatureK)
-
 
 
 """
@@ -195,15 +193,9 @@ conductivity            : is the conductivity at input conditions
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
     delta = calc_delta(Operation_temperatureK, critical_temp)
+    # optimization 1/pn likly wont change between different clac so it only needs to be caled once
 
-    # return sigma_N(delta, freq*PLANCK_CONSTev, Operation_temperatureK*KB)
-    return (1/Pn )*sigma_N(delta, freq*PLANCK_CONSTev, Operation_temperatureK*KB)
-
-
-
-
-
-
+    return (1 / Pn) * sigma_N(delta, freq * PLANCK_CONSTev, Operation_temperatureK * KB)
 
 
 """
@@ -224,5 +216,5 @@ def Zs(freq, Conductivity, ts):
 
     a = cmath.sqrt((1j * PI2 * freq * MU_0) / Conductivity)
     b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * Conductivity) * ts)
-    
+
     return a * b
