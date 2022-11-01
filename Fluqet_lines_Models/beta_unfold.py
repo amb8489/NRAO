@@ -1,11 +1,13 @@
 import cmath
 import math
+import time
 
 import numpy as np
 from matplotlib import pyplot as plt
 
 from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperConductingMicroStripModel
 from Fluqet_lines_Models.Fluqet_line_equations import ABCD_TL, GammaDZBN, UnitCellABCD_mats, S21Ncell, S12
+from Supports.constants import PI
 
 
 def Pd(mat):
@@ -26,10 +28,7 @@ def Zb(mat):
 
     ADm = mat_A - mat_D
 
-
     return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
-
-
 
 
 # ---------------------------- unit cell inputs
@@ -58,18 +57,17 @@ model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
 prev = 0
-StartFreq, EndFreq, step = 1, 100e9, 1e7
+StartFreq, EndFreq, step = 1000, 30e9, 1e7
 #
-beta ,freqs = [], []
+betaUnfoled, folded, freqs = [], [], []
 F = StartFreq
 
-
 region = 0
-PIscaler = 0
+PiMult = 0
+flipping = False
+looking = True
 
-
-flipping = True
-searching = True
+s = time.time()
 
 while F < EndFreq:
     # calc Zc for load and unloaded
@@ -83,9 +81,6 @@ while F < EndFreq:
     ZcCL = Unloaded_char_imp
     propagation2 = Unloaded_prop
     central_line = ABCD_TL(ZcCL, propagation2, d)
-
-
-
 
     # ------------- ABCD 1 -------------
     Zc1 = loaded_char_imp
@@ -134,38 +129,38 @@ while F < EndFreq:
     ZB = Zb(ABCD_UC)[1]
     pb = Pd(ABCD_UC)
 
-
-
     bta = pb.imag
 
+    # at a top or bottom
+    if looking and (bta == 0 or bta >= 3.141):
+        print(f"found flat freq:{F}")
+        looking = False
 
-    #logic to see what region we are in
-
-
-
-    if searching:
-        if bta > 3.1:
-            print(f" found start of top{F}  flipping: {True if flipping else False }  dist from prev start{F - prev}")
-
-            searching = False
-            flipping = not flipping
-            prev = F
+    # on a slope
     else:
-        if bta < 3.1:
-            print(f"found end of top {F}\n")
+        if not looking and (bta > 0 and bta < 3.141):
+            region += 1
+            PiMult += PI
+            flipping = not flipping
+            print(f"found flat end of flat   Freq:{F} starting region {region}    flipped = {flipping}\n")
+            looking = True
 
-            searching = True
+    b = bta
+    if flipping:
+        bta += 2 * abs(PI - bta) + (PiMult - PI)
+    else:
+        bta += PiMult
 
-
-
-
-
-    beta.append(bta)
+    betaUnfoled.append(bta)
+    folded.append(b)
     freqs.append(F)
 
     F += step
 
+print("total time: ", time.time() - s)
 
 fig, axs = plt.subplots()
-axs.plot(freqs, beta)
+axs.plot(freqs, betaUnfoled)
+axs.plot(freqs, folded)
+
 plt.show()
