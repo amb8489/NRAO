@@ -75,7 +75,7 @@ model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
 
 
-StartFreq, EndFreq, step = 1, 25e9, 1e7
+StartFreq, EndFreq, step = 7, 20e9, 1e6
 betaUnfoled, folded, freqs = [], [], []
 F = StartFreq
 s = time.time()

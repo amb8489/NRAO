@@ -67,7 +67,7 @@ Length4 = 0.5 * ((d / 3) - length3)
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-StartFreq, EndFreq, step = 1, 10e9, 1e6
+StartFreq, EndFreq, step = 6.7e9, 6.9e9, 1e5
 s12, FLminusCL, a, b, r, x, freqs = [], [], [], [], [], [], []
 F = StartFreq
 while F < EndFreq:
@@ -118,7 +118,7 @@ while F < EndFreq:
 
     F += step
 
-fig, axs = plt.subplots(5)
+fig, axs = plt.subplots(4)
 fig.suptitle('a  b  r  x')
 axs[0].plot(freqs, a)
 axs[1].plot(freqs, b)
