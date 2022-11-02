@@ -68,7 +68,7 @@ def g2(e, delta, freq):
 # fermiDistrib E             -> fermiDistrib(E, 0)
 # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0)
 
-#TODO come back to this and maybe just simplify into a try catch thing for over flow
+# TODO come back to this and maybe just simplify into a try catch thing for over flow
 def fermiDistrib(E, tempK, freq=0):
     # special case for temp = 0
     if tempK == 0:
@@ -193,7 +193,8 @@ conductivity            : is the conductivity at input conditions
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
     delta = calc_delta(Operation_temperatureK, critical_temp)
-    # optimization 1/pn likly wont change between different clac so it only needs to be caled once
+    # optimization 1/pn - likly wont change between different clac so it only needs to be caled once
+    # optimization Operation_temperatureK * KB - likly wont change between different clac so it only needs to be caled once
 
     return (1 / Pn) * sigma_N(delta, freq * PLANCK_CONSTev, Operation_temperatureK * KB)
 

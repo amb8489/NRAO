@@ -49,103 +49,106 @@ tg = 3e-7
 Tc = 14.28
 pn = 1.008E-6
 tanD = 0
-op_temp = 0
 
+# TODO temp is > 0 things get weird in beta
+op_temp = 0
 N = 100
 
+
+# ---------------------------- lengths of matrix
+
+
+Length1 = 0.5 * ((d / 3) - l1)
+length1 = l1
+length2 = l1
+Length2 = (d / 3) - 0.5 * (length1 + length2)
+length3 = 2 * length1
+Length3 = (d / 3) - 0.5 * (length2 + length3)
+Length4 = 0.5 * ((d / 3) - length3)
+
+
+
+# ---------------------------- models of SuperConductingMicroStripModel
+# ---------------------------- one for unloaded , one for loaded
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-prev = 0
-StartFreq, EndFreq, step = 1000, 30e9, 1e7
-#
+
+
+StartFreq, EndFreq, step = 1, 25e9, 1e7
 betaUnfoled, folded, freqs = [], [], []
 F = StartFreq
-
+s = time.time()
 region = 0
 PiMult = 0
-flipping = False
+flipping = True
 looking = True
 
-s = time.time()
-
 while F < EndFreq:
+
     # calc Zc for load and unloaded
-    loaded_char_imp = model_loaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
-    Unloaded_char_imp = model_unloaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
+    loaded_Zc = model_loaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
+    Unloaded_Zc = model_unloaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
+
 
     # calc propagation const for loaded and unloaded
-    loaded_prop = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
-    Unloaded_prop = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
+    loaded_propagation = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
+    Unloaded_propagation = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
 
-    ZcCL = Unloaded_char_imp
-    propagation2 = Unloaded_prop
-    central_line = ABCD_TL(ZcCL, propagation2, d)
+
 
     # ------------- ABCD 1 -------------
-    Zc1 = loaded_char_imp
-    propagation1 = loaded_prop
-    Length1 = 0.5 * ((d / 3) - l1)
-    mat1 = ABCD_TL(Zc1, propagation1, Length1)
+    mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, Length1)
 
     # ------------- ABCD 2 -------------
-    Zc2 = Unloaded_char_imp
-    propagation2 = Unloaded_prop
-    length1 = l1
-    mat2 = ABCD_TL(Zc2, propagation2, length1)
-
-    # ------------- ABCD 4 -------------
-    Zc4 = Unloaded_char_imp
-    propagation4 = Unloaded_prop
-    length2 = l1
-    mat4 = ABCD_TL(Zc4, propagation4, length2)
+    mat2 = ABCD_TL(loaded_Zc, loaded_propagation, length1)
 
     # ------------- ABCD 3 -------------
-    Zc3 = loaded_char_imp
-    propagation3 = loaded_prop
-    Length2 = (d / 3) - 0.5 * (length1 + length2)
-    mat3 = ABCD_TL(Zc3, propagation3, Length2)
+    mat3 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, Length2)
 
-    # ------------- ABCD 6 -------------
-    Zc6 = Unloaded_char_imp
-    propagation6 = Unloaded_prop
-    length3 = 2 * length1
-    mat6 = ABCD_TL(Zc6, propagation6, length3)
+    # ------------- ABCD 4 -------------
+    mat4 = ABCD_TL(loaded_Zc, loaded_propagation, length2)
 
     # ------------- ABCD 5 -------------
-    Zc5 = loaded_char_imp
-    propagation5 = loaded_prop
-    Length3 = (d / 3) - 0.5 * (length2 + length3)
-    mat5 = ABCD_TL(Zc5, propagation5, Length3)
+    mat5 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, Length3)
+
+    # ------------- ABCD 6 -------------
+    mat6 = ABCD_TL(loaded_Zc, loaded_propagation, length3)
 
     # ------------- ABCD 7 -------------
-    Zc7 = loaded_char_imp
-    propagation7 = loaded_prop
-    Length4 = 0.5 * ((d / 3) - length3)
-    mat7 = ABCD_TL(Zc7, propagation7, Length4)
+    mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, Length4)
 
     # ------------- ABCD UNIT CELL-------------
     ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
+
+
+    # ---------------------------- calc bloch impedence and probagation const for UC
     ZB = Zb(ABCD_UC)[1]
     pb = Pd(ABCD_UC)
 
     bta = pb.imag
 
     # at a top or bottom
-    if looking and (bta == 0 or bta >= 3.141):
-        print(f"found flat freq:{F}")
+    # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
+    # todo if we need a more general formulation of flat zones just see when prev == current val could work or dist is within some delta thresh
+    # todo could also do abs(beta) and do some translating
+
+    bta = abs(bta)
+    b = bta
+
+    if looking and (bta <= 0.0000001 or bta >= 3.141):
+        # print(f"found flat freq:{F}")
         looking = False
 
     # on a slope
     else:
-        if not looking and (bta > 0 and bta < 3.141):
+        if not looking and (bta > 0.0000001 and bta < 3.141):
             region += 1
             PiMult += PI
             flipping = not flipping
-            print(f"found flat end of flat   Freq:{F} starting region {region}    flipped = {flipping}\n")
+            # print(f"found flat end of flat   Freq:{F} starting region {region}    flipped = {flipping}\n")
             looking = True
 
-    b = bta
     if flipping:
         bta += 2 * abs(PI - bta) + (PiMult - PI)
     else:
@@ -154,7 +157,6 @@ while F < EndFreq:
     betaUnfoled.append(bta)
     folded.append(b)
     freqs.append(F)
-
     F += step
 
 print("total time: ", time.time() - s)
@@ -162,5 +164,4 @@ print("total time: ", time.time() - s)
 fig, axs = plt.subplots()
 axs.plot(freqs, betaUnfoled)
 axs.plot(freqs, folded)
-
 plt.show()

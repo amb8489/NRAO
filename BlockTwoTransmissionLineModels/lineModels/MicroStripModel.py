@@ -24,7 +24,7 @@ from Supports.Support_Functions import sech, coth, ccoth
 """
 
 
-#todo somehwere i use 1/cos for arc cos not sure if thats right ....
+# todo somehwere i use 1/cos for arc cos not sure if thats right ....
 
 
 class SuperConductingMicroStripModel(TransmissionLineModel):
@@ -37,6 +37,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
+        self.g1 = self.gg1(self.width, self.height, self.thickness)
+        self.g2 = self.gg2(self.width, self.height, self.thickness)
+        self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
+
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
 
@@ -46,7 +50,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / (2 * self.Fs(w, h)))
 
     def zmss(self, epsilon_r, w, h):
-        z0eff = z0 / (math.sqrt(self.epsilon_effs(epsilon_r, w, h)))
+        z0eff = Z0 / (math.sqrt(self.epsilon_effs(epsilon_r, w, h)))
 
         if w / h <= 1:
             return z0eff * (1 / PI2) * math.log(((8 * h) / w) + (w / (4 * h)))
@@ -278,7 +282,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         ChiC = self.Chi(w, H, ts)
         ko = (PI2 * f) / c
-        return (2 * ChiC * zs) / (ko * z0 * H)
+        return (2 * ChiC * zs) / (ko * Z0 * H)
 
     # Superconducting impedance of the microstrip
     # Note that in this version I have used the suface impedance as parameter
@@ -372,7 +376,6 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     def shunt_admittance_Y(self, epsilon_fm, g1, f):
-
         return 1j * (K0(f) / N0) * (epsilon_fm / g1)
 
     # Zc
@@ -383,23 +386,11 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         return cmath.sqrt(Z * Y)
 
     def propagation_constant_auto(self, freq, op_temp, Tc, pn):
-
-        # calc g1 and g2
-        g1 = self.gg1(self.width, self.height, self.thickness)
-        g2 = self.gg2(self.width, self.height, self.thickness)
-
-        # Calc conductivity
-        cond = conductivity(freq, op_temp, Tc, pn)
-
         # calc surface impedence
-        zs = Zs(freq, cond, self.thickness)
+        zs = Zs(freq, conductivity(freq, op_temp, Tc, pn), self.thickness)
 
-        # calc Z and Y
-        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
-        Z = self.series_impedance_Z(zs, g1, g2, freq)
-        Y = self.shunt_admittance_Y(epsilon_fm, g1, freq)
-
-        # propagation_constant
+        Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
+        Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
 
         return cmath.sqrt(Z * Y)
 
@@ -408,14 +399,8 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         # calc surface impedance
         zs = Zs(freq, conductivity(freq, op_temp, Tc, pn), self.thickness)
 
-        # calc g1 and g2 and efm
-        g1 = self.gg1(self.width, self.height, self.thickness)
-        g2 = self.gg2(self.width, self.height, self.thickness)
-        epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
-
         # calc Z and Y
-        Z = self.series_impedance_Z(zs, g1, g2, freq)
-        Y = self.shunt_admittance_Y(epsilon_fm, g1, freq)
+        Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
+        Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
 
-        # propagation_constant
         return cmath.sqrt(Z / Y)

@@ -13,7 +13,6 @@ from Supports.constants import PI
 # ( C D )
 def ABCD_TL(Z, Gamma, L):
     GL = Gamma * L
-
     coshGL = cmath.cosh(GL)
     sinhGL = cmath.sinh(GL)
 
@@ -207,11 +206,12 @@ def UnitCellABCD(Z, Gamma, L):
 
 # input is an array of mats
 def UnitCellABCD_mats(mats):
-    res = [[1, 0],
-           [0, 1]]
-    for mat in mats:
-        res = np.matmul(res, mat)
+    res = [[1, 0]
+          ,[0, 1]]
+    for mat in mats: res = np.matmul(res, mat)
+
     return res
+
 
 
 # Transmission of n identical cells
