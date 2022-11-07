@@ -8,7 +8,7 @@ from Supports.constants import PI
 
 # ABCD matrix of TLs
 # Z characteristic impedance; k wavenumber; l length 
-# TODO WHAT of these formulas are NOT model specific 
+# TODO WHAT of these formulas are NOT model specific so they can be factored out into a diff file
 # ( A B )
 # ( C D )
 def ABCD_TL(Z, Gamma, L):

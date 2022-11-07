@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from SuperConductivityEquations.SCE import conductivity, Zs
-from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperConductingMicroStripModel
+from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 import time
 
 startTime = time.time()

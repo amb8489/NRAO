@@ -1,13 +1,8 @@
 import cmath
-import math
-import time
-
 import numpy as np
 from matplotlib import pyplot as plt
-
-from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import SuperConductingMicroStripModel
-from Fluqet_lines_Models.Fluqet_line_equations import ABCD_TL, GammaDZBN, UnitCellABCD_mats, S21Ncell, S12
-from Supports.constants import PI
+from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import ABCD_TL, UnitCellABCD_mats
+from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
 
 def Pd(mat):
@@ -17,7 +12,7 @@ def Pd(mat):
     return np.arccosh((mat_A + mat_D) / 2)
 
 
-def Zb(mat):
+def Zb(mat, Z):
     mat_A = mat[0][0]
     mat_B = mat[0][1]
     mat_D = mat[1][1]
@@ -28,7 +23,7 @@ def Zb(mat):
 
     ADm = mat_A - mat_D
 
-    return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+    return [- ((B2 * Z) / (ADm + ADs2)), - ((B2 * Z) / (ADm - ADs2))]
 
 
 # ---------------------------- unit cell inputs
@@ -54,10 +49,7 @@ tanD = 0
 op_temp = 0
 N = 100
 
-
 # ---------------------------- lengths of matrix
-
-
 Length1 = 0.5 * ((d / 3) - l1)
 length1 = l1
 length2 = l1
@@ -66,36 +58,25 @@ length3 = 2 * length1
 Length3 = (d / 3) - 0.5 * (length2 + length3)
 Length4 = 0.5 * ((d / 3) - length3)
 
-
-
 # ---------------------------- models of SuperConductingMicroStripModel
 # ---------------------------- one for unloaded , one for loaded
+
+
+# optimization use python function decorators to optimize code
 model_unloaded = SuperConductingMicroStripModel(H, Wu, ts, er, tanD)
 model_loaded = SuperConductingMicroStripModel(H, Wl, ts, er, tanD)
 
-
-
-StartFreq, EndFreq, step = 7, 20e9, 1e6
-betaUnfoled, folded, freqs = [], [], []
+StartFreq, EndFreq, step = 6.7e9, 6.9e9, 1e5
+s12, FLminusCL, a, b, r, x, freqs = [], [], [], [], [], [], []
 F = StartFreq
-s = time.time()
-region = 0
-PiMult = 0
-flipping = True
-looking = True
-
 while F < EndFreq:
-
     # calc Zc for load and unloaded
     loaded_Zc = model_loaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
     Unloaded_Zc = model_unloaded.characteristic_impedance_auto(F, op_temp, Tc, pn)
 
-
     # calc propagation const for loaded and unloaded
     loaded_propagation = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
     Unloaded_propagation = model_loaded.propagation_constant_auto(F, op_temp, Tc, pn)
-
-
 
     # ------------- ABCD 1 -------------
     mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, Length1)
@@ -123,45 +104,25 @@ while F < EndFreq:
 
 
     # ---------------------------- calc bloch impedence and probagation const for UC
-    ZB = Zb(ABCD_UC)[1]
+    ZB = Zb(ABCD_UC, 1)[1]
     pb = Pd(ABCD_UC)
 
-    bta = pb.imag
 
-    # at a top or bottom
-    # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
-    # todo if we need a more general formulation of flat zones just see when prev == current val could work or dist is within some delta thresh
-    # todo could also do abs(beta) and do some translating
 
-    bta = abs(bta)
-    b = bta
-
-    if looking and (bta <= 0.0000001 or bta >= 3.141):
-        # print(f"found flat freq:{F}")
-        looking = False
-
-    # on a slope
-    else:
-        if not looking and (bta > 0.0000001 and bta < 3.141):
-            region += 1
-            PiMult += PI
-            flipping = not flipping
-            # print(f"found flat end of flat   Freq:{F} starting region {region}    flipped = {flipping}\n")
-            looking = True
-
-    if flipping:
-        bta += 2 * abs(PI - bta) + (PiMult - PI)
-    else:
-        bta += PiMult
-
-    betaUnfoled.append(bta)
-    folded.append(b)
+    # ---------------------------- plots ----------------------------
+    a.append(pb.real)
+    b.append(pb.imag)
+    r.append(ZB.real)
+    x.append(ZB.imag)
     freqs.append(F)
+
     F += step
 
-print("total time: ", time.time() - s)
+fig, axs = plt.subplots(4)
+fig.suptitle('a  b  r  x')
+axs[0].plot(freqs, a)
+axs[1].plot(freqs, b)
+axs[2].plot(freqs, r)
+axs[3].plot(freqs, x)
 
-fig, axs = plt.subplots()
-axs.plot(freqs, betaUnfoled)
-axs.plot(freqs, folded)
 plt.show()

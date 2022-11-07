@@ -22,11 +22,6 @@ MU_0 = PI4 * (10 ** -7)
 # characteristic impedance of vacuum in UNITS ohm's
 Z0 = 120 * PI
 
-# todo why are thses two bevove the same ?????
-# Impedance of free space
-N0 = 120 * PI
-
-
 # Giga hertz
 GHz = 10 ** 9
 
@@ -49,5 +44,3 @@ mm = 10 ** -3
 # wave number
 def K0(f):
     return PI2 / (c / f)
-
-

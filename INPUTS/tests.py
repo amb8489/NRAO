@@ -1,4 +1,4 @@
-from BlockTwoTransmissionLineModels.lineModels.MicroStripModel import *
+from TransmissionLineEquations.microStrip.MicroStripModel import *
 from SuperConductivityEquations.SCE import *
 from Supports.constants import *
 

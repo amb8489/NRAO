@@ -1,10 +1,10 @@
-import math
 import cmath
+import math
 
+from TransmissionLineEquations.microStrip.Model import TransmissionLineModel
 from SuperConductivityEquations.SCE import conductivity, Zs
-from BlockTwoTransmissionLineModels.lineModels.Model import TransmissionLineModel
-from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, N0, c, Z0
-from Supports.Support_Functions import sech, coth, ccoth
+from Supports.Support_Functions import sech, coth
+from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
 
 """
 
@@ -365,7 +365,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     def series_impedance_Z(self, Zs, g1, g2, f):
-        return (1j * (K0(f) * N0) * g1) + (2 * g2 * Zs)
+        return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
 
     """
     shunt admittance of a TEM transmission line
@@ -376,7 +376,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     def shunt_admittance_Y(self, epsilon_fm, g1, f):
-        return 1j * (K0(f) / N0) * (epsilon_fm / g1)
+        return 1j * (K0(f) / Z0) * (epsilon_fm / g1)
 
     # Zc
     def characteristic_impedance(self, Z, Y):
