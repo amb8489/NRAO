@@ -10,7 +10,7 @@ from TransmissionLineEquations.microStrip.MicroStripModel import SuperConducting
 
 class calc_aplha_beta_r_x():
 
-    def __init__(self):
+    def __init__(self,line):
 
         # todo add vars to init
 

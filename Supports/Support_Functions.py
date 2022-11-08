@@ -1,3 +1,4 @@
+import bisect
 import math
 import cmath
 
@@ -51,5 +52,17 @@ def Chop(number, decimals=6):
     return (math.trunc(number.real * factor) / factor) + (1j * math.trunc(number.imag * factor) / factor)
 
 
+def find_idx_of_closest_value(list, value):
+    """
+    Assumes myList is sorted. Returns the closest value to myNumber.
+
+    If two numbers are equally close, return the smallest number.
+    """
+    idx = bisect.bisect_left(list, value)
+    if idx >= len(list):
+        idx = len(list) - 1
+    elif idx and list[idx] - value > value - list[idx - 1]:
+        idx = idx - 1
+    return idx
 
 

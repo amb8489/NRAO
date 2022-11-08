@@ -5,11 +5,13 @@ from Fluqet_Line_Equations.microStrip.beta_unfold import calc_aplha_beta_r_x
 
 
 
-StartFreq, EndFreq = 1000,25e9
+StartFreq, EndFreq = 1000,7e9
 betaUnfoled, folded, freqs = [], [], []
 s = time.time()
 
 lineModel = calc_aplha_beta_r_x()
+
+
 
 for F in np.linspace(StartFreq, EndFreq,10000):
 
