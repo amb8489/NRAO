@@ -1,68 +1,87 @@
 import cmath
 import time
-
 import numpy as np
-
 from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
 
-class calc_aplha_beta_r_x():
+class SCFL_Model():
 
-    def __init__(self,line):
-
-        # todo add vars to init
+    def __init__(self, unit_Cell_Len, D0, D1, D2, width_loaded, width_unloaded, er, Height, line_thickness,
+                 ground_thickness,
+                 critical_Temp, pn, tanD, op_temp):
 
         # ---------------------------- unit cell inputs
-        self.d = 0.0023
-        self.l1 = 5e-5
-        # width of unloaded
-        self.Wu = 1.49e-6
-        self.A = 1.2
-        self.B = 2
-        # width of loads
-        self.Wl = self.A * self.Wu
+        self.unit_Cell_Len = unit_Cell_Len
+
+        self.width_loaded = width_loaded
+        self.width_unloaded = width_unloaded
 
         # ---------------------------- sce inputs
-        self.er = 10
-        self.H = 2.5e-7
-        self.ts = 6e-8
-        self.tg = 3e-7
-        self.Tc = 14.28
-        self.pn = 1.008E-6
-        self.tanD = 0
+        self.er = er
+        self.Height = Height
+        self.line_thickness = line_thickness
+        self.ground_thickness = ground_thickness
+        self.critical_Temp = critical_Temp
+        self.pn = pn
+        self.tanD = tanD
+        self.op_temp = op_temp
 
-        self.op_temp = 0
 
-        # ---------------------------- line dimensions
 
-        self.Length1 = 0.5 * ((self.d / 3) - self.l1)
-        self.length1 = self.l1
-        self.length2 = self.l1
-        self.Length2 = (self.d / 3) - 0.5 * (self.length1 + self.length2)
-        self.length3 = 2 * self.length1
-        self.Length3 = (self.d / 3) - 0.5 * (self.length2 + self.length3)
-        self.Length4 = 0.5 * ((self.d / 3) - self.length3)
+        # todo is there a wat to make this general
+        #---------------------------- line dimensions
+
+
+        # todo go back to old line from other paper
+
+        self.L1 = (D0 / 2) - (D1 / 2)
+        self.L2 = D1
+        self.L3 = D0 - D1
+        self.L4 = D1
+        self.L5 = D0 - (D1 / 2) - (D2 / 2)
+        self.L6 = D2
+        self.L7 = (D0 / 2) - (D2 / 2)
+
+
+
+        # if abs(self.L1 + self.L2 + self.L3 + self.L4 + self.L5 + self.L6 + self.L7 - unit_Cell_Len) > .0001:
+        #     print("EROOR parts of unit cell are NOT adding to the whole unit cell lenght")
 
         # ---------------------------- models of SuperConductingMicroStripModel
         # ---------------------------- one for unloaded , one for loaded
-        self.model_loaded = SuperConductingMicroStripModel(self.H, self.Wl, self.ts, self.er, self.tanD)
-        self.model_unloaded = SuperConductingMicroStripModel(self.H, self.Wu, self.ts, self.er, self.tanD)
+        self.model_loaded = SuperConductingMicroStripModel(self.Height, self.width_loaded, self.line_thickness, self.er,
+                                                           self.tanD)
+        self.model_unloaded = SuperConductingMicroStripModel(self.Height, self.width_unloaded, self.line_thickness,
+                                                             self.er, self.tanD)
 
-        # ------ globals for beta
+        # ------ globals for beta for when freq starting at close to 0
         self.region = 0
         self.PiMult = 0
         self.flipping = False
         self.looking = True
-
         # error check tp make sure that beta is run in in increasing frequnces
         self.prev_beta_freq = -1
 
-    def beta_unfolded(self, freq):
-        freq = max(freq,1000)
+    def Pd(self, mat):
+        mat_A = mat[0][0]
+        mat_D = mat[1][1]
+        return np.arccosh((mat_A + mat_D) / 2)
 
-        #todo fix this function so that these warning can go
+    def Zb(self, mat):
+        mat_A = mat[0][0]
+        mat_B = mat[0][1]
+        mat_D = mat[1][1]
+        ADs2 = cmath.sqrt(pow(mat_A + mat_D, 2) - 4)
+        B2 = 2 * mat_B
+        ADm = mat_A - mat_D
+        return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+
+    def beta_unfolded(self, freq):
+        freq = max(freq, 1000)
+
+        # todo fix this function so that these warning can go
         if freq < 1000:
             print("------WARNING ! freq under 1000 could result in beta being 1 PI too high  ----")
             exit(1)
@@ -70,61 +89,53 @@ class calc_aplha_beta_r_x():
             print("------ERROR! need to reset calc_aplha_beta_r_x class before you can use to clac beta correctly-----")
             exit(1)
 
-
         self.prev_beta_freq = freq
-
-        def Pd(mat):
-            mat_A = mat[0][0]
-            mat_D = mat[1][1]
-            return np.arccosh((mat_A + mat_D) / 2)
-
-        def Zb(mat):
-            mat_A = mat[0][0]
-            mat_B = mat[0][1]
-            mat_D = mat[1][1]
-            ADs2 = cmath.sqrt(pow(mat_A + mat_D, 2) - 4)
-            B2 = 2 * mat_B
-            ADm = mat_A - mat_D
-            return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
         # s = time.time()
 
         # calc Zc for load and unloaded
-        loaded_Zc = self.model_loaded.characteristic_impedance_auto(freq, self.op_temp, self.Tc, self.pn)
-        Unloaded_Zc = self.model_unloaded.characteristic_impedance_auto(freq, self.op_temp, self.Tc, self.pn)
+        loaded_Zc = self.model_loaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
+        Unloaded_Zc = self.model_unloaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
 
         # calc propagation const for loaded and unloaded
-        loaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.Tc, self.pn)
-        Unloaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.Tc, self.pn)
+        loaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.critical_Temp,
+                                                                         self.pn)
+        Unloaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.critical_Temp,
+                                                                           self.pn)
 
         # ------------- ABCD 1 -------------
-        mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.Length1)
+        mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L1)
 
         # ------------- ABCD 2 -------------
-        mat2 = ABCD_TL(loaded_Zc, loaded_propagation, self.length1)
+        mat2 = ABCD_TL(loaded_Zc, loaded_propagation, self.L2)
 
         # ------------- ABCD 3 -------------
-        mat3 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.Length2)
+        mat3 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L3)
 
         # ------------- ABCD 4 -------------
-        mat4 = ABCD_TL(loaded_Zc, loaded_propagation, self.length2)
+        mat4 = ABCD_TL(loaded_Zc, loaded_propagation, self.L4)
 
         # ------------- ABCD 5 -------------
-        mat5 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.Length3)
+        mat5 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L5)
 
         # ------------- ABCD 6 -------------
-        mat6 = ABCD_TL(loaded_Zc, loaded_propagation, self.length3)
+        mat6 = ABCD_TL(loaded_Zc, loaded_propagation, self.L6)
 
         # ------------- ABCD 7 -------------
-        mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.Length4)
+        mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L7)
 
         # ------------- ABCD UNIT CELL-------------
         ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
         # ---------------------------- calc bloch impedence and probagation const for UC
-        ZB = Zb(ABCD_UC)[1]
-        pb = Pd(ABCD_UC)
 
+        # todo use [1] or [0]
+        ZB = self.Zb(ABCD_UC)[1]
+        pb = self.Pd(ABCD_UC)
+
+        r = ZB.real
+        x = ZB.imag
+        a = pb.real
         bta = pb.imag
 
         # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
@@ -150,4 +161,5 @@ class calc_aplha_beta_r_x():
             bta += self.PiMult
 
         # print(" time to unfold calc a b r x and unfold beta", time.time() - s)
-        return bta, b
+        # todo renme bta to btaUnfolded and b to btafolded and return other a ,r ,x
+        return a, bta, b, r, x
