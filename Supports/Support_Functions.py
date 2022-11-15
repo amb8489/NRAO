@@ -38,7 +38,12 @@ def isOddInt(n):
     return False
 
 
+def microMeter_to_Meters(x):
+    return x / 1e+6
 
+
+def nanoMeter_to_Meter(x):
+    return x / 1e+9
 
 
 def Chop(number, decimals=6):
@@ -64,5 +69,3 @@ def find_idx_of_closest_value(list, value):
     elif idx and list[idx] - value > value - list[idx - 1]:
         idx = idx - 1
     return idx
-
-

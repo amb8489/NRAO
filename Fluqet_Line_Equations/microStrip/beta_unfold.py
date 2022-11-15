@@ -1,22 +1,21 @@
 import cmath
 import time
 import numpy as np
-from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL
+from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL, Bloch_impedance_Zb, Pd
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
 
 class SCFL_Model():
 
-    def __init__(self, unit_Cell_Len, D0, D1, D2, width_loaded, width_unloaded, er, Height, line_thickness,
+    def __init__(self, unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness,
                  ground_thickness,
-                 critical_Temp, pn, tanD, op_temp):
+                 critical_Temp, pn, tanD, op_temp, Ic=None):
 
         # ---------------------------- unit cell inputs
         self.unit_Cell_Len = unit_Cell_Len
-
-        self.width_loaded = width_loaded
         self.width_unloaded = width_unloaded
+        self.width_loaded = width_unloaded * a
 
         # ---------------------------- sce inputs
         self.er = er
@@ -28,26 +27,29 @@ class SCFL_Model():
         self.tanD = tanD
         self.op_temp = op_temp
 
-
-
         # todo is there a wat to make this general
-        #---------------------------- line dimensions
+        # ---------------------------- line dimensions
 
+        self.L1 = .5 * ((unit_Cell_Len / 3) - l1)
+        self.L2 = l1
+        self.L3 = (unit_Cell_Len / 3) - .5 * (l1 + l1)
+        self.L4 = l1
+        self.L5 = (unit_Cell_Len / 3) - .5 * (3 * l1)
+        self.L6 = 2 * l1
+        self.L7 = .5 * ((unit_Cell_Len / 3) - (3 * l1))
 
         # todo go back to old line from other paper
 
-        self.L1 = (D0 / 2) - (D1 / 2)
-        self.L2 = D1
-        self.L3 = D0 - D1
-        self.L4 = D1
-        self.L5 = D0 - (D1 / 2) - (D2 / 2)
-        self.L6 = D2
-        self.L7 = (D0 / 2) - (D2 / 2)
+        # self.L1 = (D0 / 2) - (D1 / 2)
+        # self.L2 = D1
+        # self.L3 = D0 - D1
+        # self.L4 = D1
+        # self.L5 = D0 - (D1 / 2) - (D2 / 2)
+        # self.L6 = D2
+        # self.L7 = (D0 / 2) - (D2 / 2)
 
-
-
-        # if abs(self.L1 + self.L2 + self.L3 + self.L4 + self.L5 + self.L6 + self.L7 - unit_Cell_Len) > .0001:
-        #     print("EROOR parts of unit cell are NOT adding to the whole unit cell lenght")
+        if abs(self.L1 + self.L2 + self.L3 + self.L4 + self.L5 + self.L6 + self.L7 - unit_Cell_Len) > .0001:
+            print("EROOR parts of unit cell are NOT adding to the whole unit cell lenght")
 
         # ---------------------------- models of SuperConductingMicroStripModel
         # ---------------------------- one for unloaded , one for loaded
@@ -63,20 +65,6 @@ class SCFL_Model():
         self.looking = True
         # error check tp make sure that beta is run in in increasing frequnces
         self.prev_beta_freq = -1
-
-    def Pd(self, mat):
-        mat_A = mat[0][0]
-        mat_D = mat[1][1]
-        return np.arccosh((mat_A + mat_D) / 2)
-
-    def Zb(self, mat):
-        mat_A = mat[0][0]
-        mat_B = mat[0][1]
-        mat_D = mat[1][1]
-        ADs2 = cmath.sqrt(pow(mat_A + mat_D, 2) - 4)
-        B2 = 2 * mat_B
-        ADm = mat_A - mat_D
-        return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
     def beta_unfolded(self, freq):
         freq = max(freq, 1000)
@@ -94,6 +82,7 @@ class SCFL_Model():
         # s = time.time()
 
         # calc Zc for load and unloaded
+
         loaded_Zc = self.model_loaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
         Unloaded_Zc = self.model_unloaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
 
@@ -129,9 +118,8 @@ class SCFL_Model():
 
         # ---------------------------- calc bloch impedence and probagation const for UC
 
-        # todo use [1] or [0]
-        ZB = self.Zb(ABCD_UC)[1]
-        pb = self.Pd(ABCD_UC)
+        ZB = Bloch_impedance_Zb(ABCD_UC)[0]
+        pb = Pd(ABCD_UC)
 
         r = ZB.real
         x = ZB.imag

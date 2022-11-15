@@ -2,49 +2,55 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.microStrip.beta_unfold import SCFL_Model
+from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters
 
-s = time.time()
 
 # ---------------------------- unit cell inputs from paper
-unit_Cell_Len = 0.00402
-D2 = 9.5e-5
-D1 = 1e-4
-D0 = 0.00134
-width_loaded = 4e-6
-width_unloaded = 1e-6
+unit_Cell_Len = microMeter_to_Meters(2300)
+l1 = microMeter_to_Meters(50)
+width_unloaded = microMeter_to_Meters(1.49)
+a = 1.2
+b = 2
 
 # ---------------------------- SC inputs
-Height = 3e-7
-thickness = 6e-8
-critical_Temp = 14.7
-op_temp = 4
-pn = 0.000132
-er = 11.44
-ground_thickness = Height
-tanD = 1.48351e-5
+er = 10
+Height = nanoMeter_to_Meter(250)
+line_thickness = nanoMeter_to_Meter(60)
+ground_thickness = nanoMeter_to_Meter(300)
+critical_Temp = 14.28
+op_temp = 0
+pn = 1.008e-6
+tanD = 0
 
-lineModel = SCFL_Model(unit_Cell_Len, D0, D1, D2, width_loaded, width_unloaded, er, Height, thickness, ground_thickness,
+lineModel = SCFL_Model(unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness, ground_thickness,
                        critical_Temp, pn, tanD, op_temp)
 
 betaUnfoled, folded, freqs = [], [], []
 a, r, x = [], [], []
 
-StartFreq, EndFreq, resolution = 1e9, 12e9, 1000
+s = time.time()
+StartFreq, EndFreq, resolution = 6.5e9, 7e9, 1000
+
 for F in np.linspace(StartFreq, EndFreq, resolution):
     aa, bta, b, rr, xx = lineModel.beta_unfolded(F)
     betaUnfoled.append(bta)
-    folded.append(b)
-    freqs.append(F)
     a.append(aa)
-    x.append(xx)
+    folded.append(b)
     r.append(rr)
+    x.append(xx)
+    freqs.append(F)
+
+
+
+
+
 
 print("total time: ", time.time() - s)
 
-fig, (axs1, axs2) = plt.subplots(2)
-axs1.plot(freqs, betaUnfoled)
-axs1.plot(freqs, a)
-
-axs2.plot(freqs, r)
-axs2.plot(freqs, x)
+fig, (a1, a2, a3, a4) = plt.subplots(4)
+a1.plot(freqs, betaUnfoled)
+a1.plot(freqs, folded)
+a2.plot(freqs, a)
+a3.plot(freqs, r)
+a4.plot(freqs, x)
 plt.show()

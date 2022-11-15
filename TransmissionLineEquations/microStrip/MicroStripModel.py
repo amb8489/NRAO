@@ -29,7 +29,7 @@ from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c
 
 class SuperConductingMicroStripModel(TransmissionLineModel):
 
-    def __init__(self, height, width, thickness, epsilon_r, tan_delta):
+    def __init__(self, height, width, thickness, epsilon_r, tan_delta,temp = True):
 
         self.height = height
         self.width = width
@@ -37,9 +37,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
-        self.g1 = self.gg1(self.width, self.height, self.thickness)
-        self.g2 = self.gg2(self.width, self.height, self.thickness)
-        self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
+        if temp:
+            self.g1 = self.gg1(self.width, self.height, self.thickness)
+            self.g2 = self.gg2(self.width, self.height, self.thickness)
+            self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
 
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):

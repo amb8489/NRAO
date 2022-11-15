@@ -31,6 +31,9 @@ c = scipy.constants.speed_of_light
 # speed of light m/s for GHz freq
 cc = 3
 
+
+PiDiv2 = math.pi / 2
+
 # nano meter
 nano_meter = 10 ** -9
 

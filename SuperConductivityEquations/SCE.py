@@ -4,6 +4,7 @@ Aaron Berghash amb8489@g.rit.edu
 """
 import cmath
 import math
+from functools import cache, cached_property
 
 from scipy.integrate import quad
 
@@ -12,16 +13,12 @@ from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0, KB
 
 """
 ---INPUTS---
-
 freq range    : the range of DC frequency to test in units of GHz
 conductivity  : the temperature of operation in Kelvin
 ts            : thickness of super conductor
 Pn            : normal resistivity
 TempK         : temp of operation in kelvin
-
-
 ---OUT---
-
 conductivity 
 Zs (surface in impedance)         
 """
@@ -29,7 +26,6 @@ Zs (surface in impedance)
 '''
 ------------------------------functions to support conductivity ------------------------------
 '''
-
 
 def e1(e, delta):
     return math.sqrt(e ** 2 - delta ** 2)
@@ -53,9 +49,11 @@ def g(e, delta, freq):
 
 def g2(e, delta, freq):
     bottom = ((e4(e, delta) * e2(e, delta, freq)))
+
     if bottom == 0:
-        bottom = .0000001
-    return e3(e, delta, freq) / bottom
+        bottom= .00001
+
+    return e3(e, delta, freq) / (bottom)
 
 
 # ---- WHEN TEMPK IS 0
@@ -68,21 +66,14 @@ def g2(e, delta, freq):
 # fermiDistrib E             -> fermiDistrib(E, 0)
 # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0)
 
-# TODO come back to this and maybe just simplify into a try catch thing for over flow
+# TODO come back to this and maybe just simplify  the (E - freq)
+
 def fermiDistrib(E, tempK, freq=0):
-    # special case for temp = 0
-    if tempK == 0:
-
-        if (E - freq) >= -freq:
-            return 0
-        return 1
-    # normal case for temp > 0
-
-    # math.exp(E / tempK) can be tiny < 1/ e^2000 so just return 0 if overflow
     try:
-        return 1 / (1 + math.exp(E / tempK))
-    except OverflowError:
-        return 0
+        edivk = E / tempK
+        return 0 if edivk > 30 else 1 / (1 + math.exp(edivk))
+    except ZeroDivisionError:
+        return 0 if (E - freq) >= -freq else 1
 
 
 def ff(e, freq, tempK):
@@ -151,7 +142,6 @@ def sigma_2_N(delta, freq, tempK):
         return sigma_2_N_L(delta, freq, tempK)
     return sigma_2_N_U(delta, freq, tempK)
 
-
 def Delta_O(critical_temp):
     return 1.764 * KB * critical_temp
 
@@ -178,13 +168,10 @@ def conductivityNormalized(freq, Operation_temperatureK, critical_temp):
 
 """
 -INPUTS-
-
 freq                    : frequency of DC i units of GHz
 Operation_temperatureK  : the temperature of operation in Kelvin
 critical_temp           : the temperature of transition between normal and super conductor in Kelvin
 Pn                      : normal resistivity in micro ohms / cm
-
-
 -OUT-
  
 conductivity            : is the conductivity at input conditions
@@ -195,27 +182,19 @@ def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
     delta = calc_delta(Operation_temperatureK, critical_temp)
     # optimization 1/pn - likly wont change between different clac so it only needs to be caled once
     # optimization Operation_temperatureK * KB - likly wont change between different clac so it only needs to be caled once
-
     return (1 / Pn) * sigma_N(delta, freq * PLANCK_CONSTev, Operation_temperatureK * KB)
 
 
 """
 -INPUTS-
-
 freq          : frequency of DC i units of GHz
 conductivity  : conductivity
 ts            : thickness of super conductor
-
 -OUT-
-
 Zs - surface impenitence          
 """
 
 
 def Zs(freq, Conductivity, ts):
-    # TODO ask about the complex square root should just the real part be rooted or both re and im parts
-
-    a = cmath.sqrt((1j * PI2 * freq * MU_0) / Conductivity)
-    b = ccoth(cmath.sqrt(1j * PI2 * freq * MU_0 * Conductivity) * ts)
-
-    return a * b
+    jPI2freqMU_0 = (1j * PI2 * freq * MU_0)
+    return cmath.sqrt(jPI2freqMU_0 / Conductivity) * ccoth(cmath.sqrt(jPI2freqMU_0 * Conductivity) * ts)

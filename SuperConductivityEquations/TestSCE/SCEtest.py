@@ -1,46 +1,36 @@
 import time
 
-import scipy.constants
+import numpy as np
 
-from SuperConductivityEquations.SCE import conductivityNormalized, calc_delta, gap_freq, fermiDistrib, conductivity
+from SuperConductivityEquations.SCE import conductivityNormalized, calc_delta, gap_freq, fermiDistrib, conductivity, Zs
 import matplotlib.pyplot as plt
 
-
-
-
-StartFreq, EndFreq = .01, 20
 temp = 10
 tc = 14
-Pn = 52
+Pn = 1.008e-6
+ts = 3E-7
 
-step = .5
+condut = []
+zss = []
+freqs = np.linspace(1, 10E9, 1000)
 
-
-re,im, freqs = [], [],[]
-freq = StartFreq
-while freq < EndFreq:
-
-
-    val = conductivity(freq, temp, tc,Pn)
-
-
-    # print(val)
-    re.append(val.real)
-    im.append(val.imag)
-
-    freqs.append(freq)
-    freq += step
+average = 0
+trials = 1
+for x in range(trials):
+    startTime = time.time()
+    for i, freq in enumerate(freqs):
+        val = conductivity(freq, temp, tc, Pn)
 
 
 
+        condut.append(val.real)
+        zss.append(Zs(freq,val, ts))
+    average += time.time() - startTime
 
-# plot
-fig, ax = plt.subplots()
-ax.plot(freqs, re, linewidth=1.0,label='{} Kelvin'.format(temp))
-# ax.plot(freqs, im, linewidth=1.0,label='{} Kelvin'.format(temp))
+print("avg time per run:", average / trials)
 
-ax.set_ylabel('conductivity')
-ax.set_xlabel('frequency')
-# plt.ylim([0, 1])
-plt.legend()
+fig, (ax,a2) = plt.subplots(2)
+ax.plot(freqs, condut, linewidth=1.0, label='{} Kelvin'.format(temp))
+a2.plot(freqs, zss, linewidth=1.0, label='{} Kelvin'.format(temp))
+
 plt.show()

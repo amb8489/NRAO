@@ -1,23 +1,15 @@
 import numpy as np
 from scipy.integrate import odeint
-
 from GainEquations.microStrip.amplitudeEquations import ApmlitudeEquations
+from Supports.Support_Functions import find_idx_of_closest_value
 
 
-def Gain(freq, z, I, betas_signal, betas_idler, beta_p, As_0, Ai_0, Ap_0, L, resolution, freq_to_idx):
-    # beta at each freq todo map freq to beta or pass in index
-    beta_s = betas_signal[freq_to_idx[freq]]
-
-    #  can always just do beta_signal[find_idx_of_closest_value(f_range, idel_freq)] instead
-    #todo why does this work but not res - 1 - idx
-    beta_i = betas_idler[ freq_to_idx[freq]]
-    # beta_i = betas_idler[ resolution - 1 -freq_to_idx[freq]]
-
-
-
+def Gain(freq_idler, signal_freq, z, I, betas, beta_p, As_0, Ai_0, Ap_0, L, resolution, f_range):
+    # get index for signal and idler freqs inside beta array
+    idx_sig, idx_idler = np.searchsorted(f_range, [signal_freq, freq_idler])
+    beta_s = betas[idx_sig]  # get beta for signal freq
+    beta_i = betas[idx_idler]  # get beta for idel freq
     soln = odeint(ApmlitudeEquations, [As_0, Ai_0, Ap_0], z, args=(beta_s, beta_i, beta_p, I))
-    # todo look at gain in mathimatica
 
-    return np.log10(soln[:, 0][resolution//2])
-
-
+    # todo look at gain in mathimatica where L is used
+    return soln[:, 0][L]
