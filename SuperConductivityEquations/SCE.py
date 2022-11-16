@@ -9,7 +9,7 @@ from functools import cache, cached_property
 from scipy.integrate import quad
 
 from Supports.Support_Functions import ccoth
-from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0, KB
+from Supports.constants import BOLTZMANN_CONSTev, PLANCK_CONSTev, PI2, MU_0, KB, PiDiv2
 
 """
 ---INPUTS---
@@ -26,6 +26,7 @@ Zs (surface in impedance)
 '''
 ------------------------------functions to support conductivity ------------------------------
 '''
+
 
 def e1(e, delta):
     return math.sqrt(e ** 2 - delta ** 2)
@@ -51,7 +52,7 @@ def g2(e, delta, freq):
     bottom = ((e4(e, delta) * e2(e, delta, freq)))
 
     if bottom == 0:
-        bottom= .00001
+        bottom = .00001
 
     return e3(e, delta, freq) / (bottom)
 
@@ -85,6 +86,7 @@ def f2(e, freq, tempK):
 
 
 def int1(e, delta, freq, tempK):
+    # opt g(e, delta, freq) could maybe be cached
     return ff(e, freq, tempK) * g(e, delta, freq)
 
 
@@ -110,6 +112,9 @@ def sigma_1_N_U(delta, freq, tempK):
 
     lower_bound = 0
     upper_bound = math.sqrt((freq / 2) - delta)
+
+    # opt int11(delta - freq + x ** 2, delta, freq, tempK) * 2 * x abnd int11(-delta - x ** 2, delta, freq, tempK) * 2 * x look very close
+
     return (1 / freq) * (quad(f1, lower_bound, upper_bound)[0] + quad(f2, lower_bound, upper_bound)[0])
 
 
@@ -125,6 +130,7 @@ def sigma_2_N_L(delta, freq, tempK):
 
     lower_bound = 0
     upper_bound = math.sqrt(freq / 2)
+
     return (1 / freq) * (quad(f1, lower_bound, upper_bound)[0] + quad(f2, lower_bound, upper_bound)[0])
 
 
@@ -142,12 +148,15 @@ def sigma_2_N(delta, freq, tempK):
         return sigma_2_N_L(delta, freq, tempK)
     return sigma_2_N_U(delta, freq, tempK)
 
+
 def Delta_O(critical_temp):
+    # opt only needs to be calced once
     return 1.764 * KB * critical_temp
 
 
 def calc_delta(temperature, critical_temp):
-    PiDiv2 = math.pi / 2
+
+    # opt only needs to be calced once
     TempDiv = temperature / critical_temp
 
     return Delta_O(critical_temp) * math.sqrt(math.cos(PiDiv2 * (TempDiv ** 2)))
@@ -180,8 +189,10 @@ conductivity            : is the conductivity at input conditions
 
 def conductivity(freq, Operation_temperatureK, critical_temp, Pn):
     delta = calc_delta(Operation_temperatureK, critical_temp)
-    # optimization 1/pn - likly wont change between different clac so it only needs to be caled once
-    # optimization Operation_temperatureK * KB - likly wont change between different clac so it only needs to be caled once
+
+    # opt Operation_temperatureK * KB only needs to be calced once
+    # opt (1 / Pn) only needs to be calced once
+    # opt np.linespace(StartFreq, EndFreq, resolution) * PLANCK_CONSTev
     return (1 / Pn) * sigma_N(delta, freq * PLANCK_CONSTev, Operation_temperatureK * KB)
 
 
@@ -196,5 +207,9 @@ Zs - surface impenitence
 
 
 def Zs(freq, Conductivity, ts):
+
+    # opt might be able to do this ad a numppy op for all freq then index into it
+    # opt (1j * PI2 * MU_0) * np.linspace(StartFreq, EndFreq, resolution)
+
     jPI2freqMU_0 = (1j * PI2 * freq * MU_0)
     return cmath.sqrt(jPI2freqMU_0 / Conductivity) * ccoth(cmath.sqrt(jPI2freqMU_0 * Conductivity) * ts)

@@ -1,6 +1,7 @@
 import bisect
 import math
 import cmath
+from functools import cache
 
 from Supports.constants import cc, PI2
 
@@ -25,17 +26,14 @@ def ccoth(x):
     return 1 / cmath.tanh(x)
 
 
+PI20 = PI2*10
 # wave number if freq in Ghz
 def K0_GHz(freq):
-    return (PI2 * 10 * freq) / cc
+    return (PI20 * freq) / cc
 
 
-# TODO test
-# returns true if number is an int and odd otherwise false
-def isOddInt(n):
-    if isinstance(n, int):
-        return n & 1
-    return False
+
+
 
 
 def microMeter_to_Meters(x):

@@ -2,6 +2,7 @@ import cmath
 import time
 import numpy as np
 from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL, Bloch_impedance_Zb, Pd
+from SuperConductivityEquations.SCE import Zs, conductivity
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
@@ -66,6 +67,18 @@ class SCFL_Model():
         # error check tp make sure that beta is run in in increasing frequnces
         self.prev_beta_freq = -1
 
+        self.prev = 0
+
+        self.tot = 0
+
+        # zs = Zs(1, conductivity(1, self.op_temp, self.critical_Temp, self.pn), self.line_thickness)
+
+        # loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
+        # Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
+
+
+
+
     def beta_unfolded(self, freq):
         freq = max(freq, 1000)
 
@@ -79,18 +92,16 @@ class SCFL_Model():
 
         self.prev_beta_freq = freq
 
-        # s = time.time()
-
         # calc Zc for load and unloaded
 
-        loaded_Zc = self.model_loaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
-        Unloaded_Zc = self.model_unloaded.characteristic_impedance_auto(freq, self.op_temp, self.critical_Temp, self.pn)
+        # calc surface impedence
+        st = time.time()
+        zs = Zs(freq, conductivity(freq, self.op_temp, self.critical_Temp, self.pn), self.line_thickness)
+        self.tot+= time.time()-st
+        loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
+        Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
 
-        # calc propagation const for loaded and unloaded
-        loaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.critical_Temp,
-                                                                         self.pn)
-        Unloaded_propagation = self.model_loaded.propagation_constant_auto(freq, self.op_temp, self.critical_Temp,
-                                                                           self.pn)
+
 
         # ------------- ABCD 1 -------------
         mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L1)
@@ -116,7 +127,7 @@ class SCFL_Model():
         # ------------- ABCD UNIT CELL-------------
         ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
-        # ---------------------------- calc bloch impedence and probagation const for UC
+        # ---------------------------- calc bloch impedance and propagation const for UC
 
         ZB = Bloch_impedance_Zb(ABCD_UC)[0]
         pb = Pd(ABCD_UC)
@@ -148,6 +159,5 @@ class SCFL_Model():
         else:
             bta += self.PiMult
 
-        # print(" time to unfold calc a b r x and unfold beta", time.time() - s)
         # todo renme bta to btaUnfolded and b to btafolded and return other a ,r ,x
         return a, bta, b, r, x

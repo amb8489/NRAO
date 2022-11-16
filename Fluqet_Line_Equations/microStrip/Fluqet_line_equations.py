@@ -2,8 +2,6 @@ import cmath
 import math
 import numpy as np
 
-from Supports.Support_Functions import isOddInt, Chop
-from Supports.constants import PI
 
 
 # ABCD matrix of TLs
@@ -11,6 +9,8 @@ from Supports.constants import PI
 # TODO WHAT of these formulas are NOT model specific so they can be factored out into a diff file
 # ( A B )
 # ( C D )
+
+
 
 def ABCD_TL(Z, Gamma, L):
     GL = Gamma * L
@@ -49,6 +49,7 @@ def UnitCellABCD(Z, Gamma, L):
     res = [[1, 0],
            [0, 1]]
     for i in range(len(Z)):
+
         res = np.matmul(res, ABCD_TL(Z[i], Gamma[i], L[i]))
 
     return res
@@ -58,7 +59,8 @@ def UnitCellABCD(Z, Gamma, L):
 def UnitCellABCD_mats(mats):
     res = [[1, 0]
         , [0, 1]]
-    for mat in mats: res = np.matmul(res, mat)
+    for mat in mats:
+        res = np.matmul(res, mat)
 
     return res
 

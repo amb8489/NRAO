@@ -29,7 +29,7 @@ betaUnfoled, folded, freqs = [], [], []
 a, r, x = [], [], []
 
 s = time.time()
-StartFreq, EndFreq, resolution = 6.5e9, 7e9, 1000
+StartFreq, EndFreq, resolution = 1, 7e9, 1000
 
 for F in np.linspace(StartFreq, EndFreq, resolution):
     aa, bta, b, rr, xx = lineModel.beta_unfolded(F)
@@ -40,12 +40,9 @@ for F in np.linspace(StartFreq, EndFreq, resolution):
     x.append(xx)
     freqs.append(F)
 
-
-
-
-
-
-print("total time: ", time.time() - s)
+print(lineModel.tot)
+totaltime = time.time() - s
+print("total time: ", totaltime," time taken up to calc conductivity",lineModel.tot *100 / totaltime,"%")
 
 fig, (a1, a2, a3, a4) = plt.subplots(4)
 a1.plot(freqs, betaUnfoled)
