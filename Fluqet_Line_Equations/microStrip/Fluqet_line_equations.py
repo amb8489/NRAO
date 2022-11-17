@@ -11,7 +11,6 @@ import numpy as np
 # ( C D )
 
 
-
 def ABCD_TL(Z, Gamma, L):
     GL = Gamma * L
     coshGL = cmath.cosh(GL)
@@ -57,10 +56,13 @@ def UnitCellABCD(Z, Gamma, L):
 
 # input is an array of mats
 def UnitCellABCD_mats(mats):
-    res = [[1, 0]
-        , [0, 1]]
-    for mat in mats:
-        res = np.matmul(res, mat)
+    res = mats[0]
+    for mat in mats[1:]:
+
+        res = [
+            [res[0][0]*mat[0][0]+res[0][1]*mat[1][0] ,res[0][0]*mat[0][1]+res[0][1]*mat[1][1]],
+            [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]]
+
 
     return res
 

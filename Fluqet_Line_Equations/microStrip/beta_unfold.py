@@ -2,7 +2,7 @@ import cmath
 import time
 import numpy as np
 from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL, Bloch_impedance_Zb, Pd
-from SuperConductivityEquations.SCE import Zs, conductivity
+from SuperConductivityEquations.SCE import SuperConductivity
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
@@ -16,6 +16,8 @@ class SCFL_Model():
         # ---------------------------- unit cell inputs
         self.unit_Cell_Len = unit_Cell_Len
         self.width_unloaded = width_unloaded
+
+
         self.width_loaded = width_unloaded * a
 
         # ---------------------------- sce inputs
@@ -59,6 +61,8 @@ class SCFL_Model():
         self.model_unloaded = SuperConductingMicroStripModel(self.Height, self.width_unloaded, self.line_thickness,
                                                              self.er, self.tanD)
 
+        self.conductivity_model = SuperConductivity(op_temp, critical_Temp, pn)
+
         # ------ globals for beta for when freq starting at close to 0
         self.region = 0
         self.PiMult = 0
@@ -82,26 +86,27 @@ class SCFL_Model():
     def beta_unfolded(self, freq):
         freq = max(freq, 1000)
 
-        # todo fix this function so that these warning can go
-        if freq < 1000:
-            print("------WARNING ! freq under 1000 could result in beta being 1 PI too high  ----")
-            exit(1)
-        if freq < self.prev_beta_freq:
-            print("------ERROR! need to reset calc_aplha_beta_r_x class before you can use to clac beta correctly-----")
-            exit(1)
+        # # todo fix this function so that these warning can go
+        # if freq < 1000:
+        #     print("------WARNING ! freq under 1000 could result in beta being 1 PI too high  ----")
+        #     exit(1)
+        # if freq < self.prev_beta_freq:
+        #     print("------ERROR! need to reset calc_aplha_beta_r_x class before you can use to clac beta correctly-----")
+        #     exit(1)
 
-        self.prev_beta_freq = freq
+        # self.prev_beta_freq = freq
 
         # calc Zc for load and unloaded
 
         # calc surface impedence
         st = time.time()
-        zs = Zs(freq, conductivity(freq, self.op_temp, self.critical_Temp, self.pn), self.line_thickness)
+
+        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
+        zs = self.conductivity_model.Zs(freq, self.conductivity_model.conductivity(freq), self.line_thickness)
         self.tot+= time.time()-st
+
         loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
-
-
 
         # ------------- ABCD 1 -------------
         mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L1)
@@ -125,6 +130,7 @@ class SCFL_Model():
         mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L7)
 
         # ------------- ABCD UNIT CELL-------------
+
         ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
         # ---------------------------- calc bloch impedance and propagation const for UC
@@ -143,6 +149,7 @@ class SCFL_Model():
         b = bta
         bta = abs(bta)
         # at a top or bottom
+
 
         if self.looking and (bta <= 0.0000001 or bta >= PI):
             self.looking = False

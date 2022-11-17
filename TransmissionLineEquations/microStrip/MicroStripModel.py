@@ -2,7 +2,6 @@ import cmath
 import math
 
 from TransmissionLineEquations.microStrip.Model import TransmissionLineModel
-from SuperConductivityEquations.SCE import conductivity, Zs
 from Supports.Support_Functions import sech, coth
 from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
 
@@ -45,12 +44,15 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
 
+
         return cmath.sqrt(1 + (10 * (h / w)))
 
     def epsilon_effs(self, epsilon_r, w, h):
+
         return ((epsilon_r + 1) / 2) + ((epsilon_r - 1) / (2 * self.Fs(w, h)))
 
     def zmss(self, epsilon_r, w, h):
+
         z0eff = Z0 / (math.sqrt(self.epsilon_effs(epsilon_r, w, h)))
 
         if w / h <= 1:
@@ -61,8 +63,8 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     # ----------  schneider   t > 0  ----------
 
     def epsilon_effst(self, epsilon_r, w, h, t):
-        u = w / h
 
+        u = w / h
         if u <= (1 / PI2):
             delta_w = (t / PI) * (1 + math.log((PI4 * w) / t))
         else:
@@ -203,7 +205,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # checked
     def DeltaY(self, eta, p):
-        return eta if eta > p else p
+        return max(eta,p)
 
     # checked
     def Kl(self, w, h, t):
@@ -377,7 +379,6 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     """
 
     def shunt_admittance_Y(self, epsilon_fm, g1, f):
-
         return 1j * (K0(f) / Z0) * (epsilon_fm / g1)
 
     # Zc
@@ -387,25 +388,9 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Z * Y)
 
-    def propagation_constant_auto(self, freq, op_temp, Tc, pn):
-        # calc surface impedence
-        zs = Zs(freq, conductivity(freq, op_temp, Tc, pn), self.thickness)
 
-        Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
-        Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
 
-        return cmath.sqrt(Z * Y)
 
-    def characteristic_impedance_auto(self, freq, op_temp, Tc, pn):
-
-        # calc surface impedance
-        zs = Zs(freq, conductivity(freq, op_temp, Tc, pn), self.thickness)
-
-        # calc Z and Y
-        Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
-        Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
-
-        return cmath.sqrt(Z / Y)
 
 
 
