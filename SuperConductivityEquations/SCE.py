@@ -26,7 +26,7 @@ class SuperConductivity():
     ------------------------------functions to support conductivity ------------------------------
     '''
 
-    def __init__(self, Operation_temperatureK, critical_temp, Pn,cached = False):
+    def __init__(self, Operation_temperatureK, critical_temp, Pn, cached=False):
 
         # calulations that only need to be done once per run
 
@@ -35,10 +35,6 @@ class SuperConductivity():
         self.jPI2MU_0 = 1j * PI2 * MU_0
         self.delta = self.calc_delta(critical_temp)
         self.OpTempTimesKB = Operation_temperatureK * KB
-
-
-
-        # opt cache for a run
 
     def e1(self, e, delt):
         return math.sqrt(e ** 2 - delt ** 2)
@@ -77,14 +73,11 @@ class SuperConductivity():
 
     def fermiDistrib(self, E, tempK, freq=0):
 
-
-
         if tempK == 0:
             return 0 if (E - freq) >= -freq else 1
 
         edivk = E / tempK
         return 0 if edivk > 30 else 1 / (1 + math.exp(edivk))
-
 
     def ff(self, e, freq, tempK):
         return self.fermiDistrib(e, tempK, 0) - self.fermiDistrib(e + freq, tempK, freq)

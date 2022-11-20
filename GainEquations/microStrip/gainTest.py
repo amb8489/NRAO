@@ -16,18 +16,29 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
         _, btaUf_signal, _, _, _ = lineModel.beta_unfolded(signal_freq)
         betas.append(btaUf_signal)
 
+
+
     # todo make sure that this freq approximization is okay to do
-    # calc beta for the pump freq (finds the closest freq in np.linspace(1000, 2 * pump_freq, resolution) to pump freq )
-    beta_pump = betas[find_idx_of_closest_value(f_range, pump_freq)]
+    beta_pump = betas[np.searchsorted(f_range, pump_freq)]
+    print("time to calc betas:", (time.time() - s))
+
+
 
     z = np.linspace(0, d, resolution)
     Times2PumpFreq = (2 * pump_freq)
     gain = []
     L = resolution // 2
+    s = time.time()
+
+
+    # todo should be able to define a target range thats between org start f and 2* pump f
+    # f_range = np.linspace(pump_freq*.25,  pump_freq*.75, resolution)
     for i, freq in enumerate(f_range):
         # TODO is it not doin gthis right and need to put back in init values ?
         g = Gain(Times2PumpFreq - freq, freq, z, I, betas, beta_pump, As_init, Ai_init, Ap_init, L, resolution, f_range)
         gain.append(np.log10(g))
+
+    print("time to calc gains:", (time.time() - s))
 
     print(f"time taken {time.time() - s}")
     plt.plot(f_range, gain)

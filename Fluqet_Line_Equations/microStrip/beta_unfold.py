@@ -99,11 +99,9 @@ class SCFL_Model():
         # calc Zc for load and unloaded
 
         # calc surface impedence
-        st = time.time()
 
         # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
         zs = self.conductivity_model.Zs(freq, self.conductivity_model.conductivity(freq), self.line_thickness)
-        self.tot+= time.time()-st
 
         loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
@@ -130,8 +128,10 @@ class SCFL_Model():
         mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L7)
 
         # ------------- ABCD UNIT CELL-------------
+        st = time.time()
 
         ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
+        self.tot+= time.time()-st
 
         # ---------------------------- calc bloch impedance and propagation const for UC
 

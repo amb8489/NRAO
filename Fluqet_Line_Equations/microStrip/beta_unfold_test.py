@@ -35,7 +35,7 @@ a, r, x = [], [], []
 
 
 
-StartFreq, EndFreq, resolution = 6.85e9, 7e9, 1000
+StartFreq, EndFreq, resolution = 6.8e9, 7e9, 1000
 
 
 for F in np.linspace(StartFreq, EndFreq, resolution):
@@ -58,5 +58,8 @@ a2.plot(freqs, a)
 a3.plot(freqs, r)
 a4.plot(freqs, x)
 plt.show()
+
+
+
 
 

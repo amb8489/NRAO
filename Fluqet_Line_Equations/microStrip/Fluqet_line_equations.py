@@ -1,7 +1,7 @@
 import cmath
 import math
-import numpy as np
 
+import numpy as np
 
 
 # ABCD matrix of TLs
@@ -48,7 +48,6 @@ def UnitCellABCD(Z, Gamma, L):
     res = [[1, 0],
            [0, 1]]
     for i in range(len(Z)):
-
         res = np.matmul(res, ABCD_TL(Z[i], Gamma[i], L[i]))
 
     return res
@@ -58,9 +57,8 @@ def UnitCellABCD(Z, Gamma, L):
 def UnitCellABCD_mats(mats):
     res = mats[0]
     for mat in mats[1:]:
-
         res = [
-            [res[0][0]*mat[0][0]+res[0][1]*mat[1][0] ,res[0][0]*mat[0][1]+res[0][1]*mat[1][1]],
+            [res[0][0] * mat[0][0] + res[0][1] * mat[1][0], res[0][0] * mat[0][1] + res[0][1] * mat[1][1]],
             [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]]
 
 
