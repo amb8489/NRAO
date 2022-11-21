@@ -34,7 +34,8 @@ def K0_GHz(freq):
 
 
 
-
+def toMHz(f):
+    return f * 1e9
 
 def microMeter_to_Meters(x):
     return x / 1e+6
