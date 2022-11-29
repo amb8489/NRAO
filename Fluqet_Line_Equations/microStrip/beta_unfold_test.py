@@ -21,16 +21,15 @@ critical_Temp = 14.28
 op_temp = 0
 pn = 1.008e-6
 tanD = 0
-
-
+Jc = 1
 
 
 
 s = time.time()
 
 lineModel = SCFL_Model(unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness, ground_thickness,
-                       critical_Temp, pn, tanD, op_temp)
-betaUnfoled, folded, freqs = [], [], []
+                       critical_Temp, pn, tanD, op_temp,Jc)
+beta, betaUf, freqs = [], [], []
 a, r, x = [], [], []
 
 
@@ -39,24 +38,33 @@ StartFreq, EndFreq, resolution = 6.8e9, 7e9, 1000
 
 
 for F in np.linspace(StartFreq, EndFreq, resolution):
-    aa, bta, b, rr, xx = lineModel.beta_unfolded(F)
-    betaUnfoled.append(bta)
+    aa, bta,unfolded, rr, xx = lineModel.beta_unfolded(F)
+    beta.append(bta)
+    betaUf.append(unfolded)
     a.append(aa)
-    folded.append(b)
-    r.append(rr)
+    r.append(rr) # todo abs() ?
     x.append(xx)
     freqs.append(F)
+
 
 print("total time taken for timed element: ", lineModel.tot)
 totaltime = time.time() - s
 print("total time: ", totaltime," % of total time taken up to calc element ",lineModel.tot *100 / totaltime,"%")
 
 fig, (a1, a2, a3, a4) = plt.subplots(4)
-a1.plot(freqs, betaUnfoled)
-a1.plot(freqs, folded)
+a1.plot(freqs, beta)
+a1.set_title('beta Unfolded')
+a1.plot(freqs, betaUf)
+
+a2.set_title('A')
 a2.plot(freqs, a)
+
+a3.set_title('R')
 a3.plot(freqs, r)
+
+a4.set_title('X')
 a4.plot(freqs, x)
+plt.subplots_adjust(hspace = 1)
 plt.show()
 
 

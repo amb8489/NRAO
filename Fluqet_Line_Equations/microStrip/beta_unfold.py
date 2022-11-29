@@ -11,12 +11,11 @@ class SCFL_Model():
 
     def __init__(self, unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness,
                  ground_thickness,
-                 critical_Temp, pn, tanD, op_temp, Ic=None):
+                 critical_Temp, pn, tanD, op_temp, Jc):
 
         # ---------------------------- unit cell inputs
         self.unit_Cell_Len = unit_Cell_Len
         self.width_unloaded = width_unloaded
-
 
         self.width_loaded = width_unloaded * a
 
@@ -30,7 +29,6 @@ class SCFL_Model():
         self.tanD = tanD
         self.op_temp = op_temp
 
-        # todo is there a wat to make this general
         # ---------------------------- line dimensions
 
         self.L1 = .5 * ((unit_Cell_Len / 3) - l1)
@@ -40,6 +38,11 @@ class SCFL_Model():
         self.L5 = (unit_Cell_Len / 3) - .5 * (3 * l1)
         self.L6 = 2 * l1
         self.L7 = .5 * ((unit_Cell_Len / 3) - (3 * l1))
+
+        # print(self.L7 + (self.L6/2))
+        # print(self.L5 + (self.L6/2) + (self.L4/2))
+        # print(self.L3 + (self.L2/2) + (self.L4/2))
+        # print(self.L1 + (self.L2/2))
 
         # todo go back to old line from other paper
 
@@ -56,11 +59,11 @@ class SCFL_Model():
 
         # ---------------------------- models of SuperConductingMicroStripModel
         # ---------------------------- one for unloaded , one for loaded
-        self.model_loaded = SuperConductingMicroStripModel(self.Height, self.width_loaded, self.line_thickness, self.er,
-                                                           self.tanD)
-        self.model_unloaded = SuperConductingMicroStripModel(self.Height, self.width_unloaded, self.line_thickness,
-                                                             self.er, self.tanD)
 
+        self.model_loaded = SuperConductingMicroStripModel(self.Height, self.width_loaded, self.line_thickness, self.er,
+                                                           self.tanD, Jc)
+        self.model_unloaded = SuperConductingMicroStripModel(self.Height, self.width_unloaded, self.line_thickness,
+                                                             self.er, self.tanD, Jc)
         self.conductivity_model = SuperConductivity(op_temp, critical_Temp, pn)
 
         # ------ globals for beta for when freq starting at close to 0
@@ -80,9 +83,6 @@ class SCFL_Model():
         # loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         # Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
 
-
-
-
     def beta_unfolded(self, freq):
         freq = max(freq, 1000)
 
@@ -101,10 +101,16 @@ class SCFL_Model():
         # calc surface impedence
 
         # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
+        st = time.time()
         zs = self.conductivity_model.Zs(freq, self.conductivity_model.conductivity(freq), self.line_thickness)
+        self.tot += time.time() - st
 
         loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
+
+        # cental line
+
+        # CL = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.unit_Cell_Len)
 
         # ------------- ABCD 1 -------------
         mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L1)
@@ -128,10 +134,8 @@ class SCFL_Model():
         mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L7)
 
         # ------------- ABCD UNIT CELL-------------
-        st = time.time()
 
         ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
-        self.tot+= time.time()-st
 
         # ---------------------------- calc bloch impedance and propagation const for UC
 
@@ -143,28 +147,32 @@ class SCFL_Model():
         a = pb.real
         bta = pb.imag
 
-        # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
-        # todo if we need a more general formulation of flat zones just see when prev == current val could work or dist is within some delta thresh
-        # todo could also do abs(beta) and do some translating
-        b = bta
-        bta = abs(bta)
-        # at a top or bottom
+        #
+        # # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
+        #         # todo if we need a more general formulation of flat zones just see when prev == current val could work or dist is within some delta thresh
+        #         # todo could also do abs(beta) and do some translating
 
+        unfolded = bta
 
-        if self.looking and (bta <= 0.0000001 or bta >= PI):
+        if self.looking and (unfolded <= 0.0000001 or unfolded >= PI):
             self.looking = False
         # on a slope
         else:
-            if not self.looking and (bta > 0.0000001 and bta < PI):
+            if not self.looking and (unfolded > 0.0000001 and unfolded < PI):
                 self.region += 1
                 self.PiMult += PI
                 self.flipping = not self.flipping
                 self.looking = True
 
         if self.flipping:
-            bta += 2 * abs(PI - bta) + (self.PiMult - PI)
+            unfolded += 2 * abs(PI - unfolded) + (self.PiMult - PI)
         else:
-            bta += self.PiMult
+            unfolded += self.PiMult
 
-        # todo renme bta to btaUnfolded and b to btafolded and return other a ,r ,x
-        return a, bta, b, r, x
+        #         # todo renme bta to btaUnfolded and b to btafolded and return other a ,r ,x
+
+        return a, bta,unfolded, r, x
+
+    def unfold(self, data):
+
+        pass

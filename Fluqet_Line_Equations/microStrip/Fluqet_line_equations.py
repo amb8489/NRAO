@@ -57,6 +57,8 @@ def UnitCellABCD(Z, Gamma, L):
 def UnitCellABCD_mats(mats):
     res = mats[0]
     for mat in mats[1:]:
+
+        # definition of matrix mult for 2x2 * 2x2
         res = [
             [res[0][0] * mat[0][0] + res[0][1] * mat[1][0], res[0][0] * mat[0][1] + res[0][1] * mat[1][1]],
             [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]]

@@ -28,7 +28,7 @@ from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c
 
 class SuperConductingMicroStripModel(TransmissionLineModel):
 
-    def __init__(self, height, width, thickness, epsilon_r, tan_delta,temp = True):
+    def __init__(self, height, width, thickness, epsilon_r, tan_delta, Jc):
 
         self.height = height
         self.width = width
@@ -36,14 +36,14 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
-        if temp:
-            self.g1 = self.gg1(self.width, self.height, self.thickness)
-            self.g2 = self.gg2(self.width, self.height, self.thickness)
-            self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
+        self.Ic = thickness * width * Jc
+
+        self.g1 = self.gg1(self.width, self.height, self.thickness)
+        self.g2 = self.gg2(self.width, self.height, self.thickness)
+        self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
 
     # ----------  schneider   t = 0  ----------
     def Fs(self, w, h):
-
 
         return cmath.sqrt(1 + (10 * (h / w)))
 
@@ -205,7 +205,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
     # checked
     def DeltaY(self, eta, p):
-        return max(eta,p)
+        return max(eta, p)
 
     # checked
     def Kl(self, w, h, t):
@@ -318,6 +318,11 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 - (1 / CF ** 2)
 
+
+    #opt  make sure no repeated work is done with apha_ky may be calcing twice per frequencey
+    def I_star(self ,zs, f, w, H, ts):
+        return self.Ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
+
     # Phase velocity respect to vo = c
     # checked
     def vSy(self, est, zs, f, epsilon_r, w, H, ts):
@@ -388,17 +393,10 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Z * Y)
 
-
-
-
-
-
-
-    def propagation_constant_characteristic_impedance(self, freq,zs):
+    def propagation_constant_characteristic_impedance(self, freq, zs):
 
         Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
         Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
         propagation_constant = cmath.sqrt(Z * Y)
         characteristic_impedance = cmath.sqrt(Z / Y)
         return propagation_constant, characteristic_impedance
-

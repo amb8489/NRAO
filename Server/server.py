@@ -1,4 +1,3 @@
-
 import base64
 import io
 import time
@@ -18,19 +17,16 @@ app = Flask(__name__)
 
 @app.route('/api/plot', methods=['POST'])
 def get_query_from_react():
-
-    Error_msg = ""
+    Error_msg = "None"
     successful = True
 
     try:
 
         data = request.get_json()['data']
 
-
         StartFreq = toMHz(float(data['StartFreq']))
         EndFreq = toMHz(float(data['EndFreq']))
         resolution = int(data['resolution'])
-
 
         Er = float(data['Er'])
         H = nanoMeter_to_Meter(float(data['H']))
@@ -60,12 +56,10 @@ def get_query_from_react():
 
 
     except:
-
+        print("failure on inputs")
         inputFailure = ["todo"]
         Error_msg = f"failure to read input(s): {inputFailure}"
         successful = False
-
-
 
     # ---------------------------- unit cell inputs from paper
     unit_Cell_Len = microMeter_to_Meters(2300)
@@ -75,18 +69,22 @@ def get_query_from_react():
     b = 2
 
     # ---------------------------- SC inputs
-
+    graphData = {}
     if successful:
         try:
-            mkGraphs(unit_Cell_Len, l1, width_unloaded, a, b, Er, H, Ts, Tg,
-                 Tc, Pn, tand, Temp,StartFreq, EndFreq, resolution)
+            graphData = mkGraphs(unit_Cell_Len, l1, width_unloaded, a, b, Er, H, Ts, Tg,
+                     Tc, Pn, tand, Temp, StartFreq, EndFreq, resolution, Jc)
         except:
+            Error_msg = "failed on run"
             successful = False
 
+    #opt compact data with groupby() kinda
+    # opt adaptive sampling algo to speend up and mk graphs better
     return {
-            "successful":successful,
-            "Error_msg":Error_msg
-            }
+        "successful": successful,
+        "Error_msg": Error_msg,
+        "GraphData":graphData
+    }
 
 
 if __name__ == "__main__":
