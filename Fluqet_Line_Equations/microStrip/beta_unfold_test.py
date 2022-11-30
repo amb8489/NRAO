@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.beta_unfold import SCFL_Model
+from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters
 
 
@@ -38,7 +38,7 @@ StartFreq, EndFreq, resolution = 6.8e9, 7e9, 1000
 
 
 for F in np.linspace(StartFreq, EndFreq, resolution):
-    aa, bta,unfolded, rr, xx = lineModel.beta_unfolded(F)
+    aa, bta,unfolded, rr, xx = lineModel.abrx(F)
     beta.append(bta)
     betaUf.append(unfolded)
     a.append(aa)

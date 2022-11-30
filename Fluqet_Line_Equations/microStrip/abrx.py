@@ -1,7 +1,9 @@
 import cmath
 import time
 import numpy as np
-from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import UnitCellABCD_mats, ABCD_TL, Bloch_impedance_Zb, Pd
+
+from Fluqet_Line_Equations.Line import Line
+from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import MultMats, ABCD_TL, Bloch_impedance_Zb, Pd
 from SuperConductivityEquations.SCE import SuperConductivity
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
@@ -11,7 +13,7 @@ class SCFL_Model():
 
     def __init__(self, unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness,
                  ground_thickness,
-                 critical_Temp, pn, tanD, op_temp, Jc):
+                 critical_Temp, pn, tanD, op_temp, Jc,numberOfLoads = 3):
 
         # ---------------------------- unit cell inputs
         self.unit_Cell_Len = unit_Cell_Len
@@ -31,6 +33,8 @@ class SCFL_Model():
 
         # ---------------------------- line dimensions
 
+
+        # #todo generlize this
         self.L1 = .5 * ((unit_Cell_Len / 3) - l1)
         self.L2 = l1
         self.L3 = (unit_Cell_Len / 3) - .5 * (l1 + l1)
@@ -39,20 +43,7 @@ class SCFL_Model():
         self.L6 = 2 * l1
         self.L7 = .5 * ((unit_Cell_Len / 3) - (3 * l1))
 
-        # print(self.L7 + (self.L6/2))
-        # print(self.L5 + (self.L6/2) + (self.L4/2))
-        # print(self.L3 + (self.L2/2) + (self.L4/2))
-        # print(self.L1 + (self.L2/2))
-
-        # todo go back to old line from other paper
-
-        # self.L1 = (D0 / 2) - (D1 / 2)
-        # self.L2 = D1
-        # self.L3 = D0 - D1
-        # self.L4 = D1
-        # self.L5 = D0 - (D1 / 2) - (D2 / 2)
-        # self.L6 = D2
-        # self.L7 = (D0 / 2) - (D2 / 2)
+        # L = Line(D, D0, number_of_loads, In_Order_loads_Widths)
 
         if abs(self.L1 + self.L2 + self.L3 + self.L4 + self.L5 + self.L6 + self.L7 - unit_Cell_Len) > .0001:
             print("EROOR parts of unit cell are NOT adding to the whole unit cell lenght")
@@ -71,42 +62,23 @@ class SCFL_Model():
         self.PiMult = 0
         self.flipping = False
         self.looking = True
-        # error check tp make sure that beta is run in in increasing frequnces
-        self.prev_beta_freq = -1
-
-        self.prev = 0
-
         self.tot = 0
 
-        # zs = Zs(1, conductivity(1, self.op_temp, self.critical_Temp, self.pn), self.line_thickness)
 
-        # loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
-        # Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
-
-    def beta_unfolded(self, freq):
+    def abrx(self, freq):
         freq = max(freq, 1000)
 
-        # # todo fix this function so that these warning can go
-        # if freq < 1000:
-        #     print("------WARNING ! freq under 1000 could result in beta being 1 PI too high  ----")
-        #     exit(1)
-        # if freq < self.prev_beta_freq:
-        #     print("------ERROR! need to reset calc_aplha_beta_r_x class before you can use to clac beta correctly-----")
-        #     exit(1)
-
-        # self.prev_beta_freq = freq
-
-        # calc Zc for load and unloaded
 
         # calc surface impedence
-
-        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
         st = time.time()
+        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
         zs = self.conductivity_model.Zs(freq, self.conductivity_model.conductivity(freq), self.line_thickness)
         self.tot += time.time() - st
 
+
         loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
+
 
         # cental line
 
@@ -135,12 +107,12 @@ class SCFL_Model():
 
         # ------------- ABCD UNIT CELL-------------
 
-        ABCD_UC = UnitCellABCD_mats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
+        ABCD_Mat = MultMats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
 
         # ---------------------------- calc bloch impedance and propagation const for UC
 
-        ZB = Bloch_impedance_Zb(ABCD_UC)[0]
-        pb = Pd(ABCD_UC)
+        ZB = Bloch_impedance_Zb(ABCD_Mat)[0]
+        pb = Pd(ABCD_Mat)
 
         r = ZB.real
         x = ZB.imag

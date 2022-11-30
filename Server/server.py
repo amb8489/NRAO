@@ -7,7 +7,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
 from flask import Flask, request, Response
-from Fluqet_Line_Equations.microStrip.beta_unfold import SCFL_Model
+from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Server.runGraphs import mkGraphs
 from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters, toMHz
 
@@ -75,7 +75,7 @@ def get_query_from_react():
             graphData = mkGraphs(unit_Cell_Len, l1, width_unloaded, a, b, Er, H, Ts, Tg,
                      Tc, Pn, tand, Temp, StartFreq, EndFreq, resolution, Jc)
         except:
-            Error_msg = "failed on run"
+            Error_msg = "failed on run to do error message"
             successful = False
 
     #opt compact data with groupby() kinda

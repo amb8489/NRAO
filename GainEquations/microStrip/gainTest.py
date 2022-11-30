@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.beta_unfold import SCFL_Model
+from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from GainEquations.microStrip.gain import Gain
 from Supports.Support_Functions import find_idx_of_closest_value, microMeter_to_Meters, nanoMeter_to_Meter
 

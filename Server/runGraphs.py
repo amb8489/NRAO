@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.beta_unfold import SCFL_Model
+from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters
 
 
@@ -17,7 +17,7 @@ def mkGraphs(unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness
     f,a, r, x = [], [], [],[]
 
     for F in freqs:
-        aa, bta, btaUnfolded, rr, xx = lineModel.beta_unfolded(F)
+        aa, bta, btaUnfolded, rr, xx = lineModel.abrx(F)
         betaUnfoled.append(btaUnfolded)
         a.append(aa)
         folded.append(b)

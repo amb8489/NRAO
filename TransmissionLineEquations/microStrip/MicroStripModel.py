@@ -397,6 +397,7 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
 
         Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
         Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
+
         propagation_constant = cmath.sqrt(Z * Y)
         characteristic_impedance = cmath.sqrt(Z / Y)
         return propagation_constant, characteristic_impedance

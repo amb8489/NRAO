@@ -54,7 +54,7 @@ def UnitCellABCD(Z, Gamma, L):
 
 
 # input is an array of mats
-def UnitCellABCD_mats(mats):
+def MultMats(mats):
     res = mats[0]
     for mat in mats[1:]:
 
