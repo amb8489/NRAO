@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.integrate import odeint
-from GainEquations.microStrip.amplitudeEquations import ApmlitudeEquations
+from GainEquations.microStrip.AmplitudeEquations.amplitudeEquations import ApmlitudeEquations
 from Supports.Support_Functions import find_idx_of_closest_value
 import time
 

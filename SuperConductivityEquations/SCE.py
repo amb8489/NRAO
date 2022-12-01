@@ -60,6 +60,8 @@ class SuperConductivity():
         return self.e3(e, delt, freq) / (bottom)
 
     # ---- WHEN TEMPK IS 0
+
+
     # put 0 for freq when not adding anything to E and put the freq when adding any value to e when temp is zero
     # fermiDistrib E             -> fermiDistrib(E, 0)
     # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0, someValue)

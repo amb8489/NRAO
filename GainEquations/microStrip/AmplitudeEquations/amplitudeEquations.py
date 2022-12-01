@@ -22,7 +22,7 @@ def ApmlitudeEquations(Amplitudes, z, B_s, B_i, B_p, I):
 
     deltaB = (B_s + B_i) - (2 * B_p)
 
-    # Optical coupled equations for N = 3
+    # Optical coupled equations
 
     As = ((-1j * ((B_s) / (8 * (I ** 2)))) *
           (A_sig * ((abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) + (2 * (abs(A_pump) ** 2))) + A_star_i * (
