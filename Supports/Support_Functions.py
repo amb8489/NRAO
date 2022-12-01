@@ -26,34 +26,28 @@ def ccoth(x):
     return 1 / cmath.tanh(x)
 
 
-PI20 = PI2*10
+PI20 = PI2 * 10
+
+
 # wave number if freq in Ghz
 def K0_GHz(freq):
     return (PI20 * freq) / cc
 
 
-
-
-def toMHz(f):
+def toGHz(f):
     return f * 1e9
 
-def microMeter_to_Meters(x):
+
+def microMeters_to_Meters(x):
     return x / 1e+6
 
 
-def nanoMeter_to_Meter(x):
+def nanoMeters_to_Meters(x):
     return x / 1e+9
 
 
-def Chop(number, decimals=6):
-    """
-    Returns a value truncated to a specific number of decimal places.
-
-    basically if a number is like 1.00000000132434 itll just be 1.0
-    """
-
-    factor = 10.0 ** decimals
-    return (math.trunc(number.real * factor) / factor) + (1j * math.trunc(number.imag * factor) / factor)
+def mm_To_Meters(n):
+    return n / 1000
 
 
 def find_idx_of_closest_value(list, value):
@@ -68,3 +62,21 @@ def find_idx_of_closest_value(list, value):
     elif idx and list[idx] - value > value - list[idx - 1]:
         idx = idx - 1
     return idx
+
+
+# definition of matrix mult for 2x2 * 2x2
+def Mult2x2Mat(mat1: [[float]], mat2: [[float]]):
+    return [
+        [mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0], mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1]],
+        [mat1[1][0] * mat2[0][0] + mat1[1][1] * mat2[1][0], mat1[1][0] * mat2[0][1] + mat1[1][1] * mat2[1][1]]]
+
+
+# input is an array of 2x2 matrices
+# does a matrix multiplication of all 2x2 matrices passed in,in array
+def MultMats(mats: [[[float]]]):
+    res = mats[0]
+    for mat in mats[1:]:
+        res = Mult2x2Mat(res, mat)
+    return res
+
+

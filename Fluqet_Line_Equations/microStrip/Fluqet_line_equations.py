@@ -1,6 +1,12 @@
+'''
+
+
+
+equations needed in
+'''
+
 import cmath
 import math
-
 import numpy as np
 
 
@@ -41,43 +47,5 @@ def Bloch_impedance_Zb(mat):
     return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
 
-# Product of matrices TL[Z,Gamma,l]
-# TODO WHERE CAN I GET THIS FILE of vectors
-# Z,Gamma,d are given as vectors
-def UnitCellABCD(Z, Gamma, L):
-    res = [[1, 0],
-           [0, 1]]
-    for i in range(len(Z)):
-        res = np.matmul(res, ABCD_TL(Z[i], Gamma[i], L[i]))
-
-    return res
 
 
-# input is an array of mats
-def MultMats(mats):
-    res = mats[0]
-    for mat in mats[1:]:
-
-        # definition of matrix mult for 2x2 * 2x2
-        res = [
-            [res[0][0] * mat[0][0] + res[0][1] * mat[1][0], res[0][0] * mat[0][1] + res[0][1] * mat[1][1]],
-            [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]]
-
-
-    return res
-
-
-# Transmission of n identical cells
-def S21Ncell(n, Zequ1, Zequ2, Gamma_equ, d, Zo):
-    return (2 * math.exp(d * n * Gamma_equ) * (Zequ1 - Zequ2) * Zo) / (
-            (1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 - Zequ2) * Zo - (
-            -1 + math.exp(2 * d * n * Gamma_equ)) * (Zequ1 * Zequ2 - (Zo ** 2)))
-
-
-def S12(ABCD_Mat, Z):
-    A = ABCD_Mat[0][0]
-    B = ABCD_Mat[0][1]
-    C = ABCD_Mat[1][0]
-    D = ABCD_Mat[1][1]
-
-    return 10 * cmath.log((2 * ((A * D) - (B * C))) / (A + B / Z + C * Z + D), 10)

@@ -1,7 +1,5 @@
 import cmath
 import math
-
-from TransmissionLineEquations.microStrip.Model import TransmissionLineModel
 from Supports.Support_Functions import sech, coth
 from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
 
@@ -26,7 +24,7 @@ from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c
 # todo somehwere i use 1/cos for arc cos not sure if thats right ....
 
 
-class SuperConductingMicroStripModel(TransmissionLineModel):
+class SuperConductingMicroStripModel():
 
     def __init__(self, height, width, thickness, epsilon_r, tan_delta, Jc):
 
@@ -35,11 +33,13 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         self.thickness = thickness
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
-
         self.Ic = thickness * width * Jc
 
+        # calc geometric factors
         self.g1 = self.gg1(self.width, self.height, self.thickness)
         self.g2 = self.gg2(self.width, self.height, self.thickness)
+
+        # calc dialectic constant
         self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
 
     # ----------  schneider   t = 0  ----------
@@ -318,9 +318,8 @@ class SuperConductingMicroStripModel(TransmissionLineModel):
         CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 - (1 / CF ** 2)
 
-
-    #opt  make sure no repeated work is done with apha_ky may be calcing twice per frequencey
-    def I_star(self ,zs, f, w, H, ts):
+    # opt  make sure no repeated work is done with apha_ky may be calcing twice per frequencey
+    def I_star(self, zs, f, w, H, ts):
         return self.Ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
 
     # Phase velocity respect to vo = c

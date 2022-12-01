@@ -1,25 +1,24 @@
-import cmath
-import time
-import numpy as np
-
 from Fluqet_Line_Equations.Line import Line
-from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import MultMats, ABCD_TL, Bloch_impedance_Zb, Pd
+from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import ABCD_TL, Bloch_impedance_Zb, Pd
 from SuperConductivityEquations.SCE import SuperConductivity
+from Supports.Support_Functions import MultMats
 from Supports.constants import PI
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
 
 class SCFL_Model():
 
-    def __init__(self, unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness,
-                 ground_thickness,
-                 critical_Temp, pn, tanD, op_temp, Jc,numberOfLoads = 3):
+    def __init__(self, unit_Cell_Len, D0, In_Order_loads_Widths, number_of_loads, width_unloaded, width_loaded, er,
+                 Height, line_thickness, ground_thickness, critical_Temp, pn, tanD, op_temp, Jc):
 
         # ---------------------------- unit cell inputs
         self.unit_Cell_Len = unit_Cell_Len
         self.width_unloaded = width_unloaded
+        self.width_loaded = width_loaded
+        self.numberOfLoads = number_of_loads
 
-        self.width_loaded = width_unloaded * a
+        # model of FL Line dimensions
+        self.FlLine = Line(unit_Cell_Len, D0, number_of_loads, In_Order_loads_Widths)
 
         # ---------------------------- sce inputs
         self.er = er
@@ -31,85 +30,49 @@ class SCFL_Model():
         self.tanD = tanD
         self.op_temp = op_temp
 
-        # ---------------------------- line dimensions
-
-
-        # #todo generlize this
-        self.L1 = .5 * ((unit_Cell_Len / 3) - l1)
-        self.L2 = l1
-        self.L3 = (unit_Cell_Len / 3) - .5 * (l1 + l1)
-        self.L4 = l1
-        self.L5 = (unit_Cell_Len / 3) - .5 * (3 * l1)
-        self.L6 = 2 * l1
-        self.L7 = .5 * ((unit_Cell_Len / 3) - (3 * l1))
-
-        # L = Line(D, D0, number_of_loads, In_Order_loads_Widths)
-
-        if abs(self.L1 + self.L2 + self.L3 + self.L4 + self.L5 + self.L6 + self.L7 - unit_Cell_Len) > .0001:
-            print("EROOR parts of unit cell are NOT adding to the whole unit cell lenght")
-
-        # ---------------------------- models of SuperConductingMicroStripModel
-        # ---------------------------- one for unloaded , one for loaded
-
+        # ---------------------------- models of the MicroStripModel - one for an unloaded line , one for a loaded line
         self.model_loaded = SuperConductingMicroStripModel(self.Height, self.width_loaded, self.line_thickness, self.er,
                                                            self.tanD, Jc)
         self.model_unloaded = SuperConductingMicroStripModel(self.Height, self.width_unloaded, self.line_thickness,
                                                              self.er, self.tanD, Jc)
+
+        # ---------------------------- model of the Super conductor
         self.conductivity_model = SuperConductivity(op_temp, critical_Temp, pn)
 
-        # ------ globals for beta for when freq starting at close to 0
+        # used to unfolding beta
         self.region = 0
         self.PiMult = 0
         self.flipping = False
         self.looking = True
-        self.tot = 0
 
+    '''
+    the calculation of a, b, b-unfolded, r, x
+    '''
 
     def abrx(self, freq):
+        # frequency cant be too low
         freq = max(freq, 1000)
 
-
-        # calc surface impedence
-        st = time.time()
         # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
+        # calc surface impedence Zs for super conductor
         zs = self.conductivity_model.Zs(freq, self.conductivity_model.conductivity(freq), self.line_thickness)
-        self.tot += time.time() - st
-
 
         loaded_propagation, loaded_Zc = self.model_loaded.propagation_constant_characteristic_impedance(freq, zs)
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
 
+        # making all the ABCD matrices for each subsection of unit cell
+        mats = []
+        for i in range(self.numberOfLoads * 2 + 1):
+            # every other is loaded
+            if i % 2 == 0:
+                mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(i)))
+            else:
+                mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLine.get_L_number(i)))
 
-        # cental line
+        # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
+        ABCD_Mat = MultMats(mats)
 
-        # CL = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.unit_Cell_Len)
-
-        # ------------- ABCD 1 -------------
-        mat1 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L1)
-
-        # ------------- ABCD 2 -------------
-        mat2 = ABCD_TL(loaded_Zc, loaded_propagation, self.L2)
-
-        # ------------- ABCD 3 -------------
-        mat3 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L3)
-
-        # ------------- ABCD 4 -------------
-        mat4 = ABCD_TL(loaded_Zc, loaded_propagation, self.L4)
-
-        # ------------- ABCD 5 -------------
-        mat5 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L5)
-
-        # ------------- ABCD 6 -------------
-        mat6 = ABCD_TL(loaded_Zc, loaded_propagation, self.L6)
-
-        # ------------- ABCD 7 -------------
-        mat7 = ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.L7)
-
-        # ------------- ABCD UNIT CELL-------------
-
-        ABCD_Mat = MultMats([mat1, mat2, mat3, mat4, mat5, mat6, mat7])
-
-        # ---------------------------- calc bloch impedance and propagation const for UC
+        # ---------------------------- calc bloch impedance and propagation const for unit cell
 
         ZB = Bloch_impedance_Zb(ABCD_Mat)[0]
         pb = Pd(ABCD_Mat)
@@ -119,32 +82,22 @@ class SCFL_Model():
         a = pb.real
         bta = pb.imag
 
-        #
-        # # todo if we need a more general formulation of flat zones maybe calc min() / max() of beta also
-        #         # todo if we need a more general formulation of flat zones just see when prev == current val could work or dist is within some delta thresh
-        #         # todo could also do abs(beta) and do some translating
+        # ------- un-folding beta
+        unfoldedBeta = bta
 
-        unfolded = bta
-
-        if self.looking and (unfolded <= 0.0000001 or unfolded >= PI):
+        if self.looking and (unfoldedBeta <= 0.0000001 or unfoldedBeta >= PI):
             self.looking = False
         # on a slope
         else:
-            if not self.looking and (unfolded > 0.0000001 and unfolded < PI):
+            if not self.looking and (unfoldedBeta > 0.0000001 and unfoldedBeta < PI):
                 self.region += 1
                 self.PiMult += PI
                 self.flipping = not self.flipping
                 self.looking = True
 
         if self.flipping:
-            unfolded += 2 * abs(PI - unfolded) + (self.PiMult - PI)
+            unfoldedBeta += 2 * abs(PI - unfoldedBeta) + (self.PiMult - PI)
         else:
-            unfolded += self.PiMult
+            unfoldedBeta += self.PiMult
 
-        #         # todo renme bta to btaUnfolded and b to btafolded and return other a ,r ,x
-
-        return a, bta,unfolded, r, x
-
-    def unfold(self, data):
-
-        pass
+        return a, bta, unfoldedBeta, r, x

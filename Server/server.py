@@ -9,7 +9,7 @@ import numpy as np
 from flask import Flask, request, Response
 from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Server.runGraphs import mkGraphs
-from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters, toMHz
+from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters, toGHz
 
 matplotlib.use('Agg')
 app = Flask(__name__)
@@ -24,8 +24,8 @@ def get_query_from_react():
 
         data = request.get_json()['data']
 
-        StartFreq = toMHz(float(data['StartFreq']))
-        EndFreq = toMHz(float(data['EndFreq']))
+        StartFreq = toGHz(float(data['StartFreq']))
+        EndFreq = toGHz(float(data['EndFreq']))
         resolution = int(data['resolution'])
 
         Er = float(data['Er'])
@@ -40,12 +40,14 @@ def get_query_from_react():
 
         # Wl = microMeter_to_Meters(float(data['Wl']))
         # Wu = microMeter_to_Meters(float(data['Wu']))
+        # threeLoads = data['threeLoads']
+
         # D = microMeter_to_Meters(float(data['D'])))
         # D0 = microMeter_to_Meters(float(data['D0']))
         # D1 = microMeter_to_Meters(float(data['D1']))
         # D2 = microMeter_to_Meters(float(data['D2']))
-        # D3 = microMeter_to_Meters(float(data['D3']))
-        # threeLoads = data['threeLoads']
+        # if threeLoads == "TRUE":
+        #     D3 = microMeter_to_Meters(float(data['D3']))
         #
         # Aii = float(data['Aii'])
         # Api = float(data['Api'])

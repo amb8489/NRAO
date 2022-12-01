@@ -13,7 +13,7 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
     betas = []
     f_range = np.linspace(1000, 2 * pump_freq, resolution)
     for i, signal_freq in enumerate(f_range):
-        _, btaUf_signal, _, _, _ = lineModel.beta_unfolded(signal_freq)
+        _, btaUf_signal, _, _, _ = lineModel.abrx(signal_freq)
         betas.append(btaUf_signal)
 
 
@@ -39,7 +39,6 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
         gain.append(np.log10(g))
 
     print("time to calc gains:", (time.time() - s))
-
     print(f"time taken {time.time() - s}")
     plt.plot(f_range, gain)
     plt.show()
@@ -68,9 +67,9 @@ if __name__ == "__main__":
     op_temp = 0
     pn = 1.008e-6
     tanD = 0
-
+    Jc = 1
     lineModel = SCFL_Model(unit_Cell_Len, l1, width_unloaded, a, b, er, Height, line_thickness, ground_thickness,
-                           critical_Temp, pn, tanD, op_temp)
+                           critical_Temp, pn, tanD, op_temp,Jc)
 
     # ---------------------------- gain inputs
     # todo make inputs complex
