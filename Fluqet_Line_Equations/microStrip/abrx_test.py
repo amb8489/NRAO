@@ -11,7 +11,7 @@ from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Mete
 s = time.time()
 
 # ---------------------------- inputs ----------------------------
-a, r, x, beta, betaUf, freqs,RR,LL,GG,CC = [], [], [], [], [], [],[], [], [], []
+a, r, x, beta, betaUf, freqs, RR, LL, GG, CC = [], [], [], [], [], [], [], [], [], []
 
 # ---------------------------- unit cell inputs from paper
 unit_Cell_Len = microMeters_to_Meters(2300)
@@ -38,10 +38,9 @@ tanD = 0
 Jc = 1
 
 
-#
-# # #
-# # #
-# # ---------------------------- unit cell inputs from paper
+
+# secoind paper inputs
+# ---------------------------- unit cell inputs from paper
 # width_unloaded = microMeters_to_Meters(1)
 # width_loaded = microMeters_to_Meters(4)
 # D0 = mm_To_Meters(1.34)
@@ -59,7 +58,7 @@ Jc = 1
 # ground_thickness = nanoMeters_to_Meters(300)
 # Tc = 14.7
 # T = 4  # what equatioins to use when temp is > 0
-# pn = 132
+# pn = 0.00000132
 # er = 11.44
 # tanD = 1.48351e-5
 # Jc = 1
@@ -72,7 +71,7 @@ Floquet_line = SCFL_Model(unit_Cell_Len, D0, In_Order_loads_Widths, number_of_lo
 FRange = np.linspace(toGHz(6), toGHz(25), 10000)
 # todo put this in  funciton in Floquet_line
 for F in FRange:
-    aa, bta, unfolded, rr, xx, R,L,G,C = Floquet_line.abrx(F)
+    aa, bta, unfolded, rr, xx, R, L, G, C = Floquet_line.abrx(F)
 
     # RR.append(R)
     # LL.append(L)
@@ -87,8 +86,6 @@ for F in FRange:
     freqs.append(F)
 
 print("total time: ", time.time() - s)
-
-
 
 # RR,LL,GG,CC = np.array(RR),np.array(LL),np.array(GG),np.array(CC)
 #
@@ -111,17 +108,6 @@ print("total time: ", time.time() - s)
 # CLIIIWWDiv3  = CC*LL*I3*(WW/3)
 
 
-
-
-
-
-
-
-
-
-
-
-
 # ---------------------------- plots----------------------------
 fig, (a1, a2, a3, a4) = plt.subplots(4)
 a1.plot(freqs, beta)
@@ -137,7 +123,7 @@ a3.plot(freqs, r)
 a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
-a2.axvspan(Floquet_line.A//3, Floquet_line.B//3, facecolor='g', alpha=0.3)
+a2.axvspan(Floquet_line.A // 3, Floquet_line.B // 3, facecolor='g', alpha=0.3)
 
 # a1.plot(freqs, CLWWI)
 # a2.plot(freqs, CRwI)
