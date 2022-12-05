@@ -137,16 +137,13 @@ class SuperConductingMicroStripModel():
     # -------------------
 
     def Lambda0(self, sigma, delta_O):
-        # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
-        # TODO ask about the complex square root should just the real part be rooted or both re and im parts
+
         # AND sigma_N is 1/ Pn
         return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma * delta_O))
 
-    # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
     def z_slow(self, f, yO, t):
         return 1j * PI2 * f * MU_0 * yO
 
-    # TODO TEST FOR CORRECTNESS WITH MATHEMATICA CODE
     def Lambda(self, zs, f, t):
         return (zs / (PI2 * f * MU_0)).imag
 
@@ -236,7 +233,6 @@ class SuperConductingMicroStripModel():
         return (h / w) * (2 / PI) * cmath.log((2 * rbc) / rac)
 
     # Functions to calculate Chi all checked
-
     def Is1(self, p, ra, Ra):
         return cmath.log((2 * p - (p + 1) * ra + 2 * cmath.sqrt(p * Ra)) / (ra * (p - 1)))
 

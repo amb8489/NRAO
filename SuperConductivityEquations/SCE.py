@@ -37,29 +37,6 @@ class SuperConductivity():
         self.delta = self.calc_delta(critical_temp)
         self.OpTempTimesKB = Operation_temperatureK * KB
 
-    def e1(self, e, delt):
-        return math.sqrt(e ** 2 - delt ** 2)
-
-    def e2(self, e, delt, freq):
-        return math.sqrt(((e + freq) ** 2) - delt ** 2)
-
-    def e3(self, e, delt, freq):
-        return (e ** 2) + (delt ** 2) + (freq * e)
-
-    def e4(self, e, delt):
-        return math.sqrt(delt ** 2 - e ** 2)
-
-    def g(self, e, delt, freq):
-        return self.e3(e, delt, freq) / (self.e1(e, delt) * self.e2(e, delt, freq))
-
-    def g2(self, e, delt, freq):
-        bottom = ((self.e4(e, delt) * self.e2(e, delt, freq)))
-
-        if bottom == 0:
-            bottom = .00001
-
-        return self.e3(e, delt, freq) / (bottom)
-
     def fermiDistrib(self, E, tempK):
         if tempK == 0:
             return 0 if E >= 0 else 1
@@ -67,20 +44,30 @@ class SuperConductivity():
         EdivT = E / tempK
         return 0 if EdivT > 30 else 1 / (1 + math.exp(EdivT))
 
-    def ff(self, e, freq, tempK):
-        return self.fermiDistrib(e, tempK) - self.fermiDistrib(e + freq, tempK)
+    def g2(self, e, delt, freq):
 
-    def f2(self, e, freq, tempK):
-        return 1 - (2 * self.fermiDistrib(e + freq, tempK))
+        deltdSqrd = delt ** 2
+        eSqrd = e ** 2
+
+        return ((eSqrd) + (deltdSqrd) + (freq * e)) / (
+                (math.sqrt(deltdSqrd - eSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd)))
 
     def int1(self, e, delt, freq, tempK):
-        return self.ff(e, freq, tempK) * self.g(e, delt, freq)
+        deltdSqrd = delt ** 2
+        eSqrd = e ** 2
+
+        return (self.fermiDistrib(e, tempK) - self.fermiDistrib(e + freq, tempK)) * (
+                ((eSqrd) + (deltdSqrd) + (freq * e)) / (
+                    (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd))))
 
     def int11(self, e, delt, freq, tempK):
-        return self.f2(e, freq, tempK) * self.g(e, delt, freq)
 
-    def int2(self, e, delt, freq, tempK):
-        return self.f2(e, freq, tempK) * self.g2(e, delt, freq)
+        deltdSqrd = delt ** 2
+        eSqrd = e ** 2
+
+        return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * (
+                (eSqrd + deltdSqrd + (freq * e)) / (
+                    (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd)))))
 
     def sigma_1_N_L(self, delt, freq, tempK):
 
@@ -112,10 +99,12 @@ class SuperConductivity():
     def sigma_2_N_L(self, delt, freq, tempK):
 
         def f1(x):
-            return self.int2(delt - freq + x ** 2, delt, freq, tempK) * 2 * x
+            e = delt - freq + x ** 2
+            return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * self.g2(e, delt, freq)) * 2 * x
 
         def f2(x):
-            return self.int2(delt - x ** 2, delt, freq, tempK) * 2 * x
+            e = delt - x ** 2
+            return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * self.g2(e, delt, freq)) * 2 * x
 
         lower_bound = 0
         upper_bound = math.sqrt(freq / 2)
@@ -125,10 +114,12 @@ class SuperConductivity():
     def sigma_2_N_U(self, delt, freq, tempK):
 
         def f1(x):
-            return self.int2(-delt + x ** 2, delt, freq, tempK) * 2 * x
+            e = -delt + x ** 2
+            return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * self.g2(e, delt, freq)) * 2 * x
 
         def f2(x):
-            return self.int2(delt - x ** 2, delt, freq, tempK) * 2 * x
+            e = delt - x ** 2
+            return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * self.g2(e, delt, freq)) * 2 * x
 
         lower_bound = 0
         upper_bound = math.sqrt(delt)

@@ -69,12 +69,13 @@ class SCFL_Model():
 
         # making all the ABCD matrices for each subsection of unit cell
         abcd_mats = []
-        for i in range(self.numberOfLoads * 2 + 1):
-            # every other is loaded
-            if i % 2 == 0:
-                abcd_mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(i)))
-            else:
-                abcd_mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLine.get_L_number(i)))
+        for i in range(0,self.numberOfLoads*2,2):
+            # unloaded_mat
+            abcd_mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(i)))
+            #loaded_mat
+            abcd_mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLine.get_L_number(i+1)))
+        abcd_mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(self.numberOfLoads*2)))
+
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
         Unitcell_ABCD_Mat = MultMats(abcd_mats)

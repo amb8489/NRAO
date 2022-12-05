@@ -7,7 +7,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
-from Supports.constants import PI2
 
 s = time.time()
 
@@ -38,6 +37,10 @@ pn = 1.008e-6
 tanD = 0
 Jc = 1
 
+
+#
+# # #
+# # #
 # # ---------------------------- unit cell inputs from paper
 # width_unloaded = microMeters_to_Meters(1)
 # width_loaded = microMeters_to_Meters(4)
@@ -66,8 +69,8 @@ Floquet_line = SCFL_Model(unit_Cell_Len, D0, In_Order_loads_Widths, number_of_lo
                           Height, line_thickness, ground_thickness, Tc, pn, tanD, T, Jc)
 
 # ---------------------------- calculations -------------------
-FRange = np.linspace(toGHz(6), toGHz(25), 1000)
-
+FRange = np.linspace(toGHz(6), toGHz(25), 10000)
+# todo put this in  funciton in Floquet_line
 for F in FRange:
     aa, bta, unfolded, rr, xx, R,L,G,C = Floquet_line.abrx(F)
 
