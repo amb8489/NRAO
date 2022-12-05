@@ -33,7 +33,6 @@ class Line():
         # array to hold lengths of line segments of the FL
         self.Floquet_Line_Parts_Lengths = []
 
-        # todo in paper the first and last is D0/2 - (loadlen/2) if so coud change ([D0] + self.In_Order_loads_Widths + [D0])
         # add D0 widths loads to front and back to simplify code in calculating segments
         self.In_Order_loads_Widths = [D0] + self.In_Order_loads_Widths + [D0]
 
@@ -44,6 +43,7 @@ class Line():
             if i != 0: self.Floquet_Line_Parts_Lengths.append(self.In_Order_loads_Widths[i])
 
             # compute and add length of the central line between load[i] and load[i+1]   [load i] ---CL--- [load i+1]
+            # L = D0 - (1/2 * loadLen[i] ) - (1/2 * loadLen[i+1] )
             self.Floquet_Line_Parts_Lengths.append(
                 D0 - (self.In_Order_loads_Widths[i] / 2) - (self.In_Order_loads_Widths[i + 1] / 2))
 

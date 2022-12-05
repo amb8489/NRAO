@@ -3,7 +3,7 @@ import math
 import cmath
 from functools import cache
 
-from Supports.constants import cc, PI2
+from Supports.constants import  PI2
 
 
 # Computes the hyperbolic secant of 𝑥
@@ -31,7 +31,7 @@ PI20 = PI2 * 10
 
 # wave number if freq in Ghz
 def K0_GHz(freq):
-    return (PI20 * freq) / cc
+    return (PI20 * freq) / 3
 
 
 def toGHz(f):
@@ -51,8 +51,7 @@ def mm_To_Meters(n):
 
 
 def find_idx_of_closest_value(list, value):
-    """
-    Assumes myList is sorted. Returns the closest value to myNumber.
+    """Returns the closest value to value in a sorted list.
 
     If two numbers are equally close, return the smallest number.
     """
@@ -64,16 +63,17 @@ def find_idx_of_closest_value(list, value):
     return idx
 
 
-# definition of matrix mult for 2x2 * 2x2
 def Mult2x2Mat(mat1: [[float]], mat2: [[float]]):
+    # definition of matrix mult for 2x2 * 2x2
     return [
         [mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0], mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1]],
         [mat1[1][0] * mat2[0][0] + mat1[1][1] * mat2[1][0], mat1[1][0] * mat2[0][1] + mat1[1][1] * mat2[1][1]]]
 
 
-# input is an array of 2x2 matrices
-# does a matrix multiplication of all 2x2 matrices passed in,in array
-def MultMats(mats: [[[float]]]):
+
+def MultMats(mats):
+    # input is an array of 2x2 matrices
+    # does a matrix multiplication of all 2x2 matrices passed in,in array
     res = mats[0]
     for mat in mats[1:]:
         res = Mult2x2Mat(res, mat)

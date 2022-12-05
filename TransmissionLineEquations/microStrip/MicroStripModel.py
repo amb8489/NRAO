@@ -204,7 +204,12 @@ class SuperConductingMicroStripModel():
         return eta + ((p + 1) / 2) * math.log(detaY)
 
     # checked
+
+
+
+
     def DeltaY(self, eta, p):
+
         return max(eta, p)
 
     # checked

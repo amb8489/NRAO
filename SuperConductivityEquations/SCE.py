@@ -1,6 +1,7 @@
 """
-NRAO
-Aaron Berghash amb8489@g.rit.edu
+
+
+
 """
 import cmath
 import math
@@ -26,7 +27,7 @@ class SuperConductivity():
     ------------------------------functions to support conductivity ------------------------------
     '''
 
-    def __init__(self, Operation_temperatureK, critical_temp, Pn, cached=False):
+    def __init__(self, Operation_temperatureK, critical_temp, Pn):
 
         # calulations that only need to be done once per run
 
@@ -59,37 +60,20 @@ class SuperConductivity():
 
         return self.e3(e, delt, freq) / (bottom)
 
-    # ---- WHEN TEMPK IS 0
-
-
-    # put 0 for freq when not adding anything to E and put the freq when adding any value to e when temp is zero
-    # fermiDistrib E             -> fermiDistrib(E, 0)
-    # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0, someValue)
-    # the freq tells use where the step is when temp is 0
-
-    # ---- WHEN TEMPK IS NOT ZERO:
-    # fermiDistrib E             -> fermiDistrib(E, 0)
-    # fermiDistrib E + someValue -> fermiDistrib(E + someValue, 0)
-
-    # TODO come back to this and maybe just simplify  the (E - freq)
-
-    def fermiDistrib(self, E, tempK, freq=0):
-
+    def fermiDistrib(self, E, tempK):
         if tempK == 0:
-            return 0 if (E - freq) >= -freq else 1
+            return 0 if E >= 0 else 1
 
-        edivk = E / tempK
-        return 0 if edivk > 30 else 1 / (1 + math.exp(edivk))
+        EdivT = E / tempK
+        return 0 if EdivT > 30 else 1 / (1 + math.exp(EdivT))
 
     def ff(self, e, freq, tempK):
-        return self.fermiDistrib(e, tempK, 0) - self.fermiDistrib(e + freq, tempK, freq)
+        return self.fermiDistrib(e, tempK) - self.fermiDistrib(e + freq, tempK)
 
     def f2(self, e, freq, tempK):
-        return 1 - (2 * self.fermiDistrib(e + freq, tempK, freq))
+        return 1 - (2 * self.fermiDistrib(e + freq, tempK))
 
     def int1(self, e, delt, freq, tempK):
-        # opt g(e, delta, freq) could maybe be cached
-
         return self.ff(e, freq, tempK) * self.g(e, delt, freq)
 
     def int11(self, e, delt, freq, tempK):
@@ -190,12 +174,9 @@ class SuperConductivity():
     conductivity  : conductivity
     ts            : thickness of super conductor
     -OUT-
-    Zs - surface impenitence          
+    Zs - surface impedance           
     """
 
     def Zs(self, freq, Conductivity, ts):
-        # opt might be able to do this ad a numppy op for all freq then index into it
-        # opt (1j * PI2 * MU_0) * np.linspace(StartFreq, EndFreq, resolution)
-
         return cmath.sqrt(self.jPI2MU_0 * freq / Conductivity) * ccoth(
             cmath.sqrt(self.jPI2MU_0 * freq * Conductivity) * ts)

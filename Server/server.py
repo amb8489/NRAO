@@ -9,7 +9,8 @@ import numpy as np
 from flask import Flask, request, Response
 from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
 from Server.runGraphs import mkGraphs
-from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters, toGHz
+from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
+    nanoMeters_to_Meters
 
 matplotlib.use('Agg')
 app = Flask(__name__)
@@ -29,13 +30,13 @@ def get_query_from_react():
         resolution = int(data['resolution'])
 
         Er = float(data['Er'])
-        H = nanoMeter_to_Meter(float(data['H']))
+        H = nanoMeters_to_Meters(float(data['H']))
         Jc = float(data['Jc'])
         Pn = float(data['Pn'])
         Tc = float(data['Tc'])
         Temp = float(data['Temp'])
-        Tg = nanoMeter_to_Meter(float(data['Tg']))
-        Ts = nanoMeter_to_Meter(float(data['Ts']))
+        Tg = nanoMeters_to_Meters(float(data['Tg']))
+        Ts = nanoMeters_to_Meters(float(data['Ts']))
         tand = float(data['tand'])
 
         # Wl = microMeter_to_Meters(float(data['Wl']))
@@ -63,29 +64,47 @@ def get_query_from_react():
         Error_msg = f"failure to read input(s): {inputFailure}"
         successful = False
 
-    # ---------------------------- unit cell inputs from paper
-    unit_Cell_Len = microMeter_to_Meters(2300)
-    l1 = microMeter_to_Meters(50)
-    width_unloaded = microMeter_to_Meters(1.49)
-    a = 1.2
-    b = 2
+    graphData = {}
+
+    # ------ START remove later in replacement of user input
+    unit_Cell_Len = microMeters_to_Meters(2300)
+    width_unloaded = microMeters_to_Meters(1.49)
+    width_loaded = width_unloaded * 1.2
+
+    D0 = .0007666666666666666666
+    D1 = 5e-5
+    D2 = 5e-5
+    D3 = .0001
+    In_Order_loads_Widths = [D1, D2, D3]
+    number_of_loads = len(In_Order_loads_Widths)
 
     # ---------------------------- SC inputs
-    graphData = {}
+    er = 10
+    Height = nanoMeters_to_Meters(250)
+    line_thickness = nanoMeters_to_Meters(60)
+    ground_thickness = nanoMeters_to_Meters(300)
+    Tc = 14.28
+    T = 0
+    pn = 1.008e-6
+    tanD = 0
+    Jc = 1
+    # ------ END remove later in replacement of user input
+
     if successful:
         try:
-            graphData = mkGraphs(unit_Cell_Len, l1, width_unloaded, a, b, Er, H, Ts, Tg,
-                     Tc, Pn, tand, Temp, StartFreq, EndFreq, resolution, Jc)
+            graphData = mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, In_Order_loads_Widths,
+                                 number_of_loads, width_unloaded, width_loaded, er,
+                                 Height, line_thickness, ground_thickness, Tc, pn, tanD, T, Jc)
         except:
             Error_msg = "failed on run to do error message"
             successful = False
 
-    #opt compact data with groupby() kinda
+    # opt compact data with groupby() kinda
     # opt adaptive sampling algo to speend up and mk graphs better
     return {
         "successful": successful,
         "Error_msg": Error_msg,
-        "GraphData":graphData
+        "GraphData": graphData
     }
 
 

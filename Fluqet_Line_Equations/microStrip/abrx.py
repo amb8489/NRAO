@@ -1,5 +1,5 @@
 from Fluqet_Line_Equations.Line import Line
-from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import ABCD_TL, Bloch_impedance_Zb, Pd
+from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import ABCD_TL, Bloch_impedance_Zb, Pd, RLGC
 from SuperConductivityEquations.SCE import SuperConductivity
 from Supports.Support_Functions import MultMats
 from Supports.constants import PI
@@ -45,6 +45,13 @@ class SCFL_Model():
         self.flipping = False
         self.looking = True
 
+        self.A = 0
+        self.B = 0
+        self.findA = True
+
+        self.bump = 0
+
+
     '''
     the calculation of a, b, b-unfolded, r, x
     '''
@@ -61,32 +68,57 @@ class SCFL_Model():
         Unloaded_propagation, Unloaded_Zc = self.model_unloaded.propagation_constant_characteristic_impedance(freq, zs)
 
         # making all the ABCD matrices for each subsection of unit cell
-        mats = []
+        abcd_mats = []
         for i in range(self.numberOfLoads * 2 + 1):
             # every other is loaded
             if i % 2 == 0:
-                mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(i)))
+                abcd_mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLine.get_L_number(i)))
             else:
-                mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLine.get_L_number(i)))
+                abcd_mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLine.get_L_number(i)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
-        ABCD_Mat = MultMats(mats)
+        Unitcell_ABCD_Mat = MultMats(abcd_mats)
 
         # ---------------------------- calc bloch impedance and propagation const for unit cell
 
-        ZB = Bloch_impedance_Zb(ABCD_Mat)[0]
-        pb = Pd(ABCD_Mat)
+        ZB = Bloch_impedance_Zb(Unitcell_ABCD_Mat)[0]
+        pb = Pd(Unitcell_ABCD_Mat)
+
+        R,L,G,C = RLGC(pb, ZB)
+
 
         r = ZB.real
         x = ZB.imag
         a = pb.real
         bta = pb.imag
 
+
+        # find good pump zone
+
+        if self.findA and a > 0.0007:
+            self.bump+=1
+
+            if self.bump == 3:
+                self.A = freq
+
+            self.findA =False
+
+        elif a < 0.001 and not self.findA :
+            if self.bump == 3:
+                self.B = freq
+
+            self.findA =True
+
+
+
         # ------- un-folding beta
         unfoldedBeta = bta
 
         if self.looking and (unfoldedBeta <= 0.0000001 or unfoldedBeta >= PI):
             self.looking = False
+
+
+
         # on a slope
         else:
             if not self.looking and (unfoldedBeta > 0.0000001 and unfoldedBeta < PI):
@@ -100,4 +132,12 @@ class SCFL_Model():
         else:
             unfoldedBeta += self.PiMult
 
-        return a, bta, unfoldedBeta, r, x
+
+
+
+
+
+
+
+
+        return a, bta, unfoldedBeta, r, x, R,L,G,C

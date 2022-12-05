@@ -1,6 +1,11 @@
 import math
-
 import scipy.constants
+
+
+"""
+useful constants
+
+"""
 
 # PI consts
 PI = math.pi
@@ -27,9 +32,6 @@ GHz = 10 ** 9
 
 # speed of light m/s
 c = scipy.constants.speed_of_light
-
-# speed of light m/s for GHz freq
-cc = 3
 
 
 PiDiv2 = math.pi / 2
