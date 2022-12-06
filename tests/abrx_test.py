@@ -7,13 +7,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.microStrip.FloquetLine import Super_Conducting_Floquet_Line
 from SuperConductivityEquations.SCE import SuperConductivity
+from utills_funcs_and_consts.Constants import PI2
 from utills_funcs_and_consts.Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
 from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 
 s = time.time()
 
 # ---------------------------- inputs ----------------------------
-a, r, x, beta, betaUf, freqs, RR, LL, GG, CC = [], [], [], [], [], [], [], [], [], []
+a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma = [], [], [], [], [], [], [], [], [], [], []
 
 # ---------------------------- unit cell inputs from paper
 unit_Cell_Len = microMeters_to_Meters(2300)
@@ -77,15 +78,14 @@ Floquet_line = Super_Conducting_Floquet_Line(unit_Cell_Len, D0, loads_Widths, lo
                                              super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
 
 # ---------------------------- calculations -------------------
-FRange = np.linspace(toGHz(6), toGHz(25), 1000)
+FRange = np.linspace(toGHz(6.6), toGHz(25), 1000)
 for F in FRange:
     aa, bta, unfolded, rr, xx, R, L, G, C = Floquet_line.abrx(F)
 
-    # RR.append(R)
-    # LL.append(L)
-    # GG.append(G)
-    # CC.append(C)
-
+    RR.append(R)
+    LL.append(L)
+    GG.append(G)
+    CC.append(C)
     beta.append(bta)
     betaUf.append(unfolded)
     a.append(aa)
@@ -97,29 +97,25 @@ total = time.time() - s
 print("total time: ", time.time() - s)
 print("% calc conduct: ", (Floquet_line.tot / total) * 100)
 
-# RR,LL,GG,CC = np.array(RR),np.array(LL),np.array(GG),np.array(CC)
-#
-#
-#
-#
-# I = .2
-# I3 = I * I * I
-#
-# w = FRange*PI2
-# WW = w*w
-#
-#
-# #todo gamma*I
-# CLWWI = CC*LL * WW * I
-# CRwI = CC*RR*w*I
-# GLwI = GG*LL*w*I
-# RGI = RR*GG*I
-# GLIIIwDiv3 = GG*LL*I3*(w/3)
-# CLIIIWWDiv3  = CC*LL*I3*(WW/3)
+RR, LL, GG, CC, gamma = np.array(RR), np.array(LL), np.array(GG), np.array(CC), np.array(gamma)
 
+I = .2
+I3 = I * I * I
+
+w = FRange * PI2
+WW = w * w
+
+# todo gamma*I
+CLWWI = CC * LL * WW * I
+CRwI = CC * RR * w * I
+GLwI = GG * LL * w * I
+RGI = RR * GG * I
+GLIIIwDiv3 = GG * LL * I3 * (w / 3)
+CLIIIWWDiv3 = CC * LL * I3 * (WW / 3)
+YYI = gamma * gamma * I  # TODO
 
 # ---------------------------- plots----------------------------
-fig, (a1, a2, a3, a4) = plt.subplots(4)
+fig, (a1, a2, a3, a4, a5) = plt.subplots(5)
 a1.plot(freqs, beta)
 a1.set_title('beta Unfolded')
 a1.plot(freqs, betaUf)
@@ -133,14 +129,14 @@ a3.plot(freqs, r)
 a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
-a2.axvspan(Floquet_line.A // 3, Floquet_line.B // 3, facecolor='g', alpha=0.5)
+a2.axvspan(Floquet_line.ChoosePumpZoneA // 3, Floquet_line.ChoosePumpZoneB // 3, facecolor='g', alpha=0.5)
 
-# a1.plot(freqs, CLWWI)
-# a2.plot(freqs, CRwI)
-# a3.plot(freqs, GLwI)
-# a4.plot(freqs, RGI)
-# a5.plot(freqs, GLIIIwDiv3)
-# a6.plot(freqs, CLIIIWWDiv3)
-
+a5.plot(freqs, np.abs(CLWWI))
+a5.plot(freqs, np.abs(CRwI))
+a5.plot(freqs, np.abs(GLwI))
+a5.plot(freqs, np.abs(RGI))
+a5.plot(freqs, np.abs(GLIIIwDiv3))
+a5.plot(freqs, np.abs(CLIIIWWDiv3))
+plt.yscale("log")
 
 plt.show()

@@ -30,8 +30,8 @@ class Super_Conducting_Floquet_Line():
         self.PiMult = 0
         self.flipping = False
         self.looking = True
-        self.A = 0
-        self.B = 0
+        self.ChoosePumpZoneA = 0
+        self.ChoosePumpZoneB = 0
         self.findA = True
         self.bump = 0
         self.tot = 0
@@ -90,13 +90,13 @@ class Super_Conducting_Floquet_Line():
             self.bump += 1
 
             if self.bump == 3:
-                self.A = freq
+                self.ChoosePumpZoneA = freq
 
             self.findA = False
 
         elif a < 0.001 and not self.findA:
             if self.bump == 3:
-                self.B = freq
+                self.ChoosePumpZoneB = freq
 
             self.findA = True
 

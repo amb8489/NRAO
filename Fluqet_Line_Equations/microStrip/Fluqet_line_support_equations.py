@@ -46,12 +46,11 @@ def RLGC(propagationConst, Zb):
 
     R = Z.real
     L = Z.imag
+
     G = Y.real
     C = Y.imag
     return R, L, G, C
 
 
-
 def transmission():
-
     pass

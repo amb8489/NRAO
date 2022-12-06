@@ -1,18 +1,8 @@
-import base64
-import io
-import time
-from io import BytesIO
-
-import matplotlib
-from matplotlib import pyplot as plt
-import numpy as np
-from flask import Flask, request, Response
-from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
+from flask import Flask, request
 from Server.runGraphs import mkGraphs
 from utills_funcs_and_consts.Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
     nanoMeters_to_Meters
 
-matplotlib.use('Agg')
 app = Flask(__name__)
 
 
@@ -75,14 +65,12 @@ def get_query_from_react():
     D1 = 5e-5
     D2 = 5e-5
     D3 = .0001
-    In_Order_loads_Widths = [D1, D2, D3]
-    number_of_loads = len(In_Order_loads_Widths)
+    loads_Widths = [D1, D2, D3]
 
     # ---------------------------- SC inputs
     er = 10
     Height = nanoMeters_to_Meters(250)
     line_thickness = nanoMeters_to_Meters(60)
-    ground_thickness = nanoMeters_to_Meters(300)
     Tc = 14.28
     T = 0
     pn = 1.008e-6
@@ -92,9 +80,9 @@ def get_query_from_react():
 
     if successful:
         try:
-            graphData = mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, In_Order_loads_Widths,
-                                 number_of_loads, width_unloaded, width_loaded, er,
-                                 Height, line_thickness, ground_thickness, Tc, pn, tanD, T, Jc)
+            graphData = mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, width_unloaded,
+                                 width_loaded, er,
+                                 Height, line_thickness, Tc, pn, tanD, T, Jc)
         except:
             Error_msg = "failed on run to do error message"
             successful = False
