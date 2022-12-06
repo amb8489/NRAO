@@ -7,7 +7,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
 from flask import Flask, request, Response
-from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
+from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 from Server.runGraphs import mkGraphs
 from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
     nanoMeters_to_Meters

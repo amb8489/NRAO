@@ -202,9 +202,6 @@ class SuperConductingMicroStripModel():
 
     # checked
 
-
-
-
     def DeltaY(self, eta, p):
 
         return max(eta, p)

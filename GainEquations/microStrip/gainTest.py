@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
+from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 from GainEquations.microStrip.gain import Gain
 from Supports.Support_Functions import find_idx_of_closest_value, microMeter_to_Meters, nanoMeter_to_Meter
 
@@ -33,9 +33,12 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
 
     # todo should be able to define a target range thats between org start f and 2* pump f
     # f_range = np.linspace(pump_freq*.25,  pump_freq*.75, resolution)
+
+    init_val_arr = [As_init, Ai_init, Ap_init]
     for i, freq in enumerate(f_range):
         # TODO is it not doin gthis right and need to put back in init values ?
-        g = Gain(Times2PumpFreq - freq, freq, z, I, betas, beta_pump, As_init, Ai_init, Ap_init, L, resolution, f_range)
+
+        g = Gain(Times2PumpFreq - freq, freq, z, I, betas, beta_pump, init_val_arr, L, resolution, f_range)
         gain.append(np.log10(g))
 
     print("time to calc gains:", (time.time() - s))

@@ -2,9 +2,9 @@ import numpy as np
 import cmath
 
 
-def ApmlitudeEquations(Amplitudes, z, beta_s, beta_i, beta_p, I):
+def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p, I):
     """
-    #todo
+
     # signal-idler-pump equations for N = 3
 
 

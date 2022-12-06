@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
+from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 
 
 def mkGraphs(StartFreq,EndFreq,resolution,unit_Cell_Len, D0, In_Order_loads_Widths, number_of_loads, width_unloaded, width_loaded, er,

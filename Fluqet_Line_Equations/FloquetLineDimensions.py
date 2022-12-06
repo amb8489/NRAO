@@ -7,29 +7,28 @@ given:
  -D0: spacing between centers of loads
  -number_of_loads : the number of loads in unit cell
  -In_Order_loads_Widths: the lengths of each load from left to right in Floquet line
-    ex: -----[   3   ] ----- [  2  ]-----[ 1 ] -----
-    In_Order_loads_Widths = [3,2,1]
+    ex: ===|<---L1--->|=====|<---L2--->|=====|<-L3->|===
+    In_Order_loads_Widths = [L1,L2,L3]
 '''
 from Supports.Support_Functions import microMeters_to_Meters
 
 
-class Line():
+class FloquetLineDimensions():
 
-    def __init__(self, D: float, D0: float, number_of_loads: int, In_Order_loads_Widths: [float]):
+    def __init__(self, D: float, D0: float, In_Order_loads_Widths: [float],thickness):
 
         # param checking for correctness
-        if number_of_loads < 1:
-            raise Exception(f"number of loads has to be >= 1: passed in {number_of_loads}")
+        if len(In_Order_loads_Widths) < 1:
+            raise Exception(f"number of loads has to be >= 1: passed in {len(In_Order_loads_Widths) }")
 
-        if number_of_loads != len(In_Order_loads_Widths):
-            raise Exception("number_of_loads != amount of load widths passed in")
+
 
         # saving usefull info
         self.D = D
         self.D0 = D0
-        self.number_of_loads = number_of_loads
+        self.number_of_loads = len(In_Order_loads_Widths)
         self.In_Order_loads_Widths = In_Order_loads_Widths
-
+        self.thickness = thickness
         # array to hold lengths of line segments of the FL
         self.Floquet_Line_Parts_Lengths = []
 
@@ -37,7 +36,7 @@ class Line():
         self.In_Order_loads_Widths = [D0] + self.In_Order_loads_Widths + [D0]
 
         # compute the lengths of the ccentral lines between the loads
-        for i in range(number_of_loads + 1):
+        for i in range(self.number_of_loads + 1):
 
             # add the load length just not thr first 0
             if i != 0: self.Floquet_Line_Parts_Lengths.append(self.In_Order_loads_Widths[i])

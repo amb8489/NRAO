@@ -5,8 +5,10 @@ Testing file for calculating A B R X
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
+from Fluqet_Line_Equations.microStrip.FloquetLine import Super_Conducting_Floquet_Line
+from SuperConductivityEquations.SCE import SuperConductivity
 from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
+from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
 
 s = time.time()
 
@@ -23,8 +25,8 @@ D0 = .0007666666666666666666
 D1 = 5e-5
 D2 = 5e-5
 D3 = .0001
-In_Order_loads_Widths = [D1, D2, D3]
-number_of_loads = len(In_Order_loads_Widths)
+loads_Widths = [D1, D2, D3]
+number_of_loads = len(loads_Widths)
 
 # ---------------------------- SC inputs
 er = 10
@@ -36,8 +38,6 @@ T = 0
 pn = 1.008e-6
 tanD = 0
 Jc = 1
-
-
 
 # secoind paper inputs
 # ---------------------------- unit cell inputs from paper
@@ -64,12 +64,19 @@ Jc = 1
 # Jc = 1
 
 
-Floquet_line = SCFL_Model(unit_Cell_Len, D0, In_Order_loads_Widths, number_of_loads, width_unloaded, width_loaded, er,
-                          Height, line_thickness, ground_thickness, Tc, pn, tanD, T, Jc)
+# ---------------------------- models of the MicroStripModel - one for an unloaded line , one for a loaded line
+loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
+unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
+
+# ---------------------------- model of the Super conductor
+super_conductivity_model = SuperConductivity(T, Tc, pn)
+
+# ---------------------------- model of the floquet line
+Floquet_line = Super_Conducting_Floquet_Line(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,
+                                             super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
 
 # ---------------------------- calculations -------------------
-FRange = np.linspace(toGHz(6), toGHz(25), 10000)
-# todo put this in  funciton in Floquet_line
+FRange = np.linspace(toGHz(6), toGHz(25), 1000)
 for F in FRange:
     aa, bta, unfolded, rr, xx, R, L, G, C = Floquet_line.abrx(F)
 
@@ -85,7 +92,9 @@ for F in FRange:
     x.append(xx)
     freqs.append(F)
 
+total = time.time() - s
 print("total time: ", time.time() - s)
+print("% calc conduct: ", (Floquet_line.tot / total) * 100)
 
 # RR,LL,GG,CC = np.array(RR),np.array(LL),np.array(GG),np.array(CC)
 #
@@ -123,7 +132,9 @@ a3.plot(freqs, r)
 a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
-a2.axvspan(Floquet_line.A // 3, Floquet_line.B // 3, facecolor='g', alpha=0.3)
+a2.axvspan(Floquet_line.A // 3, Floquet_line.B // 3, facecolor='g', alpha=0.5)
+
+
 
 # a1.plot(freqs, CLWWI)
 # a2.plot(freqs, CRwI)

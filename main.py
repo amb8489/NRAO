@@ -1,7 +1,7 @@
 import numpy as np
 
-from Fluqet_Line_Equations.microStrip.Fluqet_line_equations import ABCD_TL, Pd, Bloch_impedance_Zb
-from Fluqet_Line_Equations.microStrip.abrx import SCFL_Model
+from Fluqet_Line_Equations.microStrip.Fluqet_line_support_equations import ABCD_TL, Pd, Bloch_impedance_Zb
+from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 from SuperConductivityEquations.SCE import conductivity, Zs
 from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters
 from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel

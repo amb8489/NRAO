@@ -93,6 +93,7 @@ class SuperConductivity():
 
     def sigma_1_N(self, delt, freq, tempK):
         if freq <= 2 * delt:
+
             return self.sigma_1_N_L(delt, freq, tempK)
         return self.sigma_1_N_L(delt, freq, tempK) - self.sigma_1_N_U(delt, freq, tempK)
 
