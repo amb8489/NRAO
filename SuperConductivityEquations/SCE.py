@@ -6,8 +6,8 @@
 import cmath
 import math
 from scipy.integrate import quad
-from Supports.Support_Functions import ccoth
-from Supports.constants import PLANCK_CONSTev, PI2, MU_0, KB, PiDiv2
+from utills_funcs_and_consts.Functions import ccoth
+from utills_funcs_and_consts.Constants import PLANCK_CONSTev, PI2, MU_0, KB, PiDiv2
 
 
 class SuperConductivity():

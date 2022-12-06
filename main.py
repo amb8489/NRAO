@@ -3,8 +3,8 @@ import numpy as np
 from Fluqet_Line_Equations.microStrip.Fluqet_line_support_equations import ABCD_TL, Pd, Bloch_impedance_Zb
 from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 from SuperConductivityEquations.SCE import conductivity, Zs
-from Supports.Support_Functions import nanoMeter_to_Meter, microMeter_to_Meters
-from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
+from utills_funcs_and_consts.Functions import nanoMeter_to_Meter, microMeter_to_Meters
+from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 import time
 
 freq = 100000
@@ -47,8 +47,8 @@ zs = Zs(freq, conuct, thickness)
 
 
 # CALC G1 G2 good
-g1 = line.gg1(width, height, thickness)
-g2 = line.gg2(width, height, thickness)
+g1 = line.G1(width, height, thickness)
+g2 = line.G2(width, height, thickness)
 
 
 

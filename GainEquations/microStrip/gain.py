@@ -1,14 +1,12 @@
 import numpy as np
 from scipy.integrate import odeint
-from GainEquations.microStrip.AmplitudeEquations.amplitudeEquations1 import AmplitudeEqs1
 
 signal = 0
 idler = 1
 pump = 2
 
 
-def Gain(freq_idler, signal_freq, z, I, betas, beta_p, init_vals_arr, L, resolution, f_range):
-
+def Gain(idler_freq, signal_freq, z, I, betas, beta_p, init_vals_arr, L, f_range, AmplitudeEquations):
     """
     Calculates the gain at a frequency
     :param freq_idler: frequency of the idler
@@ -23,13 +21,13 @@ def Gain(freq_idler, signal_freq, z, I, betas, beta_p, init_vals_arr, L, resolut
     :param L:
     :param f_range: the range of frequencies that will be checked
 
-    :return:
+    :return: signal gain
     """
-    # get index for signal and idler freqs inside beta array
 
-    idx_sig, idx_idler = np.searchsorted(f_range, [signal_freq, freq_idler])
+    # get index for signal and idler freqs inside beta array
+    idx_sig, idx_idler = np.searchsorted(f_range, [signal_freq, idler_freq])
     beta_s = betas[idx_sig]  # get beta for signal freq
     beta_i = betas[idx_idler]  # get beta for idel freq
-    soln = odeint(ApmlitudeEquations1, init_vals_arr, z, args=(beta_s, beta_i, beta_p, I))
+    soln = odeint(AmplitudeEquations, init_vals_arr, z, args=(beta_s, beta_i, beta_p, I))
     # todo look at gain in mathimatica where L is use
     return soln[:, signal][L]

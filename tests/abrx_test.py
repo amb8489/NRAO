@@ -7,8 +7,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.microStrip.FloquetLine import Super_Conducting_Floquet_Line
 from SuperConductivityEquations.SCE import SuperConductivity
-from Supports.Support_Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
-from TransmissionLineEquations.microStrip.MicroStripModel import SuperConductingMicroStripModel
+from utills_funcs_and_consts.Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
+from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 
 s = time.time()
 
@@ -64,7 +64,8 @@ Jc = 1
 # Jc = 1
 
 
-# ---------------------------- models of the MicroStripModel - one for an unloaded line , one for a loaded line
+# ---------------------------- models of the MicroStripModel -
+#                      one for an unloaded line , one for a loaded line
 loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
 unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
 
@@ -133,8 +134,6 @@ a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
 a2.axvspan(Floquet_line.A // 3, Floquet_line.B // 3, facecolor='g', alpha=0.5)
-
-
 
 # a1.plot(freqs, CLWWI)
 # a2.plot(freqs, CRwI)

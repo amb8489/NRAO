@@ -3,8 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
 from GainEquations.microStrip.gain import Gain
-from Supports.Support_Functions import find_idx_of_closest_value, microMeter_to_Meters, nanoMeter_to_Meter
+from utills_funcs_and_consts.Functions import find_idx_of_closest_value, microMeter_to_Meters, nanoMeter_to_Meter
 
+from GainEquations.microStrip.AmplitudeEquations.amplitudeEquations1 import AmplitudeEqs1
 
 def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
     s = time.time()
@@ -38,7 +39,7 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, lineModel, resolution, I):
     for i, freq in enumerate(f_range):
         # TODO is it not doin gthis right and need to put back in init values ?
 
-        g = Gain(Times2PumpFreq - freq, freq, z, I, betas, beta_pump, init_val_arr, L, resolution, f_range)
+        g = Gain(Times2PumpFreq - freq, freq, z, I, betas, beta_pump, init_val_arr, L, resolution, f_range,AmplitudeEqs1)
         gain.append(np.log10(g))
 
     print("time to calc gains:", (time.time() - s))

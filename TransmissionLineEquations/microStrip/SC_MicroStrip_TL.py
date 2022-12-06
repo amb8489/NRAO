@@ -1,7 +1,8 @@
 import cmath
 import math
-from Supports.Support_Functions import sech, coth
-from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
+from utills_funcs_and_consts.Functions import sech, coth
+from utills_funcs_and_consts.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
+from TransmissionLineEquations.SC_TransmissionLine import SC_TransmissionLine
 
 """
 
@@ -24,7 +25,7 @@ from Supports.constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c
 # todo somehwere i use 1/cos for arc cos not sure if thats right ....
 
 
-class SuperConductingMicroStripModel():
+class SuperConductingMicroStripModel(SC_TransmissionLine):
 
     def __init__(self, height, width, thickness, epsilon_r, tan_delta, Jc):
 
@@ -36,8 +37,8 @@ class SuperConductingMicroStripModel():
         self.Ic = thickness * width * Jc
 
         # calc geometric factors
-        self.g1 = self.gg1(self.width, self.height, self.thickness)
-        self.g2 = self.gg2(self.width, self.height, self.thickness)
+        self.g1 = self.G1(self.width, self.height, self.thickness)
+        self.g2 = self.G2(self.width, self.height, self.thickness)
 
         # calc dialectic constant
         self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
@@ -355,10 +356,10 @@ class SuperConductingMicroStripModel():
     # ------------------  OUTPUTS ------------------
 
     # Geometrical factors #checked
-    def gg1(self, w, h, t):
+    def G1(self, w, h, t):
         return h / (w * self.Kf(w, h, t))
 
-    def gg2(self, w, h, t):
+    def G2(self, w, h, t):
         return self.Kl(w, h, t) / w
 
     """
