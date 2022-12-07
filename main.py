@@ -1,10 +1,10 @@
 import numpy as np
 
-from Fluqet_Line_Equations.microStrip.Fluqet_line_support_equations import ABCD_TL, Pd, Bloch_impedance_Zb
-from Fluqet_Line_Equations.microStrip.FloquetLine import SCFL_Model
+from Fluqet_Line_Equations.MicroStrip.Fluqet_line_support_equations import ABCD_TL, Pd, Bloch_impedance_Zb
+from Fluqet_Line_Equations.MicroStrip.FloquetLine import SCFL_Model
 from SuperConductivityEquations.SCE import conductivity, Zs
-from utills_funcs_and_consts.Functions import nanoMeter_to_Meter, microMeter_to_Meters
-from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from Utills.Functions import nanoMeter_to_Meter, microMeter_to_Meters
+from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 import time
 
 freq = 100000

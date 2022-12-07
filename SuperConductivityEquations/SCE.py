@@ -6,8 +6,8 @@
 import cmath
 import math
 from scipy.integrate import quad
-from utills_funcs_and_consts.Functions import ccoth
-from utills_funcs_and_consts.Constants import PLANCK_CONSTev, PI2, MU_0, KB, PiDiv2
+from Utills.Functions import ccoth
+from Utills.Constants import PLANCK_CONSTev, PI2, MU_0, KB, PiDiv2
 
 
 class SuperConductivity():
@@ -58,7 +58,7 @@ class SuperConductivity():
 
         return (self.fermiDistrib(e, tempK) - self.fermiDistrib(e + freq, tempK)) * (
                 ((eSqrd) + (deltdSqrd) + (freq * e)) / (
-                    (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd))))
+                (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd))))
 
     def int11(self, e, delt, freq, tempK):
 
@@ -67,7 +67,7 @@ class SuperConductivity():
 
         return ((1 - (2 * self.fermiDistrib(e + freq, tempK))) * (
                 (eSqrd + deltdSqrd + (freq * e)) / (
-                    (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd)))))
+                (math.sqrt(eSqrd - deltdSqrd)) * (math.sqrt(((e + freq) ** 2) - deltdSqrd)))))
 
     def sigma_1_N_L(self, delt, freq, tempK):
 
@@ -93,7 +93,6 @@ class SuperConductivity():
 
     def sigma_1_N(self, delt, freq, tempK):
         if freq <= 2 * delt:
-
             return self.sigma_1_N_L(delt, freq, tempK)
         return self.sigma_1_N_L(delt, freq, tempK) - self.sigma_1_N_U(delt, freq, tempK)
 

@@ -33,16 +33,16 @@ def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p, I):
 
     # Optical coupled equations
 
-    As = ((-1j * ((beta_s) / (8 * (I ** 2)))) *
+    AmplitudeSignal = ((-1j * ((beta_s) / (8 * (I ** 2)))) *
           (A_sig * ((abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) + (2 * (abs(A_pump) ** 2))) + A_star_i * (
                   A_pump ** 2) * cmath.exp(1j * deltaB * z)))
 
-    Ai = ((-1j * ((beta_i) / (8 * (I ** 2)))) *
+    AmplitudeIdler = ((-1j * ((beta_i) / (8 * (I ** 2)))) *
           (A_idler * ((2 * (abs(A_sig) ** 2)) + (abs(A_idler) ** 2) + (2 * (abs(A_pump) ** 2))) + A_star_s * (
                   A_pump ** 2) * cmath.exp(1j * deltaB * z)))
 
-    Ap = ((-1j * ((beta_p) / (8 * (I ** 2)))) *
+    AmplitudePump = ((-1j * ((beta_p) / (8 * (I ** 2)))) *
           (A_pump * (2 * (abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) + (abs(A_pump) ** 2)) + 2 * A_star_p *
            A_sig * A_idler * cmath.exp(-1j * deltaB * z)))
 
-    return [As, Ai, Ap]
+    return [AmplitudeSignal, AmplitudeIdler, AmplitudePump]

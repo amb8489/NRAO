@@ -5,11 +5,11 @@ Testing file for calculating A B R X
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.microStrip.FloquetLine import Super_Conducting_Floquet_Line
+from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from SuperConductivityEquations.SCE import SuperConductivity
-from utills_funcs_and_consts.Constants import PI2
-from utills_funcs_and_consts.Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
-from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from Utills.Constants import PI2
+from Utills.Functions import nanoMeters_to_Meters, microMeters_to_Meters, mm_To_Meters, toGHz
+from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 
 s = time.time()
 
@@ -35,7 +35,7 @@ Height = nanoMeters_to_Meters(250)
 line_thickness = nanoMeters_to_Meters(60)
 ground_thickness = nanoMeters_to_Meters(300)
 Tc = 14.28
-T = 0
+T = 4
 pn = 1.008e-6
 tanD = 0
 Jc = 1
@@ -74,8 +74,8 @@ unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, lin
 super_conductivity_model = SuperConductivity(T, Tc, pn)
 
 # ---------------------------- model of the floquet line
-Floquet_line = Super_Conducting_Floquet_Line(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,
-                                             super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
+Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,
+                                          super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
 
 # ---------------------------- calculations -------------------
 FRange = np.linspace(toGHz(6.6), toGHz(25), 1000)

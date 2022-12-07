@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class SC_TransmissionLine(ABC):
+class AbstractSCTL(ABC):
     # Geometrical factors
     @abstractmethod
     def G1(self, *args, **kwargs):
@@ -30,4 +30,9 @@ class SC_TransmissionLine(ABC):
 
     @abstractmethod
     def propagation_constant(self, *args, **kwargs):
+        pass
+
+
+    @abstractmethod
+    def get_propagation_constant_characteristic_impedance(self, *args, **kwargs):
         pass

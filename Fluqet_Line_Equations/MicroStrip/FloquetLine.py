@@ -1,11 +1,15 @@
+import cmath
+
+import numpy as np
+
+from Fluqet_Line_Equations.Abstract_Floquet_Line import AbstractFloquetLine
 from Fluqet_Line_Equations.FloquetLineDimensions import FloquetLineDimensions
-from Fluqet_Line_Equations.microStrip.Fluqet_line_support_equations import ABCD_TL, Bloch_impedance_Zb, Pd, RLGC
-from utills_funcs_and_consts.Functions import MultMats
-from utills_funcs_and_consts.Constants import PI
+from Utills.Functions import MultMats
+from Utills.Constants import PI
 import time
 
 
-class Super_Conducting_Floquet_Line():
+class SuperConductingFloquetLine(AbstractFloquetLine):
 
     def __init__(self, unit_Cell_Len, D0, In_Order_loads_Widths, loaded_line_model, unloaded_line_model,
                  super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc):
@@ -37,12 +41,61 @@ class Super_Conducting_Floquet_Line():
         self.tot = 0
 
     '''
-    the calculation of a, b, b-unfolded, r, x
+
+    equations needed for making ABCD matrices and ZB and gamma
+
+
     '''
+
+    # ABCD matrix of TLs
+    # Z characteristic impedance; k wavenumber; l length
+    def ABCD_TL(self, Z, Gamma, L):
+        GL = Gamma * L
+        coshGL = cmath.cosh(GL)
+        sinhGL = cmath.sinh(GL)
+
+        return [[coshGL, Z * sinhGL],
+                [(1 / Z) * sinhGL, coshGL]]
+
+    def Pd(self, ABCD_mat):
+        A = ABCD_mat[0][0]
+        D = ABCD_mat[1][1]
+        return np.arccosh((A + D) / 2)
+
+    def Bloch_impedance_Zb(self, ABCD_mat):
+        A = ABCD_mat[0][0]
+        B = ABCD_mat[0][1]
+        D = ABCD_mat[1][1]
+
+        ADs2 = cmath.sqrt(pow(A + D, 2) - 4)
+        B2 = 2 * B
+        ADm = A - D
+
+        # positive dir             # neg dir
+        return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+
+    # todo this is Zb and not Zc?
+    def RLGC(self, propagationConst, Zb):
+        Z = propagationConst * Zb
+        Y = propagationConst / Zb
+
+        R = Z.real
+        L = Z.imag
+
+        G = Y.real
+        C = Y.imag
+        return R, L, G, C
+
+    def Transmission(self):
+        pass
+
+    '''
+     the calculation of a, b, b-unfolded, r, x
+     '''
 
     def abrx(self, freq):
         # frequency cant be too low
-        freq = max(freq, 1000)
+        freq = max(freq, 1e9)
 
         # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
         # calc surface impedence Zs for super conductor
@@ -53,20 +106,22 @@ class Super_Conducting_Floquet_Line():
 
         zs = self.super_conductivity_model.Zs(freq, conductivity, self.FlLineDims.thickness)
 
-        loaded_propagation, loaded_Zc = self.loaded_line_model.propagation_constant_characteristic_impedance(freq, zs)
-        Unloaded_propagation, Unloaded_Zc = self.unloaded_line_model.propagation_constant_characteristic_impedance(freq,
-                                                                                                                   zs)
+        loaded_propagation, loaded_Zc = self.loaded_line_model.get_propagation_constant_characteristic_impedance(freq,
+                                                                                                                 zs)
+        Unloaded_propagation, Unloaded_Zc = self.unloaded_line_model.get_propagation_constant_characteristic_impedance(
+            freq,
+            zs)
 
         # making all the ABCD matrices for each subsection of unit cell
 
         abcd_mats = []
         for i in range(0, self.FlLineDims.number_of_loads * 2, 2):
             # unloaded_mat
-            abcd_mats.append(ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLineDims.get_L_number(i)))
+            abcd_mats.append(self.ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLineDims.get_L_number(i)))
             # loaded_mat
-            abcd_mats.append(ABCD_TL(loaded_Zc, loaded_propagation, self.FlLineDims.get_L_number(i + 1)))
+            abcd_mats.append(self.ABCD_TL(loaded_Zc, loaded_propagation, self.FlLineDims.get_L_number(i + 1)))
         abcd_mats.append(
-            ABCD_TL(Unloaded_Zc, Unloaded_propagation,
+            self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,
                     self.FlLineDims.get_L_number(self.FlLineDims.number_of_loads * 2)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
@@ -74,10 +129,10 @@ class Super_Conducting_Floquet_Line():
 
         # ---------------------------- calc bloch impedance and propagation const for unit cell
 
-        ZB = Bloch_impedance_Zb(Unitcell_ABCD_Mat)[0]
-        pb = Pd(Unitcell_ABCD_Mat)
+        ZB = self.Bloch_impedance_Zb(Unitcell_ABCD_Mat)[0]
+        pb = self.Pd(Unitcell_ABCD_Mat)
 
-        R, L, G, C = RLGC(pb, ZB)
+        R, L, G, C = self.RLGC(pb, ZB)
 
         r = ZB.real
         x = ZB.imag

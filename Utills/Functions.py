@@ -3,7 +3,7 @@ import math
 import cmath
 from functools import cache
 
-from utills_funcs_and_consts.Constants import  PI2
+from Utills.Constants import  PI2
 
 
 # Computes the hyperbolic secant of 𝑥

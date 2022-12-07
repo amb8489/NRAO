@@ -1,6 +1,6 @@
 from flask import Flask, request
 from Server.runGraphs import mkGraphs
-from utills_funcs_and_consts.Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
+from Utills.Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
     nanoMeters_to_Meters
 
 app = Flask(__name__)

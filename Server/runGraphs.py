@@ -1,9 +1,9 @@
 import time
 import numpy as np
-from Fluqet_Line_Equations.microStrip.FloquetLine import Super_Conducting_Floquet_Line
+from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from SuperConductivityEquations.SCE import SuperConductivity
-from TransmissionLineEquations.microStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
-from utills_funcs_and_consts.Constants import PI2
+from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from Utills.Constants import PI2
 
 
 def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, width_unloaded, width_loaded, er,
@@ -21,9 +21,9 @@ def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, wi
     super_conductivity_model = SuperConductivity(T, Tc, pn)
 
     # ---------------------------- model of the floquet line
-    Floquet_line = Super_Conducting_Floquet_Line(unit_Cell_Len, D0, loads_Widths, loaded_line_model,
-                                                 unloaded_line_model, super_conductivity_model, width_unloaded,
-                                                 width_loaded, line_thickness, Jc)
+    Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, loaded_line_model,
+                                              unloaded_line_model, super_conductivity_model, width_unloaded,
+                                              width_loaded, line_thickness, Jc)
 
     a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma = [], [], [], [], [], [], [], [], [], [], []
     for F in FreqRange:

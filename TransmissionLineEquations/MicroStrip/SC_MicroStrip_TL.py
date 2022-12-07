@@ -1,8 +1,8 @@
 import cmath
 import math
-from utills_funcs_and_consts.Functions import sech, coth
-from utills_funcs_and_consts.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
-from TransmissionLineEquations.SC_TransmissionLine import SC_TransmissionLine
+from Utills.Functions import sech, coth
+from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
+from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
 
 """
 
@@ -25,7 +25,7 @@ from TransmissionLineEquations.SC_TransmissionLine import SC_TransmissionLine
 # todo somehwere i use 1/cos for arc cos not sure if thats right ....
 
 
-class SuperConductingMicroStripModel(SC_TransmissionLine):
+class SuperConductingMicroStripModel(AbstractSCTL):
 
     def __init__(self, height, width, thickness, epsilon_r, tan_delta, Jc):
 
@@ -391,7 +391,7 @@ class SuperConductingMicroStripModel(SC_TransmissionLine):
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Z * Y)
 
-    def propagation_constant_characteristic_impedance(self, freq, zs):
+    def get_propagation_constant_characteristic_impedance(self, freq, zs):
 
         Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
         Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
