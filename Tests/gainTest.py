@@ -2,7 +2,7 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
-from Gain.MicroStrip.gain import Gain
+from Gain.MicroStrip.solveODEs import Solve_ode
 from Gain.AmplitudeEquations.AmplitudeEquations1 import AmplitudeEqs1
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
@@ -43,7 +43,7 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, Floquet_line, resolution, 
         beta_i = betas[idx_idler]  # get beta for idel freq
 
         AmplitudeEqs1Args = (beta_s, beta_i, beta_pump, I)
-        g = Gain(init_vals_arr, AmplitudeEqs1, AmplitudeEqs1Args, z, L)
+        g = Solve_ode(init_vals_arr, AmplitudeEqs1, AmplitudeEqs1Args, z, L)
         gain.append(np.log10(g))
 
     print("time to calc gains:", (time.time() - s))
@@ -119,8 +119,6 @@ if __name__ == "__main__":
 
     # ---------------------------- gain inputs
 
-    I = 7
-
     # todo make inputs complex
     As_init = 100
     Ai_init = 0
@@ -134,4 +132,4 @@ if __name__ == "__main__":
     
     """
 
-    calcGain(As_init, Ai_init, Ap_init, pump_freq, unit_Cell_Len, Floquet_line, resolution, I)
+    calcGain(As_init, Ai_init, Ap_init, pump_freq, unit_Cell_Len, Floquet_line, resolution)

@@ -10,11 +10,11 @@ from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
     
     
     NRAO
-    Aaron Berghash
 
     Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
 
-    Penetration depth & Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
+    Penetration depth <----where is this used ?
+    Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
         
         
     
@@ -61,7 +61,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         return z0eff / ((w / h) + 2.42 - (0.44 * (h / w)) + pow(1 - (h / w), 6))
 
-    # ----------  schneider   t > 0  ----------
+    # ----------  schneider   thickness > 0  ----------
 
     def epsilon_effst(self, epsilon_r, w, h, t):
 
@@ -83,7 +83,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         return self.zmss(epsilon_r, w + delta_w, h)
 
-    # ----------  Hammerstad   t = 0  ----------
+    # ----------  Hammerstad   thickness = 0  ----------
 
     def epsilon_effh(self, epsilon_r, w, h):
         u = w / h
@@ -106,7 +106,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         return (Z0 / PI2) * math.log((fu / u) + math.sqrt(1 + pow(2 / u, 2)))
 
-    # ----------  Hammerstad   t > 0  ----------
+    # ----------  Hammerstad   thickness > 0  ----------
 
     def delta_wr(self, epsilon_r, w, h, t):
         return (self.delta_w1(w, h, t) * (1 + sech(math.sqrt(epsilon_r - 1)))) / 2
@@ -317,7 +317,6 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
         return 1 - (1 / CF ** 2)
 
-    # opt  make sure no repeated work is done with apha_ky may be calcing twice per frequencey
     def I_star(self, zs, f, w, H, ts):
         return self.Ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
 
@@ -397,5 +396,5 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
 
         propagation_constant = cmath.sqrt(Z * Y)
-        characteristic_impedance = cmath.sqrt(Z / Y)
-        return propagation_constant, characteristic_impedance
+        characteristic_impedance_Zc = cmath.sqrt(Z / Y)
+        return propagation_constant, characteristic_impedance_Zc

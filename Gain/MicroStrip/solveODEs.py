@@ -6,10 +6,7 @@ idler = 1
 pump = 2
 
 
-def fun(a,b,c,d,e,f):
-    return a + b + c + d
-
-def Gain(init_vals_arr, AmplitudeEquations, AmplitudeEquationsArgs,z,L):
+def Solve_ode(init_vals_arr, AmplitudeEquations, AmplitudeEquationsArgs, z, L):
     """
 
     :param z:

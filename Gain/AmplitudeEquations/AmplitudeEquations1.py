@@ -2,7 +2,7 @@ import numpy as np
 import cmath
 
 
-def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p, I):
+def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p):
     """
 
     # signal-idler-pump equations for N = 3
@@ -13,7 +13,6 @@ def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p, I):
     :param beta_s:
     :param beta_i:
     :param beta_p:
-    :param I:
     :return:
     """
 
@@ -33,16 +32,13 @@ def AmplitudeEqs1(Amplitudes, z, beta_s, beta_i, beta_p, I):
 
     # Optical coupled equations
 
-    AmplitudeSignal = ((-1j * ((beta_s) / (8 * (I ** 2)))) *
-          (A_sig * ((abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) + (2 * (abs(A_pump) ** 2))) + A_star_i * (
-                  A_pump ** 2) * cmath.exp(1j * deltaB * z)))
+    AmplitudeSignal =  ((-1j * ((beta_s) / 8)) * (A_sig * ((abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) +
+                      (2 * (abs(A_pump) ** 2))) + A_star_i * (A_pump ** 2) * cmath.exp(1j * deltaB * z)))
 
-    AmplitudeIdler = ((-1j * ((beta_i) / (8 * (I ** 2)))) *
-          (A_idler * ((2 * (abs(A_sig) ** 2)) + (abs(A_idler) ** 2) + (2 * (abs(A_pump) ** 2))) + A_star_s * (
-                  A_pump ** 2) * cmath.exp(1j * deltaB * z)))
+    AmplitudeIdler = ((-1j * ((beta_i) / 8)) * (A_idler * ((2 * (abs(A_sig) ** 2)) + (abs(A_idler) ** 2) +
+                     (2 * (abs(A_pump) ** 2))) + A_star_s *(A_pump ** 2) * cmath.exp(1j * deltaB * z)))
 
-    AmplitudePump = ((-1j * ((beta_p) / (8 * (I ** 2)))) *
-          (A_pump * (2 * (abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) + (abs(A_pump) ** 2)) + 2 * A_star_p *
-           A_sig * A_idler * cmath.exp(-1j * deltaB * z)))
+    AmplitudePump = ((-1j * ((beta_p) / 8)) *(A_pump * (2 * (abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) +
+                     (abs(A_pump) ** 2)) + 2 * A_star_p * A_sig * A_idler * cmath.exp(-1j * deltaB * z)))
 
     return [AmplitudeSignal, AmplitudeIdler, AmplitudePump]
