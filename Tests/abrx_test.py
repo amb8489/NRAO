@@ -97,7 +97,7 @@ YYI = gamma * gamma * I  # TODO
 # a1.plot(freqs, beta)
 # a1.set_title('beta Unfolded')
 # a1.plot(freqs,Floquet_line.unfold(beta))
-# a1.axvspan(Floquet_line.ChoosePumpZoneA // 3, Floquet_line.ChoosePumpZoneB // 3, facecolor='g', alpha=0.5)
+# a1.axvspan(Floquet_line.TargetPumpZoneStart // 3, Floquet_line.TargetPumpZoneEnd // 3, facecolor='g', alpha=0.5)
 
 fig, (a1, a2, a3, a4, a5) = plt.subplots(5)
 a1.plot(freqs, beta)
@@ -114,7 +114,7 @@ a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
 Floquet_line.FindPumpZone(a)
-a2.axvspan(Floquet_line.ChoosePumpZoneA , Floquet_line.ChoosePumpZoneB , facecolor='g', alpha=0.5)
+a2.axvspan(Floquet_line.TargetPumpZoneStart, Floquet_line.TargetPumpZoneEnd, facecolor='g', alpha=0.5)
 
 # a5.plot(freqs, np.abs(CLWWI))
 # a5.plot(freqs, np.abs(CRwI))

@@ -37,8 +37,8 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         self.PiMult = 0
         self.flipping = False
         self.looking = True
-        self.ChoosePumpZoneA = 0
-        self.ChoosePumpZoneB = 0
+        self.TargetPumpZoneStart = 0
+        self.TargetPumpZoneEnd = 0
         self.findA = True
         self.bump = 0
         self.tot = 0
@@ -99,7 +99,8 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
     '''
      the calculation of a, b, b-unfolded, r, x
      '''
-    def FindPumpZone(self,alphas):
+
+    def FindPumpZone(self, alphas):
 
         harmonic_number_to_filter = 3
 
@@ -117,16 +118,11 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         plt.plot(peaks[3], a[3], "x")
         plt.hlines(*peak_widths[1:], color="C2")
         plt.show()
-        #todo finsn
+        # todo finsn
 
-        self.ChoosePumpZoneA = peak_widths[0]
-        self.ChoosePumpZoneB = peak_widths[0]
-        print(self.ChoosePumpZoneA,self.ChoosePumpZoneB)
-
-
-
-
-
+        self.TargetPumpZoneStart = peak_widths[0]
+        self.TargetPumpZoneEnd = peak_widths[0]
+        print(self.TargetPumpZoneStart, self.TargetPumpZoneEnd)
 
     def unfold(self, betas):
 
@@ -209,4 +205,4 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
         t = self.Transmission(100, 50, Bloch_impedance1, Bloch_impedance2, self.Unit_Cell_Len, propagation_const)
 
-        return a,t, bta, r, x, R, L, G, C
+        return a, t, bta, r, x, R, L, G, C
