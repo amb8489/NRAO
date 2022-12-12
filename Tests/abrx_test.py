@@ -4,7 +4,7 @@ Testing file for calculating A B R X
 
 import time
 import numpy as np
-import scipy
+
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from SuperConductivityEquations.SCE import SuperConductivity
@@ -48,6 +48,17 @@ super_conductivity_model = SuperConductivity(T, Tc, pn)
 #                      one for an unloaded line , one for a loaded line
 loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
 unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
+
+# todo in the future map width_loaded new SuperConductingMicroStripModel so that we can have dynamic widths for each load if wanted
+#  FL segment : segment width
+#  widths = [
+#           "widthUL#",
+#           "widthL1#",
+#           "widthUL#",
+#           "widthL2#"
+#           ]
+#  line_segments_models = [ SuperConductingMicroStripModel(Height, seg_width, line_thickness, er, tanD, Jc)  for seg_width in widths]
+#  Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, line_segments_models,super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
 
 # ---------------------------- model of the floquet line
 Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,

@@ -1,4 +1,3 @@
-import numpy as np
 from scipy.integrate import odeint
 
 signal = 0
@@ -8,7 +7,6 @@ pump = 2
 
 def Solve_ode(init_vals_arr, AmplitudeEquations, AmplitudeEquationsArgs, z, L):
     """
-
     :param z:
     :param init_vals_arr:
     :param L:
@@ -16,6 +14,6 @@ def Solve_ode(init_vals_arr, AmplitudeEquations, AmplitudeEquationsArgs, z, L):
     :param AmplitudeEquationsArgs:
     :return:
     """
-    soln = odeint(AmplitudeEquations, init_vals_arr, z, args=AmplitudeEquationsArgs)
     # todo look at gain in mathimatica where L is use
-    return soln[:, signal][L]
+
+    return odeint(AmplitudeEquations, init_vals_arr, z, args=AmplitudeEquationsArgs)[:, signal][L]

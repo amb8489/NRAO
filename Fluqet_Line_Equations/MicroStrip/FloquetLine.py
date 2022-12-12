@@ -25,24 +25,18 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         # model of FloquetLineDimensions dimensions
         self.FlLineDims = FloquetLineDimensions(unit_Cell_Len, D0, In_Order_loads_Widths, line_thickness)
 
-        # ---------------------------- models of the MicroStripModel - one for an unloaded line , one for a loaded line
+        # ----------------------------  #model dependent code models of the MicroStripModel - one for an unloaded line , one for a loaded line
         self.loaded_line_model = loaded_line_model
         self.unloaded_line_model = unloaded_line_model
 
         # ---------------------------- model of the Super conductor
         self.super_conductivity_model = super_conductivity_model
 
-        # used to unfolding beta
-        self.region = 0
-        self.PiMult = 0
-        self.flipping = False
-        self.looking = True
         self.TargetPumpZoneStart = 0
         self.TargetPumpZoneEnd = 0
-        self.findA = True
-        self.bump = 0
+
+        # debug info
         self.tot = 0
-        self.prevBeta = 0
 
     '''
 
@@ -167,9 +161,11 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
         zs = self.super_conductivity_model.Zs(freq, conductivity, self.FlLineDims.thickness)
 
-        loaded_propagation, loaded_Zc = self.loaded_line_model.get_propagation_constant_characteristic_impedance(freq,
-                                                                                                                 zs)
-        Unloaded_propagation, Unloaded_Zc = self.unloaded_line_model.get_propagation_constant_characteristic_impedance(
+        # todo move this into line class ? also make it dynamic
+        loaded_propagation_constant, loaded_Zc = self.loaded_line_model.get_propagation_constant_characteristic_impedance(
+            freq,
+            zs)
+        Unloaded_propagation_constant, Unloaded_Zc = self.unloaded_line_model.get_propagation_constant_characteristic_impedance(
             freq, zs)
 
         # making all the ABCD matrices for each subsection of unit cell
@@ -177,11 +173,11 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         abcd_mats = []
         for i in range(0, self.FlLineDims.number_of_loads * 2, 2):
             # unloaded_mat
-            abcd_mats.append(self.ABCD_TL(Unloaded_Zc, Unloaded_propagation, self.FlLineDims.get_L_number(i)))
+            abcd_mats.append(self.ABCD_TL(Unloaded_Zc, Unloaded_propagation_constant, self.FlLineDims.get_L_number(i)))
             # loaded_mat
-            abcd_mats.append(self.ABCD_TL(loaded_Zc, loaded_propagation, self.FlLineDims.get_L_number(i + 1)))
+            abcd_mats.append(self.ABCD_TL(loaded_Zc, loaded_propagation_constant, self.FlLineDims.get_L_number(i + 1)))
         abcd_mats.append(
-            self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,
+            self.ABCD_TL(Unloaded_Zc, Unloaded_propagation_constant,
                          self.FlLineDims.get_L_number(self.FlLineDims.number_of_loads * 2)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN

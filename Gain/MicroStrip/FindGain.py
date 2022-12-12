@@ -3,6 +3,7 @@
 #   calc beta at pumpFreq
 #   calc beta for all pumpFreqs and idler freqencys
 #   calc for each freq the gain using betas calced above and other init vars
+#   turn gain into dB, mult back by Istar*, calc power
 import numpy as np
 
 from Gain.AmplitudeEquations.AmplitudeEquations1 import AmplitudeEqs1
@@ -12,12 +13,12 @@ from Gain.MicroStrip.solveODEs import Solve_ode
 def CalculateBetas(FloquetLine, FreqRange):
     Betas = []
     for F in FreqRange:
-        _, beta, _, _, _, _, _, _ = FloquetLine.abrx(F)
+        _, _, beta, _, _, _, _, _ = FloquetLine.abrx(F)
         Betas.append(beta)
     return Betas
 
 
-def Calc_Gain(FloquetLine, StartFreq, EndFreq, Resolution, PumpFreq, As_init, Ai_init, Ap_init, L, I):
+def Calc_Gain(FloquetLine, Resolution, PumpFreq, As_init, Ai_init, Ap_init, L):
     Frequencys = np.linspace(.5e9, PumpFreq * 2, Resolution)
     z = np.linspace(0, FloquetLine.Unit_Cell_Len, Resolution)
 
@@ -34,7 +35,10 @@ def Calc_Gain(FloquetLine, StartFreq, EndFreq, Resolution, PumpFreq, As_init, Ai
     # step 4 calc gain for each freq using betas calced above and other init vars
     gain = []
     for i in range(len(Frequencys)):
-        AmplitudeEqs1Args = (betas[i], beta_idler[i], beta_pump, I)
+        AmplitudeEqs1Args = (betas[i], beta_idler[i], beta_pump)
         gain.append(Solve_ode([As_init, Ai_init, Ap_init], AmplitudeEqs1, AmplitudeEqs1Args, z, L))
 
+    # todo gain into dB
+    # todo into Istar
+    # todo calc power
     return gain
