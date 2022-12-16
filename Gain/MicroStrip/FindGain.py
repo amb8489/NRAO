@@ -35,6 +35,7 @@ def Calc_Gain(FloquetLine, Resolution, PumpFreq, As_init, Ai_init, Ap_init, L):
     # step 4 calc gain for each freq using betas calced above and other init vars
     gain = []
     for i in range(len(Frequencys)):
+        # todo generalize amplitude equations into a class maybe that holds all AmplitudeEqs1Args info and what equations to use?
         AmplitudeEqs1Args = (betas[i], beta_idler[i], beta_pump)
         gain.append(Solve_ode([As_init, Ai_init, Ap_init], AmplitudeEqs1, AmplitudeEqs1Args, z, L))
 

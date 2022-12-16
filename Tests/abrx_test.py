@@ -20,15 +20,15 @@ a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma, transmission = [], [], [], 
 # ---------------------------- unit cell inputs from paper
 unit_Cell_Len = microMeters_to_Meters(2300)
 l1 = microMeters_to_Meters(50)
-width_unloaded = microMeters_to_Meters(1.49)
-width_loaded = width_unloaded * 1.2
+central_Line_width = microMeters_to_Meters(1.49)
+load_width1 = central_Line_width * 1.2
 
 D0 = .0007666666666666666666
 D1 = 5e-5
 D2 = 5e-5
 D3 = .0001
-loads_Widths = [D1, D2, D3]
-number_of_loads = len(loads_Widths)
+loads_legths = [D1, D2, D3]
+number_of_loads = len(loads_legths)
 
 # ---------------------------- SC inputs
 er = 10
@@ -45,24 +45,17 @@ Jc = 200000000
 super_conductivity_model = SuperConductivity(T, Tc, pn)
 
 # ---------------------------- models of the MicroStripModel -
-#                      one for an unloaded line , one for a loaded line
-loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
-unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
 
-# todo in the future map width_loaded new SuperConductingMicroStripModel so that we can have dynamic widths for each load if wanted
-#  FL segment : segment width
-#  widths = [
-#           "widthUL#",
-#           "widthL1#",
-#           "widthUL#",
-#           "widthL2#"
-#           ]
-#  line_segments_models = [ SuperConductingMicroStripModel(Height, seg_width, line_thickness, er, tanD, Jc)  for seg_width in widths]
-#  Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, line_segments_models,super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
+Central_line_model = SuperConductingMicroStripModel(Height, central_Line_width, line_thickness, er, tanD, Jc)
+# list of individual load widths from left to right widths
+Load_widths = [load_width1,load_width1,load_width1]
+Load_line_models = [ SuperConductingMicroStripModel(Height, width, line_thickness, er, tanD, Jc) for width in Load_widths]
+
+
 
 # ---------------------------- model of the floquet line
-Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,
-                                          super_conductivity_model, width_unloaded, width_loaded, line_thickness, Jc)
+Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_legths, Load_line_models, Central_line_model,
+                                          super_conductivity_model, central_Line_width, Load_widths, line_thickness, Jc)
 
 # ---------------------------- calculations -------------------
 FRange = np.linspace(toGHz(1), toGHz(25), 1000)
@@ -94,12 +87,18 @@ w = FRange * PI2
 WW = w * w
 
 # todo gamma*I
+
+
 CLWWI = CC * LL * WW * I
 CRwI = CC * RR * w * I
 GLwI = GG * LL * w * I
 RGI = RR * GG * I
 GLIIIwDiv3 = GG * LL * I3 * (w / 3)
 CLIIIWWDiv3 = CC * LL * I3 * (WW / 3)
+
+
+
+
 YYI = gamma * gamma * I  # TODO
 
 # ---------------------------- plots----------------------------
@@ -115,6 +114,7 @@ a1.plot(freqs, beta)
 a1.set_title('beta Unfolded')
 a1.plot(freqs, Floquet_line.unfold(beta))
 
+
 a2.set_title('A')
 a2.plot(freqs, a)
 
@@ -124,16 +124,16 @@ a3.plot(freqs, r)
 a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
-Floquet_line.FindPumpZone(a)
+# Floquet_line.FindPumpZone(a)
 a2.axvspan(Floquet_line.TargetPumpZoneStart, Floquet_line.TargetPumpZoneEnd, facecolor='g', alpha=0.5)
 
-# a5.plot(freqs, np.abs(CLWWI))
-# a5.plot(freqs, np.abs(CRwI))
-# a5.plot(freqs, np.abs(GLwI))
-# a5.plot(freqs, np.abs(RGI))
-# a5.plot(freqs, np.abs(GLIIIwDiv3))
-# a5.plot(freqs, np.abs(CLIIIWWDiv3))
-a5.plot(transmission)
-plt.yscale("log")
+# # a5.plot(freqs, np.abs(CLWWI))
+# # a5.plot(freqs, np.abs(CRwI))
+# # a5.plot(freqs, np.abs(GLwI))
+# # a5.plot(freqs, np.abs(RGI))
+# # a5.plot(freqs, np.abs(GLIIIwDiv3))
+# # a5.plot(freqs, np.abs(CLIIIWWDiv3))
+# a5.plot(transmission)
+# plt.yscale("log")
 
 plt.show()
