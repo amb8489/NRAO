@@ -48,10 +48,9 @@ super_conductivity_model = SuperConductivity(T, Tc, pn)
 
 Central_line_model = SuperConductingMicroStripModel(Height, central_Line_width, line_thickness, er, tanD, Jc)
 # list of individual load widths from left to right widths
-Load_widths = [load_width1,load_width1,load_width1]
-Load_line_models = [ SuperConductingMicroStripModel(Height, width, line_thickness, er, tanD, Jc) for width in Load_widths]
-
-
+Load_widths = [load_width1, load_width1, load_width1]
+Load_line_models = [SuperConductingMicroStripModel(Height, width, line_thickness, er, tanD, Jc) for width in
+                    Load_widths]
 
 # ---------------------------- model of the floquet line
 Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_legths, Load_line_models, Central_line_model,
@@ -96,9 +95,6 @@ RGI = RR * GG * I
 GLIIIwDiv3 = GG * LL * I3 * (w / 3)
 CLIIIWWDiv3 = CC * LL * I3 * (WW / 3)
 
-
-
-
 YYI = gamma * gamma * I  # TODO
 
 # ---------------------------- plots----------------------------
@@ -113,7 +109,6 @@ fig, (a1, a2, a3, a4, a5) = plt.subplots(5)
 a1.plot(freqs, beta)
 a1.set_title('beta Unfolded')
 a1.plot(freqs, Floquet_line.unfold(beta))
-
 
 a2.set_title('A')
 a2.plot(freqs, a)

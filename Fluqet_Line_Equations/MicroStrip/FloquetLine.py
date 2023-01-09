@@ -159,10 +159,8 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         abcd_mats = []
         for unit_cell_segment_idx in range(0, self.FlLineDims.number_of_loads * 2 + 1):
             # abcd mat
-            gamma, Zc = self.FlLineDims.get_gamma_Zc(unit_cell_segment_idx,freq, zs)
+            gamma, Zc = self.FlLineDims.get_gamma_Zc(unit_cell_segment_idx, freq, zs)
             abcd_mats.append(self.ABCD_TL(Zc, gamma, self.FlLineDims.get_segment_len(unit_cell_segment_idx)))
-
-
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
         Unitcell_ABCD_Mat = MultMats(abcd_mats)

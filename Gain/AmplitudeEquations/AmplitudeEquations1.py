@@ -3,6 +3,7 @@ import cmath
 
 
 # todo make standanrd format (amplitudes, z ,args)
+
 def AmplitudeEqs1(Amplitudes, z, args):
     # signal-idler-pump equations for N = 3
 
@@ -13,9 +14,9 @@ def AmplitudeEqs1(Amplitudes, z, args):
     A_pump = Amplitudes[2]  # Amplitudes[2]  Amplitude for pump
 
     # conj Amplitudes
-    A_star_s = np.conj(Amplitudes[0])
-    A_star_i = np.conj(Amplitudes[1])
-    A_star_p = np.conj(Amplitudes[2])
+    A_star_s = Amplitudes[0].conjugate()
+    A_star_i = Amplitudes[1].conjugate()
+    A_star_p = Amplitudes[2].conjugate()
 
     deltaB = (beta_s + beta_i) - (2 * beta_p)
 
