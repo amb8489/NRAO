@@ -5,7 +5,7 @@ import numpy as np
 from PySide6.QtCore import QRect
 from PySide6.QtGui import QPalette, QColor, QPainter, QPen, Qt, QBrush
 
-from Utils_GUI import randomColor
+from utillsGUI import randomColor
 from Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs
 from Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
 from Widgets.GainInputWidget import WidgetGainInputs
@@ -65,8 +65,8 @@ class MainWindow(QMainWindow):
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
         # material selector
-        SCW = WidgetSCInputs()
-        self.table = WidgetMaterialsSelect(onchange=SCW.setValues)
+        self.SCW = WidgetSCInputs()
+        self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
 
         self.Mainlayout.addWidget(self.table)
 
@@ -74,12 +74,14 @@ class MainWindow(QMainWindow):
         self.InputGrid = QGridLayout()
         self.InputGridWidget = QWidget()
 
-        self.InputGrid.addWidget(SCW, 0, 0, 1, 2)
+        self.InputGrid.addWidget(self.SCW, 0, 0, 1, 2)
 
-        self.dimensions_input = WidgetFLineDimensionsInputs()
-        self.InputGrid.addWidget(self.dimensions_input, 1, 1, 2, 1)
-        self.InputGrid.addWidget(WidgetFrequencyInputs(), 1, 0)
-        self.InputGrid.addWidget(WidgetGainInputs(), 2, 0)
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
+        self.InputGrid.addWidget(self.dimensionsInputWidget, 1, 1, 2, 1)
+        self.freqRangeWidget = WidgetFrequencyInputs()
+        self.InputGrid.addWidget(self.freqRangeWidget, 1, 0)
+        self.WidgetGainInputs = WidgetGainInputs()
+        self.InputGrid.addWidget(self.WidgetGainInputs, 2, 0)
 
         self.InputGridWidget.setLayout(self.InputGrid)
         self.Mainlayout.addWidget(self.InputGridWidget)
@@ -124,8 +126,11 @@ class MainWindow(QMainWindow):
         print(self.table.getFirstSelectedRow())
 
     def get_inputs(self):
-        pass
-        # print(self.w.getValues())
+
+        widgets = [self.WidgetGainInputs,self.freqRangeWidget,self.SCW,self.dimensionsInputWidget]
+
+        for widget in widgets:
+            print(widget.getValues())
 
     def plot(self):
 

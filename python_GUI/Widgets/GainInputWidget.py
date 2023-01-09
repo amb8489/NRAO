@@ -1,6 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt
-from python_GUI.Utils_GUI import randomColor
+from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -21,7 +21,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
         for j in range(len(self.inputnames)):
-            self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j,Qt.AlignTop)
+            self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j, Qt.AlignTop)
 
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor("#057878"))

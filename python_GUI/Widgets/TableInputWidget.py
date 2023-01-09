@@ -110,7 +110,7 @@ import pandas as pd
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QTableView
 
-from python_GUI.Utils_GUI import randomColor
+from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -120,7 +120,7 @@ from PySide6.QtCore import Qt
 
 class TableModel(QtCore.QAbstractTableModel):
 
-    def __init__(self, data,onChange = None):
+    def __init__(self, data, onChange=None):
         super(TableModel, self).__init__()
         self._data = data
         self.onChange = onChange
@@ -185,6 +185,9 @@ class TableModel(QtCore.QAbstractTableModel):
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
+    def getData(self):
+        return self._data
+
 
 class TableInputWidget(QtWidgets.QWidget):
 
@@ -201,7 +204,7 @@ class TableInputWidget(QtWidgets.QWidget):
 
         defualt_n_loads = 2
         data = [['10', '10'] for i in range(defualt_n_loads)]
-        self.model = TableModel(data,self.onChange)
+        self.model = TableModel(data, self.onChange)
         self.table.setModel(self.model)
 
         self.layout().addWidget(self.table)
@@ -240,3 +243,6 @@ class TableInputWidget(QtWidgets.QWidget):
     def delete_row(self):
         if self.model.rowCnt() > 1:
             self.model.removeRows(self.model.rowCnt() - 1, 1, self.table.currentIndex())
+
+    def getData(self):
+        return self.model.getData()

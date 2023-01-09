@@ -3,7 +3,7 @@ import math
 import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt
-from python_GUI.Utils_GUI import randomColor
+from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
 
@@ -21,7 +21,6 @@ class Line(QtWidgets.QWidget):
         self.layout()
 
         nloads = len(load_widths)
-        maxSize = 50
         centralLineW = 5
         load_widths = np.array(load_widths)
         load_heights = np.array(load_heights)
@@ -119,24 +118,14 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def getValues(self):
-        res = []
-        for child in self.children():
-            try:
-                res.append(child.getTitleAndValue())
-            except:
-                pass
-        return res
-    def showHideLine(self):
 
+        return self.tableInput.getData()
+
+    def showHideLine(self):
 
         self.HideLine = not self.HideLine
 
-        if self.HideLine:
-            self.line.hide()
-            return
-        self.line.show()
-
-
+        self.line.hide() if self.HideLine else self.line.show()
 
     def updateLine(self):
 
@@ -147,6 +136,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
             self.line = Line(self.getWidths(), self.getHeights())
             self.layout().addWidget(self.line, 2, 0, 2, 0)
+
             if self.HideLine:
                 self.line.hide()
 
