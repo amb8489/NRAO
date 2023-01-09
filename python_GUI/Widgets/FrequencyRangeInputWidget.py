@@ -1,7 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
-from Utils_GUI import randomColor
-from Widgets.FloatNLabelInputWidget import WidgetDoubleInput
+from python_GUI.Utils_GUI import randomColor
+from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QGridLayout, QLabel
 from PySide6 import QtWidgets
@@ -23,7 +23,7 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
             self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j)
 
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(randomColor()))
+        palette.setColor(QPalette.Window, QColor("#057878"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

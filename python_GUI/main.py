@@ -94,7 +94,9 @@ class MainWindow(QMainWindow):
         self.GraphLayoutWidget = QWidget()
         for i in range(3):
             for j in range(3):
-                self.GraphLayout.addWidget(WidgetGraph(f"{i}-{j}"), i, j)
+                Xdata, Ydata = [i for i in range(20)], [random.randint(0, 1) for i in range(20)]
+
+                self.GraphLayout.addWidget(WidgetGraph(f"{i}-{j}",Xdata, Ydata), i, j)
         self.GraphLayoutWidget.setLayout(self.GraphLayout)
         self.Mainlayout.addWidget(self.GraphLayoutWidget)
 
@@ -102,7 +104,7 @@ class MainWindow(QMainWindow):
 
     def init(self):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(randomColor()))
+        palette.setColor(QPalette.Window, QColor("#AAAAAA"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
         self.ROOT.setLayout(self.Mainlayout)
@@ -129,7 +131,10 @@ class MainWindow(QMainWindow):
 
         for y in range(2):
             for x in range(2):
-                self.ROOT.addWidget(WidgetGraph(f"{x}-{y}"), x, y + 1)
+
+
+                Xdata, Ydata = [i for i in range(20)], [random.randint(0, 50) for i in range(20)]
+                self.ROOT.addWidget(WidgetGraph(f"{x}-{y}",Xdata,Ydata), x, y + 1)
                 # Just some button connected to 'plot' method
 
 

@@ -3,9 +3,9 @@ import random
 import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QLabel
+from PySide6.QtWidgets import QGridLayout, QLabel, QAbstractItemView, QTableView
 
-from Utils_GUI import randomColor
+from python_GUI.Utils_GUI import randomColor
 
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
@@ -33,7 +33,8 @@ class TableModel(QtCore.QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return str(self._data.columns[section])
+                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "pn", "tand","other"]
+                return headers[section]
 
             if orientation == Qt.Vertical:
                 return str(self._data.index[section])
@@ -60,7 +61,9 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.table = QtWidgets.QTableView()
 
         # table
-        self.table.setSelectionBehavior(self.table.SelectRows)
+        self.table.setSelectionBehavior(QTableView.SelectRows)
+
+
 
         # table data
         size = 10

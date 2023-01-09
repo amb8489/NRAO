@@ -108,10 +108,10 @@ import sys
 import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QTableView
 
-from Utils_GUI import randomColor
-from Widgets.FloatNLabelInputWidget import WidgetDoubleInput
+from python_GUI.Utils_GUI import randomColor
+from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
@@ -120,9 +120,10 @@ from PySide6.QtCore import Qt
 
 class TableModel(QtCore.QAbstractTableModel):
 
-    def __init__(self, data):
+    def __init__(self, data,onChange = None):
         super(TableModel, self).__init__()
         self._data = data
+        self.onChange = onChange
 
     def rowCnt(self):
         return len(self._data)
@@ -177,6 +178,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def setData(self, index, value, role):
         if role == Qt.EditRole:
             self._data[index.row()][index.column()] = value
+            self.onChange()
             return True
         return False
 
@@ -195,9 +197,11 @@ class TableInputWidget(QtWidgets.QWidget):
 
         self.layout().addWidget(self.NloadsInput)
         self.table = QtWidgets.QTableView()
+        self.table.setSelectionBehavior(QTableView.SelectRows)
+
         defualt_n_loads = 2
         data = [['10', '10'] for i in range(defualt_n_loads)]
-        self.model = TableModel(data)
+        self.model = TableModel(data,self.onChange)
         self.table.setModel(self.model)
 
         self.layout().addWidget(self.table)
@@ -227,8 +231,8 @@ class TableInputWidget(QtWidgets.QWidget):
         for i in range(int(abs(numOfCurrLoads - numOfWantedLoads))):
             function()
 
-        # if self.onChange:
-        #     self.onChange()
+        if self.onChange:
+            self.onChange()
 
     def insert_row(self):
         self.model.insertRows(self.model.rowCnt(), 1, self.table.currentIndex(), None)
