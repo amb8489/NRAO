@@ -14,44 +14,72 @@ from PySide6 import QtWidgets, QtCore
 
 class Line(QtWidgets.QWidget):
 
-    def __init__(self, load_widths, load_heights, *args, **kwargs):
+    def __init__(self, table, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.Widths = []
+        self.Heights = []
+        self.table = table
+
+        self.table.setOnChange(self.updateLine)
+
+        self.maxsize = 50
+        # todo add in for central line
+        self.centralLineW = 5
+
+        self.HideLine = True
         self.setLayout(QGridLayout())
         self.layout().setHorizontalSpacing(0)
-        self.layout()
 
-        nloads = len(load_widths)
-        centralLineW = 5
-        load_widths = np.array(load_widths)
-        load_heights = np.array(load_heights)
+        # self.ButtonLineVeiwer = QPushButton('Hide/Show Line')
+        # self.layout().addWidget(self.ButtonLineVeiwer, 0, 0, Qt.AlignTop)
+        # self.ButtonLineVeiwer.clicked.connect(self.ToggleShowHide)
 
-        # normalise to largest value
+    def Draw(self):
 
-        # load_heights = (load_heights / max(load_heights)) * maxSize
-        # load_widths = (load_widths / max(load_widths)) * maxSize
-
-        load_heights = (load_heights / centralLineW) * centralLineW
-        load_widths = (load_widths / centralLineW) * centralLineW
-
-        load_idx = 0
-        for i in range(nloads * 2 + 1):
+        loadIdx = 0
+        for i in range(len(self.Widths) * 2 + 1):
             if i % 2 == 0:
-                r = bar(i, centralLineW, centralLineW)
-                r.setMaximumHeight(centralLineW)
+
+                r = bar(i, self.centralLineW, self.centralLineW)
+                r.setMaximumHeight(self.centralLineW)
                 self.layout().addWidget(r, 1, i)
 
             else:
 
-                w = load_widths[load_idx]
-                h = load_heights[load_idx]
-                load_idx += 1
+                w = self.Widths[loadIdx]
+                h = self.Heights[loadIdx]
+                loadIdx += 1
 
                 r = bar(i, w, h)
                 r.setMaximumHeight(h)
                 r.setMaximumWidth(w)
-                self.layout().addWidget(QLabel(f"L{load_idx}"), 0, i, Qt.AlignHCenter)
-
+                self.layout().addWidget(QLabel(f"L{loadIdx}"), 0, i, Qt.AlignHCenter)
                 self.layout().addWidget(r, 1, i, Qt.AlignHCenter)
+
+    def ToggleShowHide(self):
+        self.HideLine = not self.HideLine
+        self.show() if self.HideLine else self.hide()
+
+    def clearBars(self):
+        for i in range(self.layout().count()):
+            child = self.layout().itemAt(i).widget()
+            if child:
+                child.deleteLater()
+
+    def updateLine(self):
+        self.clearBars()
+        self.setHeights(self.table.getHeights())
+        self.setWidths(self.table.getWidths())
+        self.Draw()
+
+    def setWidths(self, widths):
+        loadWidths = np.array(widths)
+
+        self.Widths = (loadWidths / max(loadWidths)) * self.maxsize
+
+    def setHeights(self, heights):
+        loadHeights = np.array(heights)
+        self.Heights = (loadHeights / max(loadHeights)) * self.maxsize
 
 
 class bar(QtWidgets.QWidget):
@@ -86,7 +114,6 @@ class bar(QtWidgets.QWidget):
 class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
-
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.Title = "Dimensions"
@@ -95,9 +122,6 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
         self.layout().addWidget(QLabel(self.Title), 0, 0)
-        self.ButtonLineVeiwer = QPushButton('Hide/Show Line')
-        self.layout().addWidget(self.ButtonLineVeiwer, 1, 1, Qt.AlignTop)
-        self.ButtonLineVeiwer.clicked.connect(self.showHideLine)
 
         self.InputWidget = QWidget()
         self.container = QVBoxLayout()
@@ -106,42 +130,18 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.InputWidget.setLayout(self.container)
         self.layout().addWidget(self.InputWidget, 1, 1, Qt.AlignVCenter)
 
-        self.tableInput = TableInputWidget(onChange=self.updateLine)
-        self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
+        self.tableInput = TableInputWidget()
 
-        self.line = QWidget()
-        self.layout().addWidget(self.line)
+        self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor("#057878"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def getValues(self):
 
+    def getValue(self):
         return self.tableInput.getData()
-
-    def showHideLine(self):
-
-        self.HideLine = not self.HideLine
-
-        self.line.hide() if self.HideLine else self.line.show()
-
-    def updateLine(self):
-
-        try:
-
-            b = self.layout().takeAt(4)
-            b.widget().deleteLater()
-
-            self.line = Line(self.getWidths(), self.getHeights())
-            self.layout().addWidget(self.line, 2, 0, 2, 0)
-
-            if self.HideLine:
-                self.line.hide()
-
-        except:
-            print("bad value")
 
     def getHeights(self):
         return self.tableInput.getHeights()

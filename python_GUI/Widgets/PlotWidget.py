@@ -37,3 +37,9 @@ class WidgetGraph(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor(randomColor()))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
+
+        # self.setFixedWidth(400)
+        # self.setFixedHeight(400)
+
+        self.setMinimumWidth(250)
+        self.setMinimumHeight(250)

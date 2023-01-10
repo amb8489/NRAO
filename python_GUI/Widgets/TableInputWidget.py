@@ -1,116 +1,6 @@
-# from PySide6 import QtCore, QtGui, QtWidgets
-# from PySide6.QtCore import Qt, QSortFilterProxyModel, QSize
-# from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLineEdit, QApplication
-# import sys
-# import pandas as pd
-#
-#
-# class TableModel(QtCore.QAbstractTableModel):
-#     def __init__(self, v_data):
-#         super().__init__()
-#
-#         self._data = v_data
-#
-#     def flags(self, index):
-#         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
-#
-#     def setData(self, index, value, role):
-#         if role == Qt.EditRole:
-#             self._data.iloc[index.row(), index.column()] = value
-#             return True
-#
-#     def data(self, index, role=Qt.DisplayRole):
-#         if index.isValid():
-#             if role == Qt.DisplayRole or role == Qt.EditRole:
-#                 value = self._data.iloc[index.row(), index.column()]
-#                 return str(value)
-#
-#     def rowCount(self, index):
-#         return self._data.shape[0]
-#
-#     def columnCount(self, index):
-#         return self._data.shape[1]
-#
-#     def headerData(self, section, orientation, role):
-#         if role == Qt.DisplayRole:
-#             if orientation == Qt.Horizontal:
-#                 return str(self._data.columns[section])
-#
-#             if orientation == Qt.Vertical:
-#                 return str(self._data.index[section])
-#
-#     def insertRow(self, ajout):
-#         row = len(self._data)
-#         self.beginInsertRows(QtCore.QModelIndex(), row, row)
-#         print(self._data, "\n\n")  # Before adding
-#         self._data.loc["Row" + str(row + 1)] = ajout
-#         print(self._data, "\n\n")  # After
-#         self.endInsertRows()
-#         self.layoutChanged.emit()
-#         return row
-#
-#
-# class MainWindow(QtWidgets.QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-#
-#         container = QWidget()
-#         layout = QVBoxLayout()
-#
-#         self.addButton = QPushButton("test")
-#         self.addButton.clicked.connect(self.add_row)
-#         self.search = QLineEdit()
-#         self.table = QtWidgets.QTableView()
-#         layout.addWidget(self.addButton)
-#         layout.addWidget(self.search)
-#         layout.addWidget(self.table)
-#         container.setLayout(layout)
-#
-#         df_data = pd.DataFrame(
-#             [
-#                 [1, 9],
-#                 [1, 0,],
-#                 [3, 5],
-#                 [3, 3],
-#                 [5, 8],
-#             ],
-#             columns=["A", "B"],
-#             index=["Row 1", "Row 2", "Row 3", "Row 4", "Row 5"],
-#         )
-#         self.model = TableModel(df_data)
-#         self.proxy_model = QSortFilterProxyModel()
-#         self.proxy_model.setFilterKeyColumn(0)  # Search all columns.
-#         self.proxy_model.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
-#         self.proxy_model.setSourceModel(self.model)
-#
-#         self.table.setModel(self.proxy_model)
-#         self.search.textChanged.connect(self.proxy_model.setFilterWildcard)
-#
-#         self.setMinimumSize(QSize(1024, 600))
-#         self.setCentralWidget(container)
-#
-#     def add_row(self):
-#         self.model.insertRow([1, 1])
-#
-#         self.model.layoutChanged.emit()
-#         print('success')
-#
-#
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#
-#     main_window = MainWindow()
-#     main_window.show()
-#     sys.exit(app.exec())
-
-import sys
-
 import matplotlib
-import pandas as pd
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QTableView
-
-from python_GUI.utillsGUI import randomColor
+from PySide6.QtWidgets import QVBoxLayout, QTableView
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -123,6 +13,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data, onChange=None):
         super(TableModel, self).__init__()
         self._data = data
+
         self.onChange = onChange
 
     def rowCnt(self):
@@ -178,7 +69,9 @@ class TableModel(QtCore.QAbstractTableModel):
     def setData(self, index, value, role):
         if role == Qt.EditRole:
             self._data[index.row()][index.column()] = value
-            self.onChange()
+
+            if self.onChange:
+                self.onChange()
             return True
         return False
 
@@ -188,12 +81,16 @@ class TableModel(QtCore.QAbstractTableModel):
     def getData(self):
         return self._data
 
+    def setOnChange(self, function):
+        self.onChange = function
+
 
 class TableInputWidget(QtWidgets.QWidget):
 
     def __init__(self, onChange=None):
         super().__init__()
         self.setLayout(QVBoxLayout())
+
         self.onChange = onChange
 
         self.NloadsInput = WidgetDoubleInput("Number of loads", MinVal=1, DefaultVal=2, onchange=self.setNLoads)
@@ -212,13 +109,18 @@ class TableInputWidget(QtWidgets.QWidget):
         # size policy
         self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.table.setFixedHeight(150)
+        self.table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
 
         # background color
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
+
+    def setOnChange(self, function):
+        self.onChange = function
+        self.model.setOnChange(function)
 
     def getWidths(self):
         return self.model.getWidths()
@@ -233,8 +135,7 @@ class TableInputWidget(QtWidgets.QWidget):
 
         for i in range(int(abs(numOfCurrLoads - numOfWantedLoads))):
             function()
-
-        if self.onChange:
+        if self.onChange():
             self.onChange()
 
     def insert_row(self):
