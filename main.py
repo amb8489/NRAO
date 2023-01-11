@@ -1,27 +1,17 @@
-import random
-import time
-
 import matplotlib
-import numpy as np
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QPalette, QColor, QPainter, QPen, Qt, QBrush
-
-from Server.runGraphs import mkGraphs
-from Utills.Functions import microMeters_to_Meters, nanoMeters_to_Meters, toGHz
+from PySide6.QtGui import QPalette, QColor
+from Utills.Functions import microMeters_to_Meters, nanoMeters_to_Meters
 from python_GUI.plotData import simulate
-from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
 from python_GUI.Widgets.GainInputWidget import WidgetGainInputs
-from python_GUI.Widgets.MaterialSelectorWidget import TableModel, WidgetMaterialsSelect
+from python_GUI.Widgets.MaterialSelectorWidget import  WidgetMaterialsSelect
 from python_GUI.Widgets.PlotWidget import WidgetGraph
 from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QHBoxLayout, QLabel, QFrame
+from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea
 import sys
-from PySide6 import QtWidgets, QtGui, QtCore
-import pandas as pd
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
 
@@ -157,8 +147,6 @@ class AnotherWindow(QScrollArea):
         for i in range(3):
             for j in range(6):
                 self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData["freqs"], graphData["alpha"]), j, i + 1)
-
-        # self.plot()
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)

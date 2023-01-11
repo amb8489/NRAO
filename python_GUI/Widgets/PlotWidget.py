@@ -1,9 +1,6 @@
-import random
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
-
 from python_GUI.utillsGUI import randomColor
-
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure

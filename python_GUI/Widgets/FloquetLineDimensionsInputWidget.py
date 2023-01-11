@@ -1,23 +1,18 @@
-import math
-
 import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt
 from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
-
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QScrollArea, QFormLayout, \
-    QHBoxLayout
-from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
+from PySide6 import QtWidgets, QtCore
 
 
 class Line(QtWidgets.QWidget):
 
     def __init__(self, table, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
 
         self.Widths = []
         self.Heights = []
@@ -34,7 +29,7 @@ class Line(QtWidgets.QWidget):
         self.grid = QGridLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
 
         self.widget.setLayout(self.grid)
-        self.layO.addWidget(QLabel("Line Visualizer"),0,0)
+        self.layO.addWidget(QLabel("Line Visualizer"), 0, 0)
 
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -56,13 +51,6 @@ class Line(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.scroll.setPalette(palette)
         self.scroll.setAutoFillBackground(True)
-
-
-
-
-
-
-
 
     def Draw(self):
 
@@ -88,8 +76,6 @@ class Line(QtWidgets.QWidget):
 
                 self.grid.addWidget(QLabel(f"L{loadIdx}"), 0, i, Qt.AlignHCenter)
                 self.grid.addWidget(r, 1, i, Qt.AlignHCenter)
-
-
 
     def ToggleShowHide(self):
         self.HideLine = not self.HideLine
@@ -172,7 +158,6 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor("#057878"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
-
 
     def getValue(self):
         return self.tableInput.getData()

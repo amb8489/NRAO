@@ -1,11 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
-
-from python_GUI.utillsGUI import randomColor
-
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, \
-    QDoubleSpinBox, QVBoxLayout
+from PySide6.QtWidgets import QLabel,QDoubleSpinBox, QVBoxLayout
 from PySide6 import QtWidgets
 
 

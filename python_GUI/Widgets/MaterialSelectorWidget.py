@@ -1,12 +1,9 @@
 import random
-
 import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QLabel, QAbstractItemView, QTableView
-
+from PySide6.QtWidgets import QGridLayout, QLabel, QTableView
 from python_GUI.utillsGUI import randomColor
-
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt

@@ -1,8 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt
-from python_GUI.utillsGUI import randomColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
-
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QGridLayout, QLabel
 from PySide6 import QtWidgets

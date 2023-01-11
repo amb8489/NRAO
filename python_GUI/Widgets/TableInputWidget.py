@@ -2,7 +2,6 @@ import matplotlib
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QVBoxLayout, QTableView
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
-
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt
