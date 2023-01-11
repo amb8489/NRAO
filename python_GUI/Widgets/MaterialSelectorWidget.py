@@ -80,7 +80,7 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
 
         # background color
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#387780"))
+        palette.setColor(QPalette.Window, QColor("#5b80bd"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
