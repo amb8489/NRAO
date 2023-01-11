@@ -76,12 +76,11 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         # size policy
         self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        # self.table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
         self.table.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)  # ---
 
         # background color
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(randomColor()))
+        palette.setColor(QPalette.Window, QColor("#387780"))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

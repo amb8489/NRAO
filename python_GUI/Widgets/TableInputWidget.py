@@ -2,9 +2,10 @@ import matplotlib
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QVBoxLayout, QTableView
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
+
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QItemSelection, QItemSelectionModel
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -116,7 +117,6 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
-
         # background color
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
@@ -152,3 +152,15 @@ class TableInputWidget(QtWidgets.QWidget):
 
     def getData(self):
         return self.model.getData()
+
+    def SelectRow(self, idx):
+
+        print(f"selecting idx: {idx}")
+
+        model = self.table.model()  # get data model for indexes.
+        selection = QItemSelection()
+        model_index = model.index(idx, 0)
+        selection.select(model_index, model_index)  # top left, bottom right identical
+
+        mode = QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
+        self.table.selectionModel().select(selection, mode)

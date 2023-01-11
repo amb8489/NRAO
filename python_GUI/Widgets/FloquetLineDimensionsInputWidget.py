@@ -1,9 +1,10 @@
 import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt
-from python_GUI.utillsGUI import randomColor
+from python_GUI.utillsGUI import randomColor, randomColorBright
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
+
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
 from PySide6 import QtWidgets, QtCore
@@ -60,7 +61,7 @@ class Line(QtWidgets.QWidget):
         for i in range(len(self.Widths) * 2 + 1):
             if i % 2 == 0:
 
-                r = bar(i, self.centralLineW, self.centralLineW)
+                r = bar(False, i, self.centralLineW, self.centralLineW)
                 r.setMaximumHeight(self.centralLineW)
                 self.grid.addWidget(r, 1, i)
 
@@ -70,7 +71,7 @@ class Line(QtWidgets.QWidget):
                 h = self.Heights[loadIdx]
                 loadIdx += 1
 
-                r = bar(i, w, h)
+                r = bar(True, loadIdx, w, h,onClick=self.table.SelectRow)
                 r.setMaximumHeight(h)
                 r.setMaximumWidth(w)
 
@@ -104,10 +105,12 @@ class Line(QtWidgets.QWidget):
 
 class bar(QtWidgets.QWidget):
 
-    def __init__(self, idx, w, h, *args, **kwargs):
+    def __init__(self, isLoad, tableIdx, w, h,onClick = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.onClick = onClick
         self.w, self.h = w, h
+        self.idxInTable = tableIdx
         layout = QtWidgets.QHBoxLayout()
 
         self.setSizePolicy(
@@ -116,16 +119,21 @@ class bar(QtWidgets.QWidget):
         )
 
         color = "#000000"
-        while color == "#000000": color = randomColor()
-
-        if idx % 2 == 0:
-            color = "#000000"
+        if isLoad:
+            color = randomColorBright()
 
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
         self.setLayout(layout)
+
+        # self.clicked.connect(lambda :print("clicked"))
+
+    def mousePressEvent(self, event):
+
+        if self.onClick:
+            print("clicked")
 
     def sizeHint(self):
         return QtCore.QSize(self.w, self.h)

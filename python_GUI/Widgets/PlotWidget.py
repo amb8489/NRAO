@@ -1,6 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
-from python_GUI.utillsGUI import randomColor
+from python_GUI.utillsGUI import randomColor, randomColorBright
+
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -31,7 +32,7 @@ class WidgetGraph(QtWidgets.QWidget):
         self.layout().addWidget(self.plt)
 
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(randomColor()))
+        palette.setColor(QPalette.Window, QColor(randomColorBright()))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
