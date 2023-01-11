@@ -36,10 +36,16 @@ class TableModel(QtCore.QAbstractTableModel):
         return True
 
     def getHeights(self):
-        return [float(row[0]) for row in self._data]
+        try:
+            return [float(row[0]) for row in self._data]
+        except:
+            pass
 
     def getWidths(self):
-        return [float(row[1]) for row in self._data]
+        try:
+            return [float(row[1]) for row in self._data]
+        except:
+            pass
 
     def headerData(self, section, orientation, role):
 

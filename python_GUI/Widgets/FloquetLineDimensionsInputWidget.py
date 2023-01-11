@@ -8,33 +8,65 @@ from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
-from PySide6 import QtWidgets, QtCore
+from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget, QScrollArea, QFormLayout, \
+    QHBoxLayout
+from PySide6 import QtWidgets, QtCore, QtGui
 
 
 class Line(QtWidgets.QWidget):
 
     def __init__(self, table, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
         self.Widths = []
         self.Heights = []
         self.table = table
 
         self.table.setOnChange(self.updateLine)
-
         self.maxsize = 50
         # todo add in for central line
         self.centralLineW = 5
 
-        self.HideLine = True
-        self.setLayout(QGridLayout())
-        self.layout().setHorizontalSpacing(0)
+        self.layO = QGridLayout()
+        self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
+        self.widget = QWidget()  # Widget that contains the collection of Vertical Box
+        self.grid = QGridLayout()  # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
 
-        # self.ButtonLineVeiwer = QPushButton('Hide/Show Line')
-        # self.layout().addWidget(self.ButtonLineVeiwer, 0, 0, Qt.AlignTop)
-        # self.ButtonLineVeiwer.clicked.connect(self.ToggleShowHide)
+        self.widget.setLayout(self.grid)
+        self.layO.addWidget(QLabel("Line Visualizer"),0,0)
+
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.widget)
+
+        self.layO.addWidget(self.scroll)
+        self.grid.setHorizontalSpacing(0)
+        self.setLayout(self.layO)
+        self.setFixedHeight(200)
+        self.setFixedWidth(800)
+
+        # color background
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor("#ff9d00"))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)
+
+        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
+        self.scroll.setPalette(palette)
+        self.scroll.setAutoFillBackground(True)
+
+
+
+
+
+
+
 
     def Draw(self):
+
+        print("draw")
 
         loadIdx = 0
         for i in range(len(self.Widths) * 2 + 1):
@@ -42,7 +74,7 @@ class Line(QtWidgets.QWidget):
 
                 r = bar(i, self.centralLineW, self.centralLineW)
                 r.setMaximumHeight(self.centralLineW)
-                self.layout().addWidget(r, 1, i)
+                self.grid.addWidget(r, 1, i)
 
             else:
 
@@ -53,16 +85,19 @@ class Line(QtWidgets.QWidget):
                 r = bar(i, w, h)
                 r.setMaximumHeight(h)
                 r.setMaximumWidth(w)
-                self.layout().addWidget(QLabel(f"L{loadIdx}"), 0, i, Qt.AlignHCenter)
-                self.layout().addWidget(r, 1, i, Qt.AlignHCenter)
+
+                self.grid.addWidget(QLabel(f"L{loadIdx}"), 0, i, Qt.AlignHCenter)
+                self.grid.addWidget(r, 1, i, Qt.AlignHCenter)
+
+
 
     def ToggleShowHide(self):
         self.HideLine = not self.HideLine
         self.show() if self.HideLine else self.hide()
 
     def clearBars(self):
-        for i in range(self.layout().count()):
-            child = self.layout().itemAt(i).widget()
+        for i in range(self.grid.count()):
+            child = self.grid.itemAt(i).widget()
             if child:
                 child.deleteLater()
 
@@ -74,7 +109,6 @@ class Line(QtWidgets.QWidget):
 
     def setWidths(self, widths):
         loadWidths = np.array(widths)
-
         self.Widths = (loadWidths / max(loadWidths)) * self.maxsize
 
     def setHeights(self, heights):
@@ -95,11 +129,11 @@ class bar(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.MinimumExpanding
         )
 
-        color = "#FFFFFF"
-        while color == "#FFFFFF": color = randomColor()
+        color = "#000000"
+        while color == "#000000": color = randomColor()
 
         if idx % 2 == 0:
-            color = "#FFFFFF"
+            color = "#000000"
 
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(color))

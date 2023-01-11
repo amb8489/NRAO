@@ -88,13 +88,10 @@ class MainWindow(QMainWindow):
         self.InputGridWidget.setLayout(self.InputGrid)
         self.Mainlayout.addWidget(self.InputGridWidget)
 
-        self.line = QWidget()
-        self.Hbox = QHBoxLayout()
-        l = Line(self.dimensionsInputWidget.tableInput)
-        self.Hbox.addWidget(l)
-        self.line.setLayout(self.Hbox)
-        self.Mainlayout.addWidget(self.line)
 
+
+        line = Line(self.dimensionsInputWidget.tableInput)
+        self.Mainlayout.addWidget(line)
         self.init()
 
     def init(self):
@@ -155,7 +152,13 @@ class AnotherWindow(QScrollArea):
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
 
-        self.plot()
+        graphData = simulate()
+
+        for i in range(3):
+            for j in range(6):
+                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData["freqs"], graphData["alpha"]), j, i + 1)
+
+        # self.plot()
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
