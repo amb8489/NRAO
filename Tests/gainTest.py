@@ -6,7 +6,7 @@ from Gain.MicroStrip.solveODEs import Solve_ode
 from Gain.AmplitudeEquations.AmplitudeEquations1 import AmplitudeEqs1
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
-from Utills.Functions import nanoMeters_to_Meters, microMeters_to_Meters
+from Utills.Functions import nano_meters_to_meters, micro_meters_to_meters
 
 
 # steps todo
@@ -57,9 +57,9 @@ if __name__ == "__main__":
 
     StartFreq, EndFreq, resolution = 1e9, 7e9, 1000
     # ---------------------------- unit cell inputs from paper
-    unit_Cell_Len = microMeters_to_Meters(2300)
-    l1 = microMeters_to_Meters(50)
-    width_unloaded = microMeters_to_Meters(1.49)
+    unit_Cell_Len = micro_meters_to_meters(2300)
+    l1 = micro_meters_to_meters(50)
+    width_unloaded = micro_meters_to_meters(1.49)
     width_loaded = width_unloaded * 1.2
 
     D0 = .0007666666666666666666
@@ -71,9 +71,9 @@ if __name__ == "__main__":
 
     # ---------------------------- SC inputs
     er = 10
-    Height = nanoMeters_to_Meters(250)
-    line_thickness = nanoMeters_to_Meters(60)
-    ground_thickness = nanoMeters_to_Meters(300)
+    Height = nano_meters_to_meters(250)
+    line_thickness = nano_meters_to_meters(60)
+    ground_thickness = nano_meters_to_meters(300)
     Tc = 14.28
     T = 4
     pn = 1.008e-6
@@ -88,21 +88,21 @@ if __name__ == "__main__":
     # D1 = microMeters_to_Meters(100)
     # D2 = microMeters_to_Meters(100)
     # D3 = microMeters_to_Meters(95)
-    # unit_Cell_Len = mm_To_Meters(4.02)
+    # unit_cell_length = mm_To_Meters(4.02)
     #
-    # In_Order_loads_Widths = [D1, D2, D3]
-    # number_of_loads = len(In_Order_loads_Widths)
+    # in_order_loads_widths = [D1, D2, D3]
+    # number_of_loads = len(in_order_loads_widths)
     #
     # # ---------------------------- SC inputs
-    # Height = nanoMeters_to_Meters(300)
+    # height = nanoMeters_to_Meters(300)
     # line_thickness = nanoMeters_to_Meters(60)
     # ground_thickness = nanoMeters_to_Meters(300)
-    # Tc = 14.7
-    # T = 4  # what equatioins to use when temp is > 0
-    # pn = 0.00000132
+    # crit_temp = 14.7
+    # op_temp = 4  # what equatioins to use when temp is > 0
+    # normal_resistivity = 0.00000132
     # er = 11.44
-    # tanD = 1.48351e-5
-    # Jc = 1
+    # tangent_delta = 1.48351e-5
+    # crit_current = 1
 
     # ---------------------------- models of the MicroStripModel -
     #                      one for an unloaded line , one for a loaded line
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     # todo get value for I
 
     """
-    The term I∗ is proportional to I∗′/√α∗, where I∗′ is a parameter comparable to the critical current Ic, and α∗ is 
+    The term I∗ is proportional to I∗′/√α∗, where I∗′ is a parameter comparable to the critical current ic, and α∗ is 
     the ratio of kinetic inductance to total inductance.
     
     """

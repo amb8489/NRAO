@@ -1,7 +1,7 @@
 import cmath
 import math
 from Utills.Functions import sech, coth
-from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, c, Z0
+from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, C, Z0
 from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
 
 """
@@ -27,14 +27,14 @@ from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
 
 class SuperConductingMicroStripModel(AbstractSCTL):
 
-    def __init__(self, height, width, thickness, epsilon_r, tan_delta, Jc):
+    def __init__(self, height, width, thickness, epsilon_r, tan_delta, crit_current):
 
         self.height = height
         self.width = width
         self.thickness = thickness
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
-        self.Ic = thickness * width * Jc
+        self.ic = thickness * width * crit_current
 
         # calc geometric factors
         self.g1 = self.G1(self.width, self.height, self.thickness)
@@ -137,10 +137,10 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
     # -------------------
 
-    def Lambda0(self, sigma, delta_O):
+    def Lambda0(self, sigma, delta_o):
 
         # AND sigma_N is 1/ Pn
-        return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma * delta_O))
+        return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma * delta_o))
 
     def z_slow(self, f, yO, t):
         return 1j * PI2 * f * MU_0 * yO
@@ -198,8 +198,8 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return 2 * bsqrd - 1 + (2 * b * math.sqrt(bsqrd - 1))
 
     # checked
-    def rbo(self, eta, p, detaY):
-        return eta + ((p + 1) / 2) * math.log(detaY)
+    def rbo(self, eta, p, deta_y):
+        return eta + ((p + 1) / 2) * math.log(deta_y)
 
     # checked
 
@@ -280,11 +280,11 @@ class SuperConductingMicroStripModel(AbstractSCTL):
     # An important expression for calculating impedance and complex propagation constant
     # defined in this way mainly to calculate tan_Delta from Alpha
     # checked
-    def X(self, zs, f, w, H, ts):
+    def X(self, zs, f, w, h, ts):
 
-        ChiC = self.Chi(w, H, ts)
-        ko = (PI2 * f) / c
-        return (2 * ChiC * zs) / (ko * Z0 * H)
+        ChiC = self.Chi(w, h, ts)
+        ko = (PI2 * f) / C
+        return (2 * ChiC * zs) / (ko * Z0 * h)
 
     # Superconducting impedance of the microstrip
     # Note that in this version I have used the suface impedance as parameter
@@ -318,9 +318,9 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return 1 - (1 / CF ** 2)
 
     def I_star(self, zs, f, w, H, ts):
-        return self.Ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
+        return self.ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
 
-    # Phase velocity respect to vo = c
+    # Phase velocity respect to vo = C
     # checked
     def vSy(self, est, zs, f, epsilon_r, w, H, ts):
         epsilon_fm = est(epsilon_r, w, H, ts)

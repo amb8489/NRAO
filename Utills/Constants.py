@@ -1,7 +1,6 @@
 import math
 import scipy.constants
 
-
 """
 useful constants
 
@@ -21,31 +20,30 @@ PLANCK_CONST_REDUCEDev = PLANCK_CONSTev / PI2
 # Boltzmann's constant in eV/K
 BOLTZMANN_CONSTev = 8.6173303E-5
 KB = 8.6173303E-5
-# The vacuum magnetic permeability in UNITS H.m^-1
+# The vacuum magnetic permeability in UNITS h.m^-1
 MU_0 = PI4 * (10 ** -7)
 
 # characteristic impedance of vacuum in UNITS ohm's
 Z0 = 120 * PI
 
 # Giga hertz
-GHz = 10 ** 9
+GHZ = 10 ** 9
 
 # speed of light m/s
-c = scipy.constants.speed_of_light
+C = scipy.constants.speed_of_light
 
-
-PiDiv2 = math.pi / 2
+PI_DIV_2 = math.pi / 2
 
 # nano meter
-nano_meter = 10 ** -9
+NANO_METER = 10 ** -9
 
-micro_meter = 10 ** -6
+micro_METER = 10 ** -6
 
-cm = 10 ** -2
+CM = 10 ** -2
 
-mm = 10 ** -3
+MM = 10 ** -3
 
 
 # wave number
 def K0(f):
-    return PI2 / (c / f)
+    return PI2 / (C / f)

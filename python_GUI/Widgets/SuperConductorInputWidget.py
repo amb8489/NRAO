@@ -13,7 +13,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
 
 
         self.Title = "Super Conductor"
-        self.inputnames = ["er", "h", "ts", "tg", "t", "tc", "jc", "pn", "tand"]
+        self.inputnames = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand"]
 
 
         self.setLayout(QGridLayout())

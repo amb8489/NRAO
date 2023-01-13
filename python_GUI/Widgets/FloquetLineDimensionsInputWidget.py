@@ -1,12 +1,12 @@
 import matplotlib
 import numpy as np
-from PySide6.QtGui import QPalette, QColor, Qt
+from PySide6.QtGui import QPalette, QColor, Qt, QPixmap
 from python_GUI.utillsGUI import randomColor, randomColorBright
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
+from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea, QPushButton
 from PySide6 import QtWidgets, QtCore
 
 
@@ -55,8 +55,6 @@ class Line(QtWidgets.QWidget):
 
     def Draw(self):
 
-        print("draw")
-
         loadIdx = 0
         for i in range(len(self.Widths) * 2 + 1):
             if i % 2 == 0:
@@ -71,7 +69,7 @@ class Line(QtWidgets.QWidget):
                 h = self.Heights[loadIdx]
                 loadIdx += 1
 
-                r = bar(True, loadIdx, w, h,onClick=self.table.SelectRow)
+                r = bar(True, loadIdx, w, h, onClick=self.table.SelectRow)
                 r.setMaximumHeight(h)
                 r.setMaximumWidth(w)
 
@@ -96,16 +94,19 @@ class Line(QtWidgets.QWidget):
 
     def setWidths(self, widths):
         loadWidths = np.array(widths)
+        # todo max(loadWidths) should be the central line widths really
         self.Widths = (loadWidths / max(loadWidths)) * self.maxsize
 
     def setHeights(self, heights):
         loadHeights = np.array(heights)
+
+        # todo max(loadWidths) should be the central line widths really
         self.Heights = (loadHeights / max(loadHeights)) * self.maxsize
 
 
 class bar(QtWidgets.QWidget):
 
-    def __init__(self, isLoad, tableIdx, w, h,onClick = None, *args, **kwargs):
+    def __init__(self, isLoad, tableIdx, w, h, onClick=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.onClick = onClick

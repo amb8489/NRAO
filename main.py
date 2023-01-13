@@ -1,6 +1,7 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor
-from Utills.Functions import microMeters_to_Meters, nanoMeters_to_Meters
+from PySide6 import QtGui, QtWidgets
+from PySide6.QtGui import QPalette, QColor, QPixmap, QImage
+from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters
 from python_GUI.plotData import simulate
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
@@ -10,7 +11,7 @@ from python_GUI.Widgets.PlotWidget import WidgetGraph
 from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea
+from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel
 import sys
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
@@ -42,6 +43,9 @@ class MainWindow(QMainWindow):
 
         # ----------------------------------EXIT and Plots buttons
 
+
+
+
         self.ButtonLayout = QGridLayout()
         self.ButtonLayoutWidget = QWidget()
 
@@ -50,6 +54,10 @@ class MainWindow(QMainWindow):
 
         self.PlotButton = QPushButton("Plot")
         self.ButtonLayout.addWidget(self.PlotButton, 0, 1)
+
+
+
+
 
         # buttons onPress
         self.PlotButton.clicked.connect(self.show_new_window)
@@ -77,6 +85,11 @@ class MainWindow(QMainWindow):
         self.InputGrid.addWidget(self.WidgetGainInputs, 2, 0)
         self.InputGridWidget.setLayout(self.InputGrid)
         self.Mainlayout.addWidget(self.InputGridWidget)
+
+
+
+
+
 
 
 
@@ -155,8 +168,8 @@ class AnotherWindow(QScrollArea):
 
         # ----------------
 
-        unit_Cell_Len = microMeters_to_Meters(2300)
-        width_unloaded = microMeters_to_Meters(1.49)
+        unit_Cell_Len = micro_meters_to_meters(2300)
+        width_unloaded = micro_meters_to_meters(1.49)
         width_loaded = width_unloaded * 1.2
 
         D0 = .0007666666666666666666
@@ -167,8 +180,8 @@ class AnotherWindow(QScrollArea):
 
         # ---------------------------- SC inputs
         er = 10
-        Height = nanoMeters_to_Meters(250)
-        line_thickness = nanoMeters_to_Meters(60)
+        Height = nano_meters_to_meters(250)
+        line_thickness = nano_meters_to_meters(60)
         Tc = 14.28
         T = 0
         pn = 1.008e-6

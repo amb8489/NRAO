@@ -55,8 +55,8 @@ class TableModel(QtCore.QAbstractTableModel):
 
             if orientation == Qt.Horizontal:
                 if section == 0:
-                    return str(f"Hight [unit]")
-                return str(f"Width [unit]")
+                    return str(f"Widths [unit]")
+                return str(f"Lengths [unit]")
 
     def removeRows(self, position, rows, QModelIndex):
         self.beginRemoveRows(QModelIndex, position, position + rows - 1)

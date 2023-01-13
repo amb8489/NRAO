@@ -18,37 +18,30 @@ def CalculateBetas(FloquetLine, FreqRange):
     return Betas
 
 
-def Calc_Gain(FloquetLine, Resolution, PumpFreq, init_amplitudes, L):
-    Frequencys = np.linspace(.5e9, PumpFreq * 2, Resolution)
-    z = np.linspace(0, FloquetLine.Unit_Cell_Len, Resolution)
+def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
+    frequencys = np.linspace(.5e9, pump_freq * 2, resolution)
+    z = np.linspace(0, floquet_line.unit_cell_length, resolution)
 
-    # step 1 calc beta for given range and resolution (betas for signal freq)
-    betas = FloquetLine.unfold(CalculateBetas(FloquetLine, Frequencys))
+    # step 1) calc unfolded beta for given range and resolution (betas for signal freq)
+    beta_signal = floquet_line.unfold(CalculateBetas(floquet_line, frequencys))
 
-    # step 2 find the beta for pumpFreq
-    beta_pump = betas[np.searchsorted(Frequencys, PumpFreq)]
+    # step 2) find the beta for pumpFreq
+    beta_pump = beta_signal[np.searchsorted(frequencys, pump_freq)]
 
-    # step 3 calc beta for all idler freqencys
-    # todo (PumpFreq*2) - FreqRange may need to be reversed
-    beta_idler = betas[np.searchsorted(Frequencys, (PumpFreq * 2) - Frequencys)]
+    # step 3) calc beta for all idler freqencys
+    # todo (pump_freq*2) - FreqRange may need to be reversed
+    beta_idler = beta_signal[np.searchsorted(frequencys, (pump_freq * 2) - frequencys)]
 
-    # step 4 calc gain for each freq using betas calced above and other init vars
+    # step 4) calc gain for each freq using betas calced above and other init vars
     gain = []
-    for i in range(len(Frequencys)):
-        # todo generalize amplitude equations into a class maybe that holds all AmplitudeEqs1Args info and what equations to use?
-        AmplitudeEqs1Args = (betas[i], beta_idler[i], beta_pump)
+    for i in range(len(frequencys)):
+        # todo generalize amplitude equations into a class maybe that holds all amplitude_eqs1_args info and what equations to use?
+        amplitude_eqs1_args = (beta_signal[i], beta_idler[i], beta_pump)
 
-        # opt split up into multipul proceses then recombine
-        gain.append(Solve_ode(init_amplitudes, AmplitudeEqs1, AmplitudeEqs1Args, z, L))
+        # opt split up into multiple processes then recombine
+        gain.append(Solve_ode(init_amplitudes, AmplitudeEqs1, amplitude_eqs1_args, z, L))
 
     # todo gain into dB
     # todo into Istar
     # todo calc power
     return gain
-
-
-As_init = 0
-Ai_init = 0
-Ap_init = 0
-
-init_amplitudes = [As_init, Ai_init, Ap_init]

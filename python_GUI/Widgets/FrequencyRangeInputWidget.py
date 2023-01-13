@@ -13,7 +13,7 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         super(WidgetFrequencyInputs, self).__init__(*args, **kwargs)
 
         self.Title = "Frequency"
-        self.inputnames = ["Start Freq [GHz]", "End Freq [GHz]", "Resolution"]
+        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
 
         self.setLayout(QGridLayout())
         self.layout().addWidget(QLabel(self.Title), 0, 0)

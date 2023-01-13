@@ -4,30 +4,30 @@ import scipy
 from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.Abstract_Floquet_Line import AbstractFloquetLine
 from Fluqet_Line_Equations.FloquetLineDimensions import FloquetLineDimensions
-from Utills.Functions import MultMats
+from Utills.Functions import mult_mats
 from Utills.Constants import PI, PI2
 import time
 
 
 class SuperConductingFloquetLine(AbstractFloquetLine):
 
-    def __init__(self, unit_Cell_Len, D0, left_to_right_load_lengths, Load_line_models, Central_line_model,
-                 super_conductivity_model, central_Line_width, Load_widths, line_thickness, Jc):
+    def __init__(self, unit_cell_length, D0, load_lengths, load_line_models, central_line_model,
+                 super_conductivity_model, central_line_width, load_widths, line_thickness, crit_current):
 
         # ---------------------------- unit cell inputs
-        self.Unit_Cell_Len = unit_Cell_Len
-        self.central_Line_width = central_Line_width
-        self.Load_widths = Load_widths
+        self.unit_cell_length = unit_cell_length
+        self.central_Line_width = central_line_width
+        self.load_widths = load_widths
 
         # model of FloquetLineDimensions dimensions
-        self.FlLineDims = FloquetLineDimensions(unit_Cell_Len, D0, left_to_right_load_lengths, line_thickness,
-                                                Load_line_models, Central_line_model)
+        self.FlLineDims = FloquetLineDimensions(unit_cell_length, D0, load_lengths, line_thickness,
+                                                load_line_models, central_line_model)
 
         # ---------------------------- model of the Super conductor
         self.super_conductivity_model = super_conductivity_model
 
-        self.TargetPumpZoneStart = 0
-        self.TargetPumpZoneEnd = 0
+        self.target_pump_zone_start = 0
+        self.target_pump_zone_end = 0
 
         # debug info
         self.tot = 0
@@ -106,39 +106,39 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         plt.plot(peaks[3], a[3], "x")
         plt.hlines(*peak_widths[1:], color="C2")
         plt.show()
-        # todo finish finding the TargetPumpZoneStart and TargetPumpZoneEnd
+        # todo finish finding the target_pump_zone_start and target_pump_zone_end
 
-        self.TargetPumpZoneStart = peak_widths[0]
-        self.TargetPumpZoneEnd = peak_widths[0]
-        print(self.TargetPumpZoneStart, self.TargetPumpZoneEnd)
+        self.target_pump_zone_start = peak_widths[0]
+        self.target_pump_zone_end = peak_widths[0]
+        print(self.target_pump_zone_start, self.target_pump_zone_end)
 
     def unfold(self, betas):
 
         betas = np.abs(betas)
-        prevBeta = 0
-        scaleFactor = -PI2
-        shouldFlip = False
+        prev_beta = 0
+        scale_factor = -PI2
+        should_flip = False
         res = []
         for b in betas:
 
             temp = b
 
-            if b <= prevBeta:
+            if b <= prev_beta:
                 # REFLACTION OVER Y = PI
                 b += 2 * (PI - b)
 
-                if shouldFlip:
-                    shouldFlip = not shouldFlip
+                if should_flip:
+                    should_flip = not should_flip
 
-            elif b > prevBeta:
-                if not shouldFlip:
+            elif b > prev_beta:
+                if not should_flip:
                     # TRANSLATE UP NO REFLECTION
-                    scaleFactor += PI2
-                    shouldFlip = not shouldFlip
+                    scale_factor += PI2
+                    should_flip = not should_flip
 
-            res.append(b + scaleFactor)
+            res.append(b + scale_factor)
 
-            prevBeta = temp
+            prev_beta = temp
 
         return res
 
@@ -146,7 +146,7 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         # frequency cant be too low
         freq = max(freq, 1e9)
 
-        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.pn
+        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.normal_resistivity
         # calc surface impedence Zs for super conductor
 
         s = time.time()
@@ -163,7 +163,7 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
             abcd_mats.append(self.ABCD_TL(Zc, gamma, self.FlLineDims.get_segment_len(unit_cell_segment_idx)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
-        Unitcell_ABCD_Mat = MultMats(abcd_mats)
+        Unitcell_ABCD_Mat = mult_mats(abcd_mats)
 
         # ---------------------------- calc bloch impedance and propagation const for unit cell
 
@@ -173,14 +173,14 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         # calculate circuit factors
         R, L, G, C = self.RLGC(propagation_const, Bloch_impedance1)
 
-        t = self.Transmission(100, 50, Bloch_impedance1, Bloch_impedance2, self.Unit_Cell_Len, propagation_const)
+        t = self.Transmission(100, 50, Bloch_impedance1, Bloch_impedance2, self.unit_cell_length, propagation_const)
 
         a = propagation_const.real
         bta = propagation_const.imag
         r = Bloch_impedance1.real
         x = Bloch_impedance1.imag
 
-        # CentralLineMat = self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,self.Unit_Cell_Len)
+        # CentralLineMat = self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,self.unit_cell_length)
         # a =  Unloaded_propagation.imag
 
         return a, t, bta, r, x, R, L, G, C

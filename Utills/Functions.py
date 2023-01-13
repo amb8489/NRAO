@@ -37,15 +37,15 @@ def toGHz(f):
     return f * 1e9
 
 
-def microMeters_to_Meters(x):
+def micro_meters_to_meters(x):
     return x / 1e+6
 
 
-def nanoMeters_to_Meters(x):
+def nano_meters_to_meters(x):
     return x / 1e+9
 
 
-def mm_To_Meters(n):
+def mm_to_meters(n):
     return n / 1000
 
 
@@ -62,7 +62,7 @@ def find_idx_of_closest_value(list, value):
     return idx
 
 
-def Mult2x2Mat(mat1: [[float]], mat2: [[float]]):
+def mult_2x2_mat(mat1: [[float]], mat2: [[float]]):
     # definition of matrix mult for 2x2 * 2x2
     return [
         [mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0], mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1]],
@@ -70,12 +70,12 @@ def Mult2x2Mat(mat1: [[float]], mat2: [[float]]):
 
 
 
-def MultMats(mats):
+def mult_mats(mats):
     # input is an array of 2x2 matrices
     # does a matrix multiplication of all 2x2 matrices passed in,in array
     res = mats[0]
     for mat in mats[1:]:
-        res = Mult2x2Mat(res, mat)
+        res = mult_2x2_mat(res, mat)
     return res
 
 

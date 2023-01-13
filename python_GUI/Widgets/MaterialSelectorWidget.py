@@ -30,7 +30,7 @@ class TableModel(QtCore.QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "pn", "tand","other"]
+                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand","other"]
                 return headers[section]
 
             if orientation == Qt.Vertical:
@@ -51,7 +51,7 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         self.Title = "Material Properties"
-        self.inputnames = ["Start Freq [GHz]", "End Freq [GHz]", "Resolution"]
+        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
 
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 

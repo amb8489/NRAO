@@ -13,7 +13,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
         super(WidgetGainInputs, self).__init__(*args, **kwargs)
 
         self.Title = "Gain"
-        self.inputnames = ["As0", "Ai0", "Ap0", "Pump Frequency [GHz]"]
+        self.inputnames = ["As0", "Ai0", "Ap0", "Pump Frequency [GHZ]"]
 
         self.setLayout(QGridLayout())
         self.layout().addWidget(QLabel(self.Title), 0, 0)

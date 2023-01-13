@@ -1,7 +1,7 @@
 from flask import Flask, request
 from Server.runGraphs import mkGraphs
-from Utills.Functions import nanoMeters_to_Meters, microMeters_to_Meters, toGHz, microMeters_to_Meters, \
-    nanoMeters_to_Meters
+from Utills.Functions import nano_meters_to_meters, micro_meters_to_meters, toGHz, micro_meters_to_meters, \
+    nano_meters_to_meters
 
 app = Flask(__name__)
 
@@ -20,13 +20,13 @@ def get_query_from_react():
         resolution = int(data['resolution'])
 
         Er = float(data['Er'])
-        H = nanoMeters_to_Meters(float(data['H']))
-        Jc = float(data['Jc'])
+        H = nano_meters_to_meters(float(data['h']))
+        Jc = float(data['crit_current'])
         Pn = float(data['Pn'])
-        Tc = float(data['Tc'])
+        Tc = float(data['crit_temp'])
         Temp = float(data['Temp'])
-        Tg = nanoMeters_to_Meters(float(data['Tg']))
-        Ts = nanoMeters_to_Meters(float(data['Ts']))
+        Tg = nano_meters_to_meters(float(data['Tg']))
+        Ts = nano_meters_to_meters(float(data['Ts']))
         tand = float(data['tand'])
 
         # Wl = microMeter_to_Meters(float(data['Wl']))
@@ -57,8 +57,8 @@ def get_query_from_react():
     graphData = {}
 
     # ------ START remove later in replacement of user input
-    unit_Cell_Len = microMeters_to_Meters(2300)
-    width_unloaded = microMeters_to_Meters(1.49)
+    unit_Cell_Len = micro_meters_to_meters(2300)
+    width_unloaded = micro_meters_to_meters(1.49)
     width_loaded = width_unloaded * 1.2
 
     D0 = .0007666666666666666666
@@ -69,8 +69,8 @@ def get_query_from_react():
 
     # ---------------------------- SC inputs
     er = 10
-    Height = nanoMeters_to_Meters(250)
-    line_thickness = nanoMeters_to_Meters(60)
+    Height = nano_meters_to_meters(250)
+    line_thickness = nano_meters_to_meters(60)
     Tc = 14.28
     T = 0
     pn = 1.008e-6
