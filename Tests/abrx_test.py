@@ -67,19 +67,7 @@ YYI = gamma * gamma * I  # TODO
 # ---------------------------- plots----------------------------
 
 
-
 # exit(999)
-
-
-
-
-
-
-
-
-
-
-
 
 
 fig, (plt1, plt2, plt3, plt4, plt5, plt6) = plt.subplots(6)
@@ -89,12 +77,15 @@ plt1.plot(FRange, beta_plt)
 plt1.set_title('beta_plt Unfolded')
 plt1.plot(FRange, floquet_line.unfold(beta_plt))
 
-plt2.set_title('Alpha')
-floquet_line.FindPumpZone(3,np.array(alpha_plt))
-
+plt2.set_title('Alpha/beta scaled')
+floquet_line.FindPumpZone(3, np.array(alpha_plt))
 print(floquet_line.target_pump_zone_start)
-plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)], facecolor='b', alpha=0.3)
-plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start/3)], FRange[int(floquet_line.target_pump_zone_end/3)], facecolor='g', alpha=0.5)
+plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
+             facecolor='b', alpha=0.3)
+plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)], FRange[int(floquet_line.target_pump_zone_end / 3)],
+             facecolor='g', alpha=0.5)
+
+
 plt2.plot(FRange, alpha_plt)
 
 plt3.set_title('R')
