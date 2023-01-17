@@ -12,22 +12,28 @@ class WidgetSCInputs(QtWidgets.QWidget):
         super(WidgetSCInputs, self).__init__(*args, **kwargs)
 
 
-        self.Title = "Super Conductor"
-        self.inputnames = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand"]
-
-
         self.setLayout(QGridLayout())
+
+        # title
+        self.Title = "Super Conductor"
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
 
+        # inputs
+        self.inputnames = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand"]
         self.inputs = []
         for j in range(len(self.inputnames)):
             input = WidgetDoubleInput(self.inputnames[j])
             self.layout().addWidget(input, 1, j)
             self.inputs.append(input)
 
+        
+        # set widget color
+        self.setBackGroundColor("#057878")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#057878"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

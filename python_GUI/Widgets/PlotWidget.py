@@ -27,17 +27,23 @@ class WidgetGraph(QtWidgets.QWidget):
     def __init__(self, title,Xdata,Ydata, *args, **kwargs):
         super(WidgetGraph, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
+
+        # matpltlib plot
         self.plt = MplCanvas(Xdata,Ydata,title=title, width=4, height=4, dpi=100)
+
+        # navbar for plot
         self.layout().addWidget(NavigationToolbar(self.plt, self))
         self.layout().addWidget(self.plt)
 
-        palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(randomColorBright()))
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
-
-        # self.setFixedWidth(400)
-        # self.setFixedHeight(400)
-
+        # size policy
         self.setMinimumWidth(250)
         self.setMinimumHeight(250)
+
+        # set widget color
+        self.setBackGroundColor(randomColorBright())
+
+    def setBackGroundColor(self, hex_color: str):
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(hex_color))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)

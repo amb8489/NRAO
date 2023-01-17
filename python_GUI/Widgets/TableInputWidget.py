@@ -99,14 +99,19 @@ class TableInputWidget(QtWidgets.QWidget):
 
         self.onChange = onChange
 
+        # input for load number selection
         self.NloadsInput = WidgetDoubleInput("Number of loads", MinVal=1, DefaultVal=2, onchange=self.setNLoads)
-
         self.layout().addWidget(self.NloadsInput)
+
+        # inputs table
         self.table = QtWidgets.QTableView()
+
+        # table selection behavior for rows
         self.table.setSelectionBehavior(QTableView.SelectRows)
 
+        # defualt table data and table model
         defualt_n_loads = 2
-        data = [['10', '10'] for i in range(defualt_n_loads)]
+        data = [[0] * defualt_n_loads for i in range(defualt_n_loads)]
         self.model = TableModel(data, self.onChange)
         self.table.setModel(self.model)
 
@@ -117,9 +122,12 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
-        # background color
+        # set widget color
+        self.setBackGroundColor("#FFFFFF")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
