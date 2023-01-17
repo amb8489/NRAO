@@ -163,8 +163,6 @@ class TableInputWidget(QtWidgets.QWidget):
 
     def SelectRow(self, idx):
 
-        print(f"selecting idx: {idx}")
-
         model = self.table.model()  # get data model for indexes.
         selection = QItemSelection()
         model_index = model.index(idx, 0)

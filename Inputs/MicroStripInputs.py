@@ -47,3 +47,5 @@ class MicroStripInputs():
         self.Ai_init = 0
         self.Ap_init = 300000
         self.pump_freq = 6.772e9
+
+        self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)

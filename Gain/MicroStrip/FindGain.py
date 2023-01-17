@@ -13,7 +13,7 @@ from Gain.MicroStrip.solveODEs import Solve_ode
 def CalculateBetas(FloquetLine, FreqRange):
     Betas = []
     for F in FreqRange:
-        _, _, beta, _, _, _, _, _ = FloquetLine.abrx(F)
+        a, t, beta, r, x, R, L, G, C = FloquetLine.abrx(F)
         Betas.append(beta)
     return Betas
 
@@ -23,7 +23,7 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     z = np.linspace(0, floquet_line.unit_cell_length, resolution)
 
     # step 1) calc unfolded beta for given range and resolution (betas for signal freq)
-    beta_signal = floquet_line.unfold(CalculateBetas(floquet_line, frequencys))
+    beta_signal = np.array(floquet_line.unfold(CalculateBetas(floquet_line, frequencys)))
 
     # step 2) find the beta for pumpFreq
     beta_pump = beta_signal[np.searchsorted(frequencys, pump_freq)]
@@ -44,4 +44,4 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     # todo gain into dB
     # todo into Istar
     # todo calc power
-    return gain
+    return frequencys,gain
