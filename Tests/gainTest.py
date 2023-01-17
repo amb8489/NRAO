@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from Gain.MicroStrip.solveODEs import Solve_ode
 from Gain.AmplitudeEquations.AmplitudeEquations1 import AmplitudeEqs1
+from Inputs.MicroStripInputs import MicroStripInputs
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 from Utills.Functions import nano_meters_to_meters, micro_meters_to_meters
@@ -55,76 +56,31 @@ def calcGain(As_init, Ai_init, Ap_init, pump_freq, d, Floquet_line, resolution, 
 if __name__ == "__main__":
     # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission-lines.pdf on MS
 
-    StartFreq, EndFreq, resolution = 1e9, 7e9, 1000
-    # ---------------------------- unit cell inputs from paper
-    unit_Cell_Len = micro_meters_to_meters(2300)
-    l1 = micro_meters_to_meters(50)
-    width_unloaded = micro_meters_to_meters(1.49)
-    width_loaded = width_unloaded * 1.2
+    MSinputs = MicroStripInputs()
 
-    D0 = .0007666666666666666666
-    D1 = 5e-5
-    D2 = 5e-5
-    D3 = .0001
-    loads_Widths = [D1, D2, D3]
-    number_of_loads = len(loads_Widths)
+    MSinputs = MicroStripInputs()
 
-    # ---------------------------- SC inputs
-    er = 10
-    Height = nano_meters_to_meters(250)
-    line_thickness = nano_meters_to_meters(60)
-    ground_thickness = nano_meters_to_meters(300)
-    Tc = 14.28
-    T = 4
-    pn = 1.008e-6
-    tanD = 0
-    Jc = 1
+    # ---------------------------- dependency models ----------------------------
+    super_conductivity_model = SuperConductivity(MSinputs.op_temp, MSinputs.crit_temp, MSinputs.normal_resistivity)
+    Central_line_model = SuperConductingMicroStripModel(MSinputs.height, MSinputs.central_line_width,
+                                                        MSinputs.line_thickness, MSinputs.er, MSinputs.tangent_delta,
+                                                        MSinputs.crit_current)
+    Load_line_models = [
+        SuperConductingMicroStripModel(MSinputs.height, width, MSinputs.line_thickness, MSinputs.er,
+                                       MSinputs.tangent_delta,
+                                       MSinputs.crit_current) for width in MSinputs.load_widths]
 
-    # secoind paper inputs
-    # ---------------------------- unit cell inputs from paper
-    # width_unloaded = microMeters_to_Meters(1)
-    # width_loaded = microMeters_to_Meters(4)
-    # D0 = mm_To_Meters(1.34)
-    # D1 = microMeters_to_Meters(100)
-    # D2 = microMeters_to_Meters(100)
-    # D3 = microMeters_to_Meters(95)
-    # unit_cell_length = mm_To_Meters(4.02)
-    #
-    # in_order_loads_widths = [D1, D2, D3]
-    # number_of_loads = len(in_order_loads_widths)
-    #
-    # # ---------------------------- SC inputs
-    # height = nanoMeters_to_Meters(300)
-    # line_thickness = nanoMeters_to_Meters(60)
-    # ground_thickness = nanoMeters_to_Meters(300)
-    # crit_temp = 14.7
-    # op_temp = 4  # what equatioins to use when temp is > 0
-    # normal_resistivity = 0.00000132
-    # er = 11.44
-    # tangent_delta = 1.48351e-5
-    # crit_current = 1
-
-    # ---------------------------- models of the MicroStripModel -
-    #                      one for an unloaded line , one for a loaded line
-    loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
-    unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
-
-    # ---------------------------- model of the Super conductor
-    super_conductivity_model = SuperConductivity(T, Tc, pn)
-
-    # ---------------------------- model of the floquet line
-    Floquet_line = SuperConductingFloquetLine(unit_Cell_Len, D0, loads_Widths, loaded_line_model, unloaded_line_model,
-                                              super_conductivity_model, width_unloaded, width_loaded, line_thickness,
-                                              Jc)
+    Floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_lengths,
+                                              Load_line_models,
+                                              Central_line_model,
+                                              super_conductivity_model, MSinputs.central_line_width,
+                                              MSinputs.load_widths,
+                                              MSinputs.line_thickness, MSinputs.crit_current)
 
     # ---------------------------- gain inputs
 
-    # todo make inputs complex
-    As_init = 100
-    Ai_init = 0
-    Ap_init = 300000
-    pump_freq = 6.772e9
-    # todo get value for I
+
+
 
     """
     The term I∗ is proportional to I∗′/√α∗, where I∗′ is a parameter comparable to the critical current ic, and α∗ is 
@@ -132,4 +88,4 @@ if __name__ == "__main__":
     
     """
 
-    calcGain(As_init, Ai_init, Ap_init, pump_freq, unit_Cell_Len, Floquet_line, resolution)
+    calcGain(MSinputs.As_init, MSinputs.Ai_init, MSinputs.Ap_init, MSinputs.pump_freq, MSinputs.unit_cell_length, Floquet_line, MSinputs.resoultion)

@@ -3,7 +3,6 @@ import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QLabel, QTableView
-from python_GUI.utillsGUI import randomColor
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt
@@ -51,16 +50,15 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         self.Title = "Material Properties"
-        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
-
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
-        self.table = QtWidgets.QTableView()
+
+
 
         # table
+        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
+        self.table = QtWidgets.QTableView()
         self.table.setSelectionBehavior(QTableView.SelectRows)
-
-
 
         # table data
         size = 10
@@ -69,22 +67,33 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
             columns=[f'Col {i}' for i in range(size)],
             index=[f'Row {i}' for i in range(size)], )
 
+
+        # table moedel
         self.model = TableModel(data)
         self.table.setModel(self.model)
+
+        # setting row selections
         self.table.selectionModel().selectionChanged.connect(self.prow)
 
-        # size policy
+        # table size policy
         self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.table.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)  # ---
+        self.table.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
-        # background color
+
+        # table
+        self.layout().addWidget(self.table, 1, 0)
+
+
+
+        # set widget color
+        self.setBackGroundColor("#5b80bd")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#5b80bd"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
-
-        self.layout().addWidget(self.table, 1, 0)
 
     def prow(self):
         self.onchange(self.getFirstSelectedRow())

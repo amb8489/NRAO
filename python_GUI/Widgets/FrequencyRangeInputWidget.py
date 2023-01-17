@@ -12,17 +12,29 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
 
         super(WidgetFrequencyInputs, self).__init__(*args, **kwargs)
 
-        self.Title = "Frequency"
-        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
-
         self.setLayout(QGridLayout())
+
+
+
+        # widget title
+        self.Title = "Frequency"
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
+
+
+        # inputs for freq range and res
+        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
         for j in range(len(self.inputnames)):
             self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j)
 
+
+
+        # set widget color
+        self.setBackGroundColor("#057878")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#057878"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

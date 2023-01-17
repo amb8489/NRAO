@@ -7,10 +7,9 @@ from Inputs.MicroStripInputs import MicroStripInputs
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 
-
-
 # ---------------------------- unit cell inputs from paper
 MSinputs = MicroStripInputs()
+
 
 def simulate():
     # ---------------------------- inputs ----------------------------
@@ -48,9 +47,7 @@ def simulate():
         x.append(xx)
         transmission.append(t)
 
-
-
     return {
-        "freqs":FRange.tolist(),
-        "alpha":a
+        "freqs": FRange.tolist(),
+        "alpha": a
     }

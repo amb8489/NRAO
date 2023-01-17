@@ -3,10 +3,12 @@ from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters, toGH
 
 class MicroStripInputs():
     def __init__(self):
-        # ---------------------------- unit cell inputs from paper
+        # ---------------------------- range and resolution inputs
         self.resoultion = 1000
         self.start_freq_GHz = toGHz(1)
         self.end_freq_GHz = toGHz(25)
+
+        # ---------------------------- unit cell inputs
 
         self.unit_cell_length = micro_meters_to_meters(2300)
         self.l1 = micro_meters_to_meters(50)
@@ -37,3 +39,11 @@ class MicroStripInputs():
         self.normal_resistivity = 1.008e-6
         self.tangent_delta = 0
         self.crit_current = 200000000
+
+        # ---------------------------- Gain inputs
+        # todo make inputs complex
+
+        self.As_init = 100
+        self.Ai_init = 0
+        self.Ap_init = 300000
+        self.pump_freq = 6.772e9

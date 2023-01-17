@@ -25,8 +25,13 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.input)
 
+
+
+        self.setBackGroundColor("#a89b74")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#d98b8b"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 

@@ -6,7 +6,7 @@ from python_GUI.plotData import simulate
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
 from python_GUI.Widgets.GainInputWidget import WidgetGainInputs
-from python_GUI.Widgets.MaterialSelectorWidget import  WidgetMaterialsSelect
+from python_GUI.Widgets.MaterialSelectorWidget import WidgetMaterialsSelect
 from python_GUI.Widgets.PlotWidget import WidgetGraph
 from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
@@ -37,14 +37,10 @@ class MainWindow(QMainWindow):
         self.showMaterialsWidget = False
         self.scroll = QScrollArea()
         self.ROOT = QWidget()
-
         self.Mainlayout = QVBoxLayout()
         self.plotWindow = None  # No external window yet.
 
         # ----------------------------------EXIT and Plots buttons
-
-
-
 
         self.ButtonLayout = QGridLayout()
         self.ButtonLayoutWidget = QWidget()
@@ -54,10 +50,6 @@ class MainWindow(QMainWindow):
 
         self.PlotButton = QPushButton("Plot")
         self.ButtonLayout.addWidget(self.PlotButton, 0, 1)
-
-
-
-
 
         # buttons onPress
         self.PlotButton.clicked.connect(self.show_new_window)
@@ -85,13 +77,6 @@ class MainWindow(QMainWindow):
         self.InputGrid.addWidget(self.WidgetGainInputs, 2, 0)
         self.InputGridWidget.setLayout(self.InputGrid)
         self.Mainlayout.addWidget(self.InputGridWidget)
-
-
-
-
-
-
-
 
         line = Line(self.dimensionsInputWidget.tableInput)
         self.Mainlayout.addWidget(line)
@@ -125,7 +110,7 @@ class MainWindow(QMainWindow):
         widgets = [self.WidgetGainInputs, self.freqRangeWidget, self.SCW, self.dimensionsInputWidget]
 
         for widget in widgets:
-            print(widget.getValues())
+            print(widget.getTableValues())
 
     def show_new_window(self, checked):
 

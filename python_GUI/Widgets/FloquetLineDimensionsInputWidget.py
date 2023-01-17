@@ -59,7 +59,7 @@ class Line(QtWidgets.QWidget):
         for i in range(len(self.Widths) * 2 + 1):
             if i % 2 == 0:
 
-                r = bar(False, i, self.centralLineW, self.centralLineW)
+                r = rectangleWidget(False, i, self.centralLineW, self.centralLineW)
                 r.setMaximumHeight(self.centralLineW)
                 self.grid.addWidget(r, 1, i)
 
@@ -69,7 +69,7 @@ class Line(QtWidgets.QWidget):
                 h = self.Heights[loadIdx]
                 loadIdx += 1
 
-                r = bar(True, loadIdx, w, h, onClick=self.table.SelectRow)
+                r = rectangleWidget(True, loadIdx, w, h, onClick=self.table.SelectRow)
                 r.setMaximumHeight(h)
                 r.setMaximumWidth(w)
 
@@ -104,15 +104,15 @@ class Line(QtWidgets.QWidget):
         self.Heights = (loadHeights / max(loadHeights)) * self.maxsize
 
 
-class bar(QtWidgets.QWidget):
+# widget for rectangleWidget
+class rectangleWidget(QtWidgets.QWidget):
 
     def __init__(self, isLoad, tableIdx, w, h, onClick=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.onClick = onClick
         self.w, self.h = w, h
+        self.onClick = onClick
         self.idxInTable = tableIdx
-        layout = QtWidgets.QHBoxLayout()
 
         self.setSizePolicy(
             QtWidgets.QSizePolicy.MinimumExpanding,
@@ -123,16 +123,16 @@ class bar(QtWidgets.QWidget):
         if isLoad:
             color = randomColorBright()
 
+        # set widget color
+        self.setBackGroundColor(color)
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(color))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
-        self.setLayout(layout)
-
-        # self.clicked.connect(lambda :print("clicked"))
 
     def mousePressEvent(self, event):
-
         if self.onClick:
             print("clicked")
 
@@ -145,30 +145,40 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
-        self.Title = "Dimensions"
         self.HideLine = False
-        self.inputnames = ["Unit Cell Length []", "Central Line Width []"]
 
+        # main layout
         self.setLayout(QGridLayout())
+
+        # component title
+        self.Title = "Dimensions"
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
-        self.InputWidget = QWidget()
+        # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
+        self.inputnames = ["Unit Cell Length []", "Central Line Width []"]
+
         for col in range(len(self.inputnames)):
             self.container.addWidget(WidgetDoubleInput(self.inputnames[col]))
+
+        self.InputWidget = QWidget()
         self.InputWidget.setLayout(self.container)
         self.layout().addWidget(self.InputWidget, 1, 1, Qt.AlignVCenter)
 
+        # table for load widths and lengths inputs
         self.tableInput = TableInputWidget()
-
         self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 
+        # set widget color
+        self.setBackGroundColor("#057878")
+
+    def setBackGroundColor(self, hex_color: str):
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#057878"))
+        palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def getValue(self):
+    def getTableValues(self):
         return self.tableInput.getData()
 
     def getHeights(self):
