@@ -125,8 +125,8 @@ class MainWindow(QMainWindow):
 
 class AnotherWindow(QScrollArea):
     """
-    This "window" is a QWidget. If it has no parent, it
-    will appear as a free-floating window as we want.
+    This "window" is alpha_plt QWidget. If it has no parent, it
+    will appear as alpha_plt free-floating window as we want.
     """
 
     def __init__(self):

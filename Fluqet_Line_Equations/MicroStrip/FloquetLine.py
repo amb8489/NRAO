@@ -2,6 +2,8 @@ import cmath
 import numpy as np
 import scipy
 from matplotlib import pyplot as plt
+from scipy.signal import find_peaks, peak_widths
+
 from Fluqet_Line_Equations.Abstract_Floquet_Line import AbstractFloquetLine
 from Fluqet_Line_Equations.FloquetLineDimensions import FloquetLineDimensions
 from Utills.Functions import mult_mats
@@ -85,32 +87,29 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
                  (- 1 + cmath.exp(2 * Unit_Cell_Len * Ncells * pb)) * (zb1 * zb2 - (z0 ** 2))))
 
     '''
-     the calculation of a, b, b-unfolded, r, x
+     the calculation of alpha_plt, b, b-unfolded, r, x
      '''
 
-    def FindPumpZone(self, alphas):
+    def FindPumpZone(self, peak_number, alphas):
 
-        harmonic_number_to_filter = 3
+        x = np.array(alphas)
+        peaks, _ = find_peaks(x, prominence=.005)
 
-        a = np.array(alphas)
-        peaks, _ = scipy.signal.find_peaks(alphas)
-
-        if len(peaks) < harmonic_number_to_filter:
+        if len(peaks) < peak_number:
+            self.target_pump_zone_start, self.target_pump_zone_end = 0, 0
             return
 
-        peak_widths = scipy.signal.peak_widths(alphas, peaks, rel_height=0.95)
 
-        peak_widths = [[a[harmonic_number_to_filter]] for a in peak_widths]
 
-        plt.plot(a)
-        plt.plot(peaks[3], a[3], "x")
-        plt.hlines(*peak_widths[1:], color="C2")
-        plt.show()
-        # todo finish finding the target_pump_zone_start and target_pump_zone_end
+        y, self.target_pump_zone_start, self.target_pump_zone_end = \
+            list(zip(*peak_widths(x, peaks, rel_height=.95)[1:]))[max(peak_number - 1, 0)]
 
-        self.target_pump_zone_start = peak_widths[0]
-        self.target_pump_zone_end = peak_widths[0]
-        print(self.target_pump_zone_start, self.target_pump_zone_end)
+        # plt.axvspan(self.target_pump_zone_start, self.target_pump_zone_end, facecolor='r', alpha=0.5)
+        # plt.axvspan(self.target_pump_zone_start // 3, self.target_pump_zone_end // 3, facecolor='g', alpha=0.5)
+        # plt.plot(x)
+        # plt.plot(betas)
+        # plt.plot(peaks, x[peaks], "x")
+        # plt.show()
 
     def unfold(self, betas):
 
@@ -146,7 +145,7 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         # frequency cant be too low
         freq = max(freq, 1e9)
 
-        # opt would be to store after first run all conductivity values for a given  freq rannge for a given  self.op_temp, self.critical_Temp, self.normal_resistivity
+        # opt would be to store after first run all conductivity values for alpha_plt given  freq rannge for alpha_plt given  self.op_temp, self.critical_Temp, self.normal_resistivity
         # calc surface impedence Zs for super conductor
 
         s = time.time()
@@ -181,6 +180,6 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         x = Bloch_impedance1.imag
 
         # CentralLineMat = self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,self.unit_cell_length)
-        # a =  Unloaded_propagation.imag
+        # alpha_plt =  Unloaded_propagation.imag
 
         return a, t, bta, r, x, R, L, G, C

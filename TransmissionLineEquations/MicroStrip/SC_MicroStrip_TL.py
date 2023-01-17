@@ -158,7 +158,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
                     
              Implementation of the paper of Yassin
              Electromagnetic models for superconducting millimetre-wave and
-             sub-milLimetre-wave microstrip transmission lines
+             sub-milLimetre-wave microstrip transmission_plt lines
     """
 
     # ------ helper functions ----------
@@ -362,22 +362,22 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return self.Kl(w, h, t) / w
 
     """
-    series impedance of a TEM transmission line
+    series impedance of alpha_plt TEM transmission_plt line
     ko is the free-space wavenumber
     No is the impedance of free space
     Zs, is the surface impedance of the conductors
-    g1 and g2 are geometrical factors, which characterize the particular transmission line being used.
+    g1 and g2 are geometrical factors, which characterize the particular transmission_plt line being used.
     """
 
     def series_impedance_Z(self, Zs, g1, g2, f):
         return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
 
     """
-    shunt admittance of a TEM transmission line
+    shunt admittance of alpha_plt TEM transmission_plt line
     ko is the free-space wavenumber
     No is the impedance of free space
     epsilon_fm the effective dielectric constant -- in the modal sense.
-    g1 is a geometrical factor, which characterize the particular transmission line being used.
+    g1 is alpha_plt geometrical factor, which characterize the particular transmission_plt line being used.
     """
 
     def shunt_admittance_Y(self, epsilon_fm, g1, f):

@@ -15,7 +15,7 @@ from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductin
 
 
 if __name__ == "__main__":
-    # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission-lines.pdf on MS
+    # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission_plt-lines.pdf on MS
 
     MSinputs = MicroStripInputs()
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # ---------------------------- gain inputs
 
     """
-    The term I∗ is proportional to I∗′/√α∗, where I∗′ is a parameter comparable to the critical current ic, and α∗ is 
+    The term I∗ is proportional to I∗′/√α∗, where I∗′ is alpha_plt parameter comparable to the critical current ic, and α∗ is 
     the ratio of kinetic inductance to total inductance.
     
     """

@@ -15,12 +15,12 @@ def coth(x):
     return 1 / math.tanh(x)
 
 
-# Computes the hyperbolic secant of 𝑥 if x is a complex number
+# Computes the hyperbolic secant of 𝑥 if x is alpha_plt complex number
 def csech(x):
     return 1 / cmath.cosh(x)
 
 
-# Computes the hyperbolic tangent of 𝑥 if x is a complex number
+# Computes the hyperbolic tangent of 𝑥 if x is alpha_plt complex number
 def ccoth(x):
     return 1 / cmath.tanh(x)
 
@@ -50,7 +50,7 @@ def mm_to_meters(n):
 
 
 def find_idx_of_closest_value(list, value):
-    """Returns the closest value to value in a sorted list.
+    """Returns the closest value to value in alpha_plt sorted list.
 
     If two numbers are equally close, return the smallest number.
     """
@@ -72,7 +72,7 @@ def mult_2x2_mat(mat1: [[float]], mat2: [[float]]):
 
 def mult_mats(mats):
     # input is an array of 2x2 matrices
-    # does a matrix multiplication of all 2x2 matrices passed in,in array
+    # does alpha_plt matrix multiplication of all 2x2 matrices passed in,in array
     res = mats[0]
     for mat in mats[1:]:
         res = mult_2x2_mat(res, mat)

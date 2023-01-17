@@ -13,7 +13,7 @@ def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, wi
     FreqRange = np.linspace(int(StartFreq), int(EndFreq), int(resolution))
 
     # ---------------------------- models of the MicroStripModel -
-    #                      one for an unloaded line , one for a loaded line
+    #                      one for an unloaded line , one for alpha_plt loaded line
     loaded_line_model = SuperConductingMicroStripModel(Height, width_loaded, line_thickness, er, tanD, Jc)
     unloaded_line_model = SuperConductingMicroStripModel(Height, width_unloaded, line_thickness, er, tanD, Jc)
 

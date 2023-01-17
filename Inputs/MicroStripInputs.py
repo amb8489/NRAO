@@ -4,7 +4,7 @@ from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters, toGH
 class MicroStripInputs():
     def __init__(self):
         # ---------------------------- range and resolution inputs
-        self.resoultion = 1000
+        self.resoultion = 1700
         self.start_freq_GHz = toGHz(1)
         self.end_freq_GHz = toGHz(25)
 

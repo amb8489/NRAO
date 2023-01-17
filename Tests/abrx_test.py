@@ -33,11 +33,7 @@ floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0
 # ---------------------------- calculations -------------------
 
 
-
-
-
-
-a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma, transmission = [], [], [], [], [], [], [], [], [], [], [], []
+alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
 FRange = np.linspace(MSinputs.start_freq_GHz, MSinputs.end_freq_GHz, MSinputs.resoultion)
 for F in FRange:
     aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
@@ -45,85 +41,77 @@ for F in FRange:
     LL.append(L)
     GG.append(G)
     CC.append(C)
-    beta.append(bta)
-    a.append(aa)
+    beta_plt.append(bta)
+    alpha_plt.append(aa)
     r.append(rr)
     x.append(xx)
-    transmission.append(t)
-
-    freqs.append(F)
+    transmission_plt.append(t)
 
 total = time.time() - s
 print("total time: ", time.time() - s)
 print("% calc conduct: ", (floquet_line.tot / total) * 100)
 
-
 RR, LL, GG, CC, gamma = np.array(RR), np.array(LL), np.array(GG), np.array(CC), np.array(gamma)
-
 I = .2
 I3 = I * I * I
-
 w = FRange * PI2
 WW = w * w
-
-# todo gamma*I
-
-
 CLWWI = CC * LL * WW * I
 CRwI = CC * RR * w * I
 GLwI = GG * LL * w * I
 RGI = RR * GG * I
 GLIIIwDiv3 = GG * LL * I3 * (w / 3)
 CLIIIWWDiv3 = CC * LL * I3 * (WW / 3)
-
 YYI = gamma * gamma * I  # TODO
 
 # ---------------------------- plots----------------------------
 
-# fig, a1 = plt.subplots(1)
-# a1.plot(freqs, beta)
-# a1.set_title('beta Unfolded')
-# a1.plot(freqs,Floquet_line.unfold(beta))
-# a1.axvspan(Floquet_line.target_pump_zone_start // 3, Floquet_line.target_pump_zone_end // 3, facecolor='g', alpha=0.5)
 
-fig, (a1, a2, a3, a4, a5) = plt.subplots(5)
-a1.plot(freqs, beta)
-a1.set_title('beta Unfolded')
-a1.plot(freqs, floquet_line.unfold(beta))
 
-a2.set_title('A')
-a2.plot(freqs, a)
+# exit(999)
 
-a3.set_title('R')
-a3.plot(freqs, r)
 
-a4.set_title('X')
-a4.plot(freqs, x)
+
+
+
+
+
+
+
+
+
+
+
+fig, (plt1, plt2, plt3, plt4, plt5, plt6) = plt.subplots(6)
 plt.subplots_adjust(hspace=1)
-# Floquet_line.FindPumpZone(a)
-a2.axvspan(floquet_line.target_pump_zone_start, floquet_line.target_pump_zone_end, facecolor='g', alpha=0.5)
 
+plt1.plot(FRange, beta_plt)
+plt1.set_title('beta_plt Unfolded')
+plt1.plot(FRange, floquet_line.unfold(beta_plt))
 
+plt2.set_title('Alpha')
+floquet_line.FindPumpZone(3,np.array(alpha_plt))
 
+print(floquet_line.target_pump_zone_start)
+plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)], facecolor='b', alpha=0.3)
+plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start/3)], FRange[int(floquet_line.target_pump_zone_end/3)], facecolor='g', alpha=0.5)
+plt2.plot(FRange, alpha_plt)
 
+plt3.set_title('R')
+plt3.plot(FRange, r)
 
-# # a5.plot(freqs, np.abs(CLWWI))
-# # a5.plot(freqs, np.abs(CRwI))
-# # a5.plot(freqs, np.abs(GLwI))
-# # a5.plot(freqs, np.abs(RGI))
-# # a5.plot(freqs, np.abs(GLIIIwDiv3))
-# # a5.plot(freqs, np.abs(CLIIIWWDiv3))
-# a5.plot(transmission)
-# plt.yscale("log")
+plt4.set_title('X')
+plt4.plot(FRange, x)
 
+plt5.plot(transmission_plt)
 
-
-
-
-
-
+plt.yscale("log")
+plt6.plot(FRange, np.abs(CLWWI))
+plt6.plot(FRange, np.abs(CRwI))
+plt6.plot(FRange, np.abs(GLwI))
+plt6.plot(FRange, np.abs(RGI))
+plt6.plot(FRange, np.abs(GLIIIwDiv3))
+plt6.plot(FRange, np.abs(CLIIIWWDiv3))
+plt.yscale("log")
 
 plt.show()
-
-
-

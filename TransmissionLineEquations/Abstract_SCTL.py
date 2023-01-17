@@ -16,7 +16,7 @@ class AbstractSCTL(ABC):
         pass
 
     """
-    shunt admittance of a TEM transmission line
+    shunt admittance of alpha_plt TEM transmission_plt line
     """
 
     @abstractmethod
