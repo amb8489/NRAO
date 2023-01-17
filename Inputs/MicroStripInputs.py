@@ -43,9 +43,9 @@ class MicroStripInputs():
         # ---------------------------- Gain inputs
         # todo make inputs complex
 
-        self.As_init = 100
-        self.Ai_init = 0
-        self.Ap_init = 300000
+        self.As_init = 100000
+        self.Ai_init = 1309
+        self.Ap_init = 3
         self.pump_freq = 6.772e9
 
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)

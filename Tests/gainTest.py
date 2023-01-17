@@ -46,10 +46,7 @@ if __name__ == "__main__":
 
 
     start_time = time.time()
-
-    #todo where does L comefrom in mathimatica
-    L = 500
-
+    L = 500 #todo where does L comefrom in mathimatica
     f_range, gain = Calc_Gain(floquet_line, MSinputs.resoultion, MSinputs.pump_freq,MSinputs.init_amplitudes, L)
     print("time to calc gains:", (time.time() - start_time))
     plt.plot(f_range, gain)

@@ -44,4 +44,4 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     # todo gain into dB
     # todo into Istar
     # todo calc power
-    return frequencys,gain
+    return frequencys, gain

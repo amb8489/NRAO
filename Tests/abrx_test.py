@@ -24,17 +24,23 @@ Central_line_model = SuperConductingMicroStripModel(MSinputs.height, MSinputs.ce
 Load_line_models = [
     SuperConductingMicroStripModel(MSinputs.height, width, MSinputs.line_thickness, MSinputs.er, MSinputs.tangent_delta,
                                    MSinputs.crit_current) for width in MSinputs.load_widths]
-Floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_lengths,
+floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_lengths,
                                           Load_line_models,
                                           Central_line_model,
                                           super_conductivity_model, MSinputs.central_line_width, MSinputs.load_widths,
                                           MSinputs.line_thickness, MSinputs.crit_current)
 
 # ---------------------------- calculations -------------------
+
+
+
+
+
+
 a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma, transmission = [], [], [], [], [], [], [], [], [], [], [], []
 FRange = np.linspace(MSinputs.start_freq_GHz, MSinputs.end_freq_GHz, MSinputs.resoultion)
 for F in FRange:
-    aa, t, bta, rr, xx, R, L, G, C = Floquet_line.abrx(F)
+    aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
     RR.append(R)
     LL.append(L)
     GG.append(G)
@@ -49,7 +55,8 @@ for F in FRange:
 
 total = time.time() - s
 print("total time: ", time.time() - s)
-print("% calc conduct: ", (Floquet_line.tot / total) * 100)
+print("% calc conduct: ", (floquet_line.tot / total) * 100)
+
 
 RR, LL, GG, CC, gamma = np.array(RR), np.array(LL), np.array(GG), np.array(CC), np.array(gamma)
 
@@ -82,7 +89,7 @@ YYI = gamma * gamma * I  # TODO
 fig, (a1, a2, a3, a4, a5) = plt.subplots(5)
 a1.plot(freqs, beta)
 a1.set_title('beta Unfolded')
-a1.plot(freqs, Floquet_line.unfold(beta))
+a1.plot(freqs, floquet_line.unfold(beta))
 
 a2.set_title('A')
 a2.plot(freqs, a)
@@ -94,7 +101,11 @@ a4.set_title('X')
 a4.plot(freqs, x)
 plt.subplots_adjust(hspace=1)
 # Floquet_line.FindPumpZone(a)
-a2.axvspan(Floquet_line.target_pump_zone_start, Floquet_line.target_pump_zone_end, facecolor='g', alpha=0.5)
+a2.axvspan(floquet_line.target_pump_zone_start, floquet_line.target_pump_zone_end, facecolor='g', alpha=0.5)
+
+
+
+
 
 # # a5.plot(freqs, np.abs(CLWWI))
 # # a5.plot(freqs, np.abs(CRwI))
@@ -105,4 +116,14 @@ a2.axvspan(Floquet_line.target_pump_zone_start, Floquet_line.target_pump_zone_en
 # a5.plot(transmission)
 # plt.yscale("log")
 
+
+
+
+
+
+
+
 plt.show()
+
+
+
