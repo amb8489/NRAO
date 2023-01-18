@@ -17,19 +17,49 @@ class MplCanvas(FigureCanvasQTAgg):
         fig.suptitle(title)
         self.axes.set_xlabel('Frequency')
         self.axes.set_ylabel('Frequency')
-
-        for vals in Ydata:
-            self.axes.plot(Xdata[0],vals)
+        self.axes.plot(Xdata,Ydata)
 
         super(MplCanvas, self).__init__(fig)
 
 
+class MplCanvas_fig(FigureCanvasQTAgg):
+
+    def __init__(self,fig):
+        super(MplCanvas_fig, self).__init__(fig)
+
+
+
+class WidgetGraph_fig(QtWidgets.QWidget):
+
+    def __init__(self, fig, *args, **kwargs):
+        super(WidgetGraph_fig, self).__init__(*args, **kwargs)
+        self.setLayout(QVBoxLayout())
+
+        # matpltlib plot
+        self.plt = MplCanvas_fig(fig)
+
+        # navbar for plot
+        self.layout().addWidget(NavigationToolbar(self.plt, self))
+        self.layout().addWidget(self.plt)
+
+        # size policy
+        self.setMinimumWidth(250)
+        self.setMinimumHeight(250)
+
+        # set widget color
+        self.setBackGroundColor(randomColorBright())
+
+    def setBackGroundColor(self, hex_color: str):
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(hex_color))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)
 
 
 
 class WidgetGraph(QtWidgets.QWidget):
 
-    def __init__(self, title,Xdata ,Ydata , *args, **kwargs):
+    def __init__(self, title,Xdata,Ydata, *args, **kwargs):
         super(WidgetGraph, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
 

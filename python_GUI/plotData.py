@@ -1,8 +1,11 @@
 '''
 Testing file for calculating A B R X
 '''
+import time
+
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from Inputs.MicroStripInputs import MicroStripInputs
@@ -65,19 +68,96 @@ def simulate(model_type, inputs):
     GLIIIwDiv3 = GG * LL * I3 * (w / 3)
     CLIIIWWDiv3 = CC * LL * I3 * (WW / 3)
     YYI = gamma * gamma * I  # TODO
-    floquet_line.FindPumpZone(3, np.array(alpha_plt))
 
     # ---------------------------- plots----------------------------
-    return [
-        [FRange.tolist()],
-        [alpha_plt],
-        [beta_plt],
-        [r],
-        [x],
-        [transmission_plt],
-        [CLWWI, CRwI, GLwI, RGI, GLIIIwDiv3, CLIIIWWDiv3, YYI]
 
-    ]
+    plot_width = 4
+    plot_height = 4
+    dpi = 100
+
+    fig1 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes1 = fig1.add_subplot(111)
+    fig1.suptitle("title")
+    axes1.set_xlabel('Frequency')
+    axes1.set_ylabel('Frequency')
+    axes1.plot(FRange, alpha_plt)
+
+    fig2 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes2 = fig2.add_subplot(111)
+    fig2.suptitle("title")
+    axes2.set_xlabel('Frequency')
+    axes2.set_ylabel('Frequency')
+    axes2.plot(FRange, beta_plt)
+
+    fig3 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes3 = fig3.add_subplot(111)
+    fig3.suptitle("title")
+    axes3.set_xlabel('Frequency')
+    axes3.set_ylabel('Frequency')
+    axes3.plot(FRange, r)
+
+    fig4 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes4 = fig4.add_subplot(111)
+    fig4.suptitle("title")
+    axes4.set_xlabel('Frequency')
+    axes4.set_ylabel('Frequency')
+    axes4.plot(FRange, x)
+
+    fig5 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes5 = fig5.add_subplot(111)
+    fig5.suptitle("title")
+    axes5.set_xlabel('Frequency')
+    axes5.set_ylabel('Frequency')
+    axes5.plot(FRange, transmission_plt)
+
+    fig6 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
+    axes6 = fig6.add_subplot(111)
+    fig6.suptitle("title")
+    axes6.set_xlabel('Frequency')
+    axes6.set_ylabel('Frequency')
+    axes6.plot(FRange, FRange)
+
+    #
+    #
+    #
+    # fig, (plt1, plt2, plt3, plt4, plt5, plt6) = plt.subplots(6)
+    #
+    # plt1.plot(FRange, beta_plt)
+    # plt1.set_title('beta_plt Unfolded')
+    # plt1.plot(FRange, floquet_line.unfold(beta_plt))
+    #
+    # plt2.set_title('Alpha')
+    # floquet_line.FindPumpZone(3, np.array(alpha_plt))
+    # print(floquet_line.target_pump_zone_start)
+    # plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
+    #              facecolor='b', alpha=0.3)
+    # plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)],
+    #              FRange[int(floquet_line.target_pump_zone_end / 3)],
+    #              facecolor='g', alpha=0.5)
+    # plt2.plot(FRange, alpha_plt)
+    #
+    # plt3.set_title('R')
+    # plt3.plot(FRange, r)
+    #
+    # plt4.set_title('X')
+    # plt4.plot(FRange, x)
+    #
+    # plt5.set_title('Transmission')
+    # plt5.plot(transmission_plt)
+    #
+    # plt.yscale("log")
+    # plt6.set_title('circuit values')
+    # plt6.plot(FRange, np.abs(CLWWI))
+    # plt6.plot(FRange, np.abs(CRwI))
+    # plt6.plot(FRange, np.abs(GLwI))
+    # plt6.plot(FRange, np.abs(RGI))
+    # plt6.plot(FRange, np.abs(GLIIIwDiv3))
+    # plt6.plot(FRange, np.abs(CLIIIWWDiv3))
+    # plt.yscale("log")
+    #
+    # plt.show()
+
+    return [[fig1, fig2], [fig3, fig4], [fig5, fig6]]
 
     # return {
     #     "freqs": FRange.tolist(),

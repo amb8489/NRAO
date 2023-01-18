@@ -9,7 +9,7 @@ from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimen
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
 from python_GUI.Widgets.GainInputWidget import WidgetGainInputs
 from python_GUI.Widgets.MaterialSelectorWidget import WidgetMaterialsSelect
-from python_GUI.Widgets.PlotWidget import WidgetGraph
+from python_GUI.Widgets.PlotWidget import WidgetGraph, WidgetGraph_fig
 from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
 matplotlib.use('Qt5Agg')
@@ -157,16 +157,11 @@ class AnotherWindow(QScrollArea):
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
 
-        graphData = simulate(self.model_type, self.inputs)
+        plots = simulate(self.model_type, self.inputs)
 
-        idx = 0
         for i in range(2):
             for j in range(3):
-                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData[0], graphData[idx]), j, i + 1)
-                idx += 1
-
-
-
+                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
@@ -181,12 +176,11 @@ class AnotherWindow(QScrollArea):
         self.grid.addWidget(self.ButtonExit, 0, 0)
         self.ButtonExit.clicked.connect(lambda: self.close())
 
-        graphData = simulate(self.model_type, self.inputs)
-        idx = 0
+        plots = simulate(self.model_type, self.inputs)
+
         for i in range(2):
             for j in range(3):
-                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData[0], graphData[idx]), j, i + 1)
-                idx += 1
+                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
 
     def clearPlots(self):
         for i in range(self.grid.count()):
