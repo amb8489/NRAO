@@ -71,51 +71,66 @@ def simulate(model_type, inputs):
 
     # ---------------------------- plots----------------------------
 
-    plot_width = 4
-    plot_height = 4
+    plot_width = 1
+    plot_height = 1
     dpi = 100
 
     fig1 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes1 = fig1.add_subplot(111)
-    fig1.suptitle("title")
-    axes1.set_xlabel('Frequency')
-    axes1.set_ylabel('Frequency')
+    fig1.suptitle("ALPHAS")
+    axes1.set_xlabel('Frequency [GHz]')
+    axes1.set_ylabel('Frequency [GHz]')
     axes1.plot(FRange, alpha_plt)
+
+    floquet_line.FindPumpZone(3, alpha_plt)
+    axes1.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
+                  facecolor='b', alpha=0.3)
+    axes1.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)],
+                  FRange[int(floquet_line.target_pump_zone_end / 3)],
+                  facecolor='g', alpha=0.5)
+
+
+
+
+
 
     fig2 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes2 = fig2.add_subplot(111)
-    fig2.suptitle("title")
-    axes2.set_xlabel('Frequency')
-    axes2.set_ylabel('Frequency')
+    fig2.suptitle("BETAS")
+    axes2.set_xlabel('Frequency [GHz]')
+    axes2.set_ylabel('Frequency [GHz]')
     axes2.plot(FRange, beta_plt)
+    axes2.plot(FRange, floquet_line.unfold(beta_plt))
+
 
     fig3 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes3 = fig3.add_subplot(111)
-    fig3.suptitle("title")
-    axes3.set_xlabel('Frequency')
-    axes3.set_ylabel('Frequency')
+    fig3.suptitle("R")
+    axes3.set_xlabel('Frequency [GHz]')
+    axes3.set_ylabel('Frequency [GHz]')
     axes3.plot(FRange, r)
 
     fig4 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes4 = fig4.add_subplot(111)
-    fig4.suptitle("title")
-    axes4.set_xlabel('Frequency')
-    axes4.set_ylabel('Frequency')
+    fig4.suptitle("X")
+    axes4.set_xlabel('Frequency [GHz]')
+    axes4.set_ylabel('Frequency [GHz]')
     axes4.plot(FRange, x)
 
     fig5 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes5 = fig5.add_subplot(111)
-    fig5.suptitle("title")
-    axes5.set_xlabel('Frequency')
-    axes5.set_ylabel('Frequency')
+    fig5.suptitle("TRANSMISSION")
+    axes5.set_xlabel('Frequency [GHz]')
+    axes5.set_ylabel('Frequency [GHz]')
     axes5.plot(FRange, transmission_plt)
 
     fig6 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes6 = fig6.add_subplot(111)
-    fig6.suptitle("title")
-    axes6.set_xlabel('Frequency')
-    axes6.set_ylabel('Frequency')
+    fig6.suptitle("CIRCUIT")
+    axes6.set_xlabel('Frequency [GHz]')
+    axes6.set_ylabel('Frequency [GHz]')
     axes6.plot(FRange, FRange)
+
 
     #
     #
