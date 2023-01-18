@@ -1,6 +1,8 @@
 import matplotlib
 from PySide6 import QtGui, QtWidgets
-from PySide6.QtGui import QPalette, QColor, QPixmap, QImage
+from PySide6.QtGui import QPalette, QColor, QPixmap, QImage, Qt
+
+from Inputs.MicroStripInputs import MicroStripInputs
 from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters
 from python_GUI.plotData import simulate
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
@@ -45,20 +47,26 @@ class MainWindow(QMainWindow):
         self.ButtonLayout = QGridLayout()
         self.ButtonLayoutWidget = QWidget()
 
-        self.ButtonExit = QPushButton('Exit')
-        self.ButtonLayout.addWidget(self.ButtonExit, 0, 0)
+        self.button_exit = QPushButton('Exit')
+        self.ButtonLayout.addWidget(self.button_exit, 0, 0)
 
-        self.PlotButton = QPushButton("Plot")
-        self.ButtonLayout.addWidget(self.PlotButton, 0, 1)
+        self.button_plot = QPushButton("Plot")
+        self.ButtonLayout.addWidget(self.button_plot, 0, 1)
+
+        self.button_choose_model = QPushButton('Select New Model')
+        self.ButtonLayout.addWidget(self.button_choose_model, 0, 2)
 
         # buttons onPress
-        self.PlotButton.clicked.connect(self.show_new_window)
-        self.ButtonExit.clicked.connect(lambda: exit(0))
+        self.button_plot.clicked.connect(self.show_new_window)
+        self.button_exit.clicked.connect(lambda: exit(0))
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
         # ---------------------------------- material selector
+
+        self.title = QLabel('Micro Strip model')
+        self.Mainlayout.addWidget(self.title)
 
         self.SCW = WidgetSCInputs()
         self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
@@ -83,8 +91,16 @@ class MainWindow(QMainWindow):
         self.init()
 
     def init(self):
-        self.setWindowTitle("TKIPA SIMULATION")
 
+        self.model_type = "MS"
+        self.inputs = None
+        if self.model_type == "MS":
+            self.inputs = MicroStripInputs()
+        else:
+            print(f"model_type {self.model_type} is not supported")
+            exit(1)
+
+        self.setWindowTitle("TKIPA DESIGN TOOL")
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor("#AAAAAA"))
         self.setPalette(palette)
@@ -118,7 +134,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.clearPlots()
             self.plotWindow.plot()
         else:
-            self.plotWindow = AnotherWindow()
+            self.plotWindow = AnotherWindow(self.model_type, self.inputs)
 
         self.plotWindow.show()
 
@@ -129,50 +145,33 @@ class AnotherWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    def __init__(self):
+    def __init__(self, model_type, inputs):
         super().__init__()
 
         self.setWindowTitle("PLOTS")
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
-
+        self.inputs = inputs
+        self.model_type = model_type
         holder = QWidget()
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
 
-        graphData = simulate()
+        graphData = simulate(self.model_type, self.inputs)
 
-        for i in range(3):
-            for j in range(6):
-                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData["freqs"], graphData["alpha"]), j, i + 1)
+        idx = 0
+        for i in range(2):
+            for j in range(3):
+                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData[0], graphData[idx]), j, i + 1)
+                idx += 1
+
+
+
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
         self.setMinimumWidth(900)
         self.setMinimumHeight(700)
-
-        # ----------------
-
-        unit_Cell_Len = micro_meters_to_meters(2300)
-        width_unloaded = micro_meters_to_meters(1.49)
-        width_loaded = width_unloaded * 1.2
-
-        D0 = .0007666666666666666666
-        D1 = 5e-5
-        D2 = 5e-5
-        D3 = .0001
-        loads_Widths = [D1, D2, D3]
-
-        # ---------------------------- SC inputs
-        er = 10
-        Height = nano_meters_to_meters(250)
-        line_thickness = nano_meters_to_meters(60)
-        Tc = 14.28
-        T = 0
-        pn = 1.008e-6
-        tanD = 0
-        Jc = 1
-        # ------ END remove later in replacement of user input
 
     def plot(self):
 
@@ -181,11 +180,13 @@ class AnotherWindow(QScrollArea):
         self.ButtonExit = QPushButton('Close window')
         self.grid.addWidget(self.ButtonExit, 0, 0)
         self.ButtonExit.clicked.connect(lambda: self.close())
-        graphData = simulate()
 
-        for i in range(3):
-            for j in range(6):
-                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData["freqs"], graphData["alpha"]), j, i + 1)
+        graphData = simulate(self.model_type, self.inputs)
+        idx = 0
+        for i in range(2):
+            for j in range(3):
+                self.grid.addWidget(WidgetGraph(f"{0}-{0}", graphData[0], graphData[idx]), j, i + 1)
+                idx += 1
 
     def clearPlots(self):
         for i in range(self.grid.count()):

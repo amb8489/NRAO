@@ -17,14 +17,19 @@ class MplCanvas(FigureCanvasQTAgg):
         fig.suptitle(title)
         self.axes.set_xlabel('Frequency')
         self.axes.set_ylabel('Frequency')
-        self.axes.plot(Xdata,Ydata)
+
+        for vals in Ydata:
+            self.axes.plot(Xdata[0],vals)
 
         super(MplCanvas, self).__init__(fig)
 
 
+
+
+
 class WidgetGraph(QtWidgets.QWidget):
 
-    def __init__(self, title,Xdata,Ydata, *args, **kwargs):
+    def __init__(self, title,Xdata ,Ydata , *args, **kwargs):
         super(WidgetGraph, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
 

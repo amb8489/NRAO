@@ -71,22 +71,24 @@ YYI = gamma * gamma * I  # TODO
 
 
 fig, (plt1, plt2, plt3, plt4, plt5, plt6) = plt.subplots(6)
-plt.subplots_adjust(hspace=1)
 
 plt1.plot(FRange, beta_plt)
 plt1.set_title('beta_plt Unfolded')
 plt1.plot(FRange, floquet_line.unfold(beta_plt))
 
-plt2.set_title('Alpha/beta scaled')
+
+
+plt2.set_title('Alpha')
 floquet_line.FindPumpZone(3, np.array(alpha_plt))
 print(floquet_line.target_pump_zone_start)
 plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
              facecolor='b', alpha=0.3)
 plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)], FRange[int(floquet_line.target_pump_zone_end / 3)],
              facecolor='g', alpha=0.5)
-
-
 plt2.plot(FRange, alpha_plt)
+
+
+
 
 plt3.set_title('R')
 plt3.plot(FRange, r)
@@ -94,9 +96,12 @@ plt3.plot(FRange, r)
 plt4.set_title('X')
 plt4.plot(FRange, x)
 
+plt5.set_title('Transmission')
 plt5.plot(transmission_plt)
 
+
 plt.yscale("log")
+plt6.set_title('circuit values')
 plt6.plot(FRange, np.abs(CLWWI))
 plt6.plot(FRange, np.abs(CRwI))
 plt6.plot(FRange, np.abs(GLwI))
