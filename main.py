@@ -68,9 +68,6 @@ class MainWindow(QMainWindow):
         self.button_save_settings = QPushButton('Save Settings')
         self.ButtonLayout.addWidget(self.button_save_settings, 1, 1)
 
-
-
-
         # buttons onPress
         self.button_plot.clicked.connect(self.show_new_window)
         self.button_exit.clicked.connect(lambda: exit(0))
@@ -79,16 +76,11 @@ class MainWindow(QMainWindow):
         self.ButtonLayoutWidget.setMaximumHeight(100)
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
-        # ---------------------------------- material selector
-
+        # title
         self.title = QLabel(self.modelSelector.currentText())
         self.title.setMaximumHeight(20)
 
         self.Mainlayout.addWidget(self.title)
-
-
-
-        # todo refeactor this into there own class widget
 
         # ---------------------------------- input models
         self.Micro_strip_inputs_widget = MicroStripInputsWidget()
@@ -107,7 +99,6 @@ class MainWindow(QMainWindow):
 
         self.init()
 
-
     def showModel(self, line_model):
 
         for model_name in self.line_models:
@@ -116,7 +107,7 @@ class MainWindow(QMainWindow):
         self.line_model = line_model
         self.line_model.show()
 
-        # will error on model woth no SCW or table
+        # todo will error on model woth no SCW or table temp fix for testing
         try:
             line_model.table.onchange = self.line_model.SCW.setValues
         except:
@@ -126,12 +117,9 @@ class MainWindow(QMainWindow):
 
         self.title.setText(self.modelSelector.currentText())
         self.showModel(self.line_models[modelName])
-        print("model changed to:", modelName)
 
     def init(self):
         self.showModel(self.Micro_strip_inputs_widget)
-
-
 
         # todo
         self.model_type = "MS"
@@ -157,14 +145,13 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    def hideMaterialsList(self):
-        self.showMaterialsWidget = not self.showMaterialsWidget
-        self.table.show() if self.showMaterialsWidget else self.table.hide()
-
     def srow(self):
-        print(self.table.getFirstSelectedRow())
+        # todo get inputs from selected row
+        print(self.line_model.table.getFirstSelectedRow())
 
     def get_inputs(self):
+        # todo put this in line model widget class MicroStripInputsWidget() and CPWInputsWidget()
+        # what to do with classes that dont have these subwidgets
 
         widgets = [self.WidgetGainInputs, self.freqRangeWidget, self.SCW, self.dimensionsInputWidget]
 
@@ -173,10 +160,12 @@ class MainWindow(QMainWindow):
 
     def show_new_window(self, checked):
 
+        # if we already have a window open redisplay the plots
         if self.plotWindow:
             self.plotWindow.clearPlots()
             self.plotWindow.plot()
         else:
+            # open a new plotting window
             self.plotWindow = AnotherWindow(self.model_type, self.inputs)
 
         self.plotWindow.show()
