@@ -1,19 +1,11 @@
 import matplotlib
-from PySide6 import QtGui, QtWidgets
-from PySide6.QtGui import QPalette, QColor, QPixmap, QImage, Qt
-
+from PySide6.QtGui import QPalette, QColor
 from Inputs.MicroStripInputs import MicroStripInputs
-from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters
 from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
 from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget
+from python_GUI.Widgets.PlotWidget import WidgetGraph_fig
 from python_GUI.Widgets.S_Matrix_input_widget import SMatrixInputsWidget
 from python_GUI.plotData import simulate
-from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
-from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
-from python_GUI.Widgets.GainInputWidget import WidgetGainInputs
-from python_GUI.Widgets.MaterialSelectorWidget import WidgetMaterialsSelect
-from python_GUI.Widgets.PlotWidget import WidgetGraph, WidgetGraph_fig
-from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox

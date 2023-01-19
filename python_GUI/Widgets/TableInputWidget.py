@@ -121,7 +121,7 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-
+        self.table.setMaximumHeight(100)
         # set widget color
         self.setBackGroundColor("#FFFFFF")
 

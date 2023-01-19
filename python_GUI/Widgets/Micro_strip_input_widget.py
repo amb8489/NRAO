@@ -15,7 +15,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(MicroStripInputsWidget, self).__init__(*args, **kwargs)
 
-
         self.setLayout(QGridLayout())
 
         # self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
