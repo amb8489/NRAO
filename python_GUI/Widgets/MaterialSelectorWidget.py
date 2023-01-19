@@ -3,6 +3,7 @@ import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QLabel, QTableView
+
 matplotlib.use('Qt5Agg')
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt
@@ -29,7 +30,7 @@ class TableModel(QtCore.QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand","other"]
+                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand", "other"]
                 return headers[section]
 
             if orientation == Qt.Vertical:
@@ -41,7 +42,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 class WidgetMaterialsSelect(QtWidgets.QWidget):
 
-    def __init__(self,onchange, *args, **kwargs):
+    def __init__(self, onchange = None, *args, **kwargs):
 
         self.onchange = onchange
 
@@ -52,9 +53,6 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.Title = "Material Properties"
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
-
-
-
         # table
         self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
         self.table = QtWidgets.QTableView()
@@ -63,10 +61,9 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         # table data
         size = 10
         data = pd.DataFrame(
-            [[random.randrange(0,99) for i in range(size)] for i in range(size)],
+            [[random.randrange(0, 99) for i in range(size)] for i in range(size)],
             columns=[f'Col {i}' for i in range(size)],
             index=[f'Row {i}' for i in range(size)], )
-
 
         # table moedel
         self.model = TableModel(data)
@@ -80,11 +77,8 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
-
         # table
         self.layout().addWidget(self.table, 1, 0)
-
-
 
         # set widget color
         self.setBackGroundColor("#5b80bd")
@@ -96,7 +90,8 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def prow(self):
-        self.onchange(self.getFirstSelectedRow())
+        if self.onchange:
+            self.onchange(self.getFirstSelectedRow())
 
     def getFirstSelectedRow(self):
         index = self.table.selectionModel().selectedRows()

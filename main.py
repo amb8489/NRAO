@@ -4,6 +4,9 @@ from PySide6.QtGui import QPalette, QColor, QPixmap, QImage, Qt
 
 from Inputs.MicroStripInputs import MicroStripInputs
 from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters
+from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
+from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget
+from python_GUI.Widgets.S_Matrix_input_widget import SMatrixInputsWidget
 from python_GUI.plotData import simulate
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import WidgetFLineDimensionsInputs, Line
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
@@ -13,7 +16,7 @@ from python_GUI.Widgets.PlotWidget import WidgetGraph, WidgetGraph_fig
 from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel
+from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox
 import sys
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
@@ -36,10 +39,12 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.showWidget = False
+        self.showMS = True
         self.showMaterialsWidget = False
         self.scroll = QScrollArea()
         self.ROOT = QWidget()
         self.Mainlayout = QVBoxLayout()
+
         self.plotWindow = None  # No external window yet.
 
         # ----------------------------------EXIT and Plots buttons
@@ -53,45 +58,82 @@ class MainWindow(QMainWindow):
         self.button_plot = QPushButton("Plot")
         self.ButtonLayout.addWidget(self.button_plot, 0, 1)
 
-        self.button_choose_model = QPushButton('Select New Model')
-        self.ButtonLayout.addWidget(self.button_choose_model, 0, 2)
+        self.modelSelector = QComboBox()
+        self.modelSelector.addItems(['Micro Strip', 'CPW', 'S Matrix'])
+
+        self.modelSelector.currentTextChanged.connect(self.model_changed)
+
+        self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
+
+        self.button_save_settings = QPushButton('Save Settings')
+        self.ButtonLayout.addWidget(self.button_save_settings, 1, 1)
+
+
+
 
         # buttons onPress
         self.button_plot.clicked.connect(self.show_new_window)
         self.button_exit.clicked.connect(lambda: exit(0))
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
+        self.ButtonLayoutWidget.setMaximumHeight(100)
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
         # ---------------------------------- material selector
 
-        self.title = QLabel('Micro Strip model')
+        self.title = QLabel(self.modelSelector.currentText())
+        self.title.setMaximumHeight(20)
+
         self.Mainlayout.addWidget(self.title)
 
-        self.SCW = WidgetSCInputs()
-        self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
-        self.Mainlayout.addWidget(self.table)
 
-        # ---------------------------------- Inputs
-        self.InputGrid = QGridLayout()
-        self.InputGridWidget = QWidget()
 
-        self.InputGrid.addWidget(self.SCW, 0, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
-        self.InputGrid.addWidget(self.dimensionsInputWidget, 1, 1, 2, 1)
-        self.freqRangeWidget = WidgetFrequencyInputs()
-        self.InputGrid.addWidget(self.freqRangeWidget, 1, 0)
-        self.WidgetGainInputs = WidgetGainInputs()
-        self.InputGrid.addWidget(self.WidgetGainInputs, 2, 0)
-        self.InputGridWidget.setLayout(self.InputGrid)
-        self.Mainlayout.addWidget(self.InputGridWidget)
+        # todo refeactor this into there own class widget
 
-        line = Line(self.dimensionsInputWidget.tableInput)
-        self.Mainlayout.addWidget(line)
+        # ---------------------------------- input models
+        self.Micro_strip_inputs_widget = MicroStripInputsWidget()
+        self.CPW_inputs_widget = CPWInputsWidget()
+        self.S_matrix_inputs_widget = SMatrixInputsWidget()
+
+        self.Mainlayout.addWidget(self.Micro_strip_inputs_widget)
+        self.Mainlayout.addWidget(self.CPW_inputs_widget)
+        self.Mainlayout.addWidget(self.S_matrix_inputs_widget)
+
+        self.line_model = self.Micro_strip_inputs_widget
+
+        self.line_models = {"Micro Strip": self.Micro_strip_inputs_widget,
+                            "CPW": self.CPW_inputs_widget,
+                            "S Matrix": self.S_matrix_inputs_widget}
+
         self.init()
 
-    def init(self):
 
+    def showModel(self, line_model):
+
+        for model_name in self.line_models:
+            self.line_models[model_name].hide()
+
+        self.line_model = line_model
+        self.line_model.show()
+
+        # will error on model woth no SCW or table
+        try:
+            line_model.table.onchange = self.line_model.SCW.setValues
+        except:
+            pass
+
+    def model_changed(self, modelName):
+
+        self.title.setText(self.modelSelector.currentText())
+        self.showModel(self.line_models[modelName])
+        print("model changed to:", modelName)
+
+    def init(self):
+        self.showModel(self.Micro_strip_inputs_widget)
+
+
+
+        # todo
         self.model_type = "MS"
         self.inputs = None
         if self.model_type == "MS":
@@ -110,8 +152,9 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.scroll)
 
-        self.setFixedWidth(1050)
+        self.setFixedWidth(1350)
         self.setFixedHeight(800)
+
         self.show()
 
     def hideMaterialsList(self):

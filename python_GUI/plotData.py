@@ -89,11 +89,6 @@ def simulate(model_type, inputs):
                   FRange[int(floquet_line.target_pump_zone_end / 3)],
                   facecolor='g', alpha=0.5)
 
-
-
-
-
-
     fig2 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes2 = fig2.add_subplot(111)
     fig2.suptitle("BETAS")
@@ -101,7 +96,6 @@ def simulate(model_type, inputs):
     axes2.set_ylabel('Frequency [GHz]')
     axes2.plot(FRange, beta_plt)
     axes2.plot(FRange, floquet_line.unfold(beta_plt))
-
 
     fig3 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes3 = fig3.add_subplot(111)
@@ -124,53 +118,13 @@ def simulate(model_type, inputs):
     axes5.set_ylabel('Frequency [GHz]')
     axes5.plot(FRange, transmission_plt)
 
+    # todo
     fig6 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes6 = fig6.add_subplot(111)
     fig6.suptitle("CIRCUIT")
     axes6.set_xlabel('Frequency [GHz]')
     axes6.set_ylabel('Frequency [GHz]')
     axes6.plot(FRange, FRange)
-
-
-    #
-    #
-    #
-    # fig, (plt1, plt2, plt3, plt4, plt5, plt6) = plt.subplots(6)
-    #
-    # plt1.plot(FRange, beta_plt)
-    # plt1.set_title('beta_plt Unfolded')
-    # plt1.plot(FRange, floquet_line.unfold(beta_plt))
-    #
-    # plt2.set_title('Alpha')
-    # floquet_line.FindPumpZone(3, np.array(alpha_plt))
-    # print(floquet_line.target_pump_zone_start)
-    # plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
-    #              facecolor='b', alpha=0.3)
-    # plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)],
-    #              FRange[int(floquet_line.target_pump_zone_end / 3)],
-    #              facecolor='g', alpha=0.5)
-    # plt2.plot(FRange, alpha_plt)
-    #
-    # plt3.set_title('R')
-    # plt3.plot(FRange, r)
-    #
-    # plt4.set_title('X')
-    # plt4.plot(FRange, x)
-    #
-    # plt5.set_title('Transmission')
-    # plt5.plot(transmission_plt)
-    #
-    # plt.yscale("log")
-    # plt6.set_title('circuit values')
-    # plt6.plot(FRange, np.abs(CLWWI))
-    # plt6.plot(FRange, np.abs(CRwI))
-    # plt6.plot(FRange, np.abs(GLwI))
-    # plt6.plot(FRange, np.abs(RGI))
-    # plt6.plot(FRange, np.abs(GLIIIwDiv3))
-    # plt6.plot(FRange, np.abs(CLIIIWWDiv3))
-    # plt.yscale("log")
-    #
-    # plt.show()
 
     return [[fig1, fig2], [fig3, fig4], [fig5, fig6]]
 
