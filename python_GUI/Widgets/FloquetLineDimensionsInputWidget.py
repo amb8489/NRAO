@@ -15,14 +15,14 @@ class Line(QtWidgets.QWidget):
     def __init__(self, table, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.Widths = []
-        self.Heights = []
+        self.lengths = []
+        self.widths = []
         self.table = table
 
         self.table.setOnChange(self.updateLine)
-        self.maxsize = 50
-        # todo add in for central line
+        # todo add input connection in for central line
         self.centralLineW = 5
+        self.maxsize = self.centralLineW
 
         self.layO = QGridLayout()
         self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
@@ -56,7 +56,7 @@ class Line(QtWidgets.QWidget):
     def Draw(self):
 
         loadIdx = 0
-        for i in range(len(self.Widths) * 2 + 1):
+        for i in range(len(self.lengths) * 2 + 1):
             if i % 2 == 0:
 
                 r = rectangleWidget(False, i, self.centralLineW, self.centralLineW)
@@ -65,13 +65,13 @@ class Line(QtWidgets.QWidget):
 
             else:
 
-                w = self.Widths[loadIdx]
-                h = self.Heights[loadIdx]
+                load_length = self.lengths[loadIdx]
+                load_width = self.widths[loadIdx]
                 loadIdx += 1
 
-                r = rectangleWidget(True, loadIdx, w, h, onClick=self.table.SelectRow)
-                r.setMaximumHeight(h)
-                r.setMaximumWidth(w)
+                r = rectangleWidget(True, loadIdx, load_length, load_width, onClick=self.table.SelectRow)
+                r.setMaximumHeight(load_width)
+                r.setMaximumWidth(load_length)
 
                 self.grid.addWidget(QLabel(f"L{loadIdx}"), 0, i, Qt.AlignHCenter)
                 self.grid.addWidget(r, 1, i, Qt.AlignHCenter)
@@ -88,29 +88,32 @@ class Line(QtWidgets.QWidget):
 
     def updateLine(self):
         self.clearBars()
-        self.setHeights(self.table.getHeights())
-        self.setWidths(self.table.getWidths())
+        self.setLengths(self.table.get_lengths())
+        self.setWidths(self.table.get_widths())
         self.Draw()
 
+    def setLengths(self, lengths):
+
+        load_lengths = np.array(lengths)
+        w = (load_lengths / self.centralLineW)
+        # self.centralLineW = 10
+        self.lengths = w * self.centralLineW
+
     def setWidths(self, widths):
-        loadWidths = np.array(widths)
-        # todo max(loadWidths) should be the central line widths really
-        self.Widths = (loadWidths / max(loadWidths)) * self.maxsize
 
-    def setHeights(self, heights):
-        loadHeights = np.array(heights)
-
-        # todo max(loadWidths) should be the central line widths really
-        self.Heights = (loadHeights / max(loadHeights)) * self.maxsize
+        load_widths = np.array(widths)
+        h = (load_widths / self.centralLineW)
+        # self.centralLineW = 10
+        self.widths = h * self.centralLineW
 
 
 # widget for rectangleWidget
 class rectangleWidget(QtWidgets.QWidget):
 
-    def __init__(self, isLoad, tableIdx, w, h, onClick=None, *args, **kwargs):
+    def __init__(self, isLoad, tableIdx, length, width, onClick=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.w, self.h = w, h
+        self.l, self.w = length, width
         self.onClick = onClick
         self.idxInTable = tableIdx
 
@@ -137,7 +140,7 @@ class rectangleWidget(QtWidgets.QWidget):
             print("clicked")
 
     def sizeHint(self):
-        return QtCore.QSize(self.w, self.h)
+        return QtCore.QSize(self.l, self.w)
 
 
 class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
@@ -181,8 +184,8 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
     def getTableValues(self):
         return self.tableInput.getData()
 
-    def getHeights(self):
-        return self.tableInput.getHeights()
+    def getLengths(self):
+        return self.tableInput.getLengths()
 
     def getWidths(self):
         return self.tableInput.getWidths()

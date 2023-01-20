@@ -35,13 +35,13 @@ class TableModel(QtCore.QAbstractTableModel):
         self.layoutChanged.emit()
         return True
 
-    def getHeights(self):
+    def get_lengths(self):
         try:
             return [float(row[0]) for row in self._data]
         except:
             pass
 
-    def getWidths(self):
+    def get_widths(self):
         try:
             return [float(row[1]) for row in self._data]
         except:
@@ -55,8 +55,8 @@ class TableModel(QtCore.QAbstractTableModel):
 
             if orientation == Qt.Horizontal:
                 if section == 0:
-                    return str(f"Widths [unit]")
-                return str(f"Lengths [unit]")
+                    return str(f"Lengths [unit]")
+                return str(f"Widths[unit]")
 
     def removeRows(self, position, rows, QModelIndex):
         self.beginRemoveRows(QModelIndex, position, position + rows - 1)
@@ -135,11 +135,11 @@ class TableInputWidget(QtWidgets.QWidget):
         self.onChange = function
         self.model.setOnChange(function)
 
-    def getWidths(self):
-        return self.model.getWidths()
+    def get_widths(self):
+        return self.model.get_widths()
 
-    def getHeights(self):
-        return self.model.getHeights()
+    def get_lengths(self):
+        return self.model.get_lengths()
 
     def setNLoads(self):
         numOfWantedLoads = self.NloadsInput.getTitleAndValue()[1]
