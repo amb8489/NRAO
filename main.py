@@ -1,11 +1,12 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, Qt
 from Inputs.MicroStripInputs import MicroStripInputs
 from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
 from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget
 from python_GUI.Widgets.PlotWidget import WidgetGraph_fig
 from python_GUI.Widgets.S_Matrix_input_widget import SMatrixInputsWidget
 from python_GUI.plotData import simulate
+from python_GUI.utillsGUI import randomColorBright
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox
@@ -60,17 +61,31 @@ class MainWindow(QMainWindow):
         self.button_save_settings = QPushButton('Save Settings')
         self.ButtonLayout.addWidget(self.button_save_settings, 1, 1)
 
+        self.button_load_settings = QPushButton('Load Settings')
+        self.ButtonLayout.addWidget(self.button_load_settings, 1, 2)
+
         # buttons onPress
         self.button_plot.clicked.connect(self.show_new_window)
         self.button_exit.clicked.connect(lambda: exit(0))
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
-        self.ButtonLayoutWidget.setMaximumHeight(100)
+        self.ButtonLayoutWidget.setFixedHeight(100)
+
+        palette = self.ButtonLayoutWidget.palette()
+        palette.setColor(QPalette.Window, QColor(randomColorBright()))
+        self.ButtonLayoutWidget.setPalette(palette)
+        self.ButtonLayoutWidget.setAutoFillBackground(True)
+
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
         # title
         self.title = QLabel(self.modelSelector.currentText())
         self.title.setMaximumHeight(20)
+
+        palette = self.title.palette()
+        palette.setColor(QPalette.Window, QColor(randomColorBright()))
+        self.title.setPalette(palette)
+        self.title.setAutoFillBackground(True)
 
         self.Mainlayout.addWidget(self.title)
 
@@ -88,7 +103,6 @@ class MainWindow(QMainWindow):
         self.line_models = {"Micro Strip": self.Micro_strip_inputs_widget,
                             "CPW": self.CPW_inputs_widget,
                             "S Matrix": self.S_matrix_inputs_widget}
-
         self.init()
 
     def showModel(self, line_model):
@@ -111,6 +125,8 @@ class MainWindow(QMainWindow):
         self.showModel(self.line_models[modelName])
 
     def init(self):
+        self.Mainlayout.insertStretch( -1, 1 )
+
         self.showModel(self.Micro_strip_inputs_widget)
 
         # todo
@@ -131,6 +147,7 @@ class MainWindow(QMainWindow):
         self.scroll.setWidget(self.ROOT)
 
         self.setCentralWidget(self.scroll)
+
 
         self.setFixedWidth(1350)
         self.setFixedHeight(800)
