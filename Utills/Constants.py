@@ -32,6 +32,8 @@ GHZ = 10 ** 9
 # speed of light m/s
 C = scipy.constants.speed_of_light
 
+SPEED_OF_LIGHT = scipy.constants.speed_of_light
+
 PI_DIV_2 = math.pi / 2
 
 # nano meter

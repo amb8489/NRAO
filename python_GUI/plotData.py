@@ -1,14 +1,11 @@
 '''
 Testing file for calculating A B R X
 '''
-import time
 
 import numpy as np
-from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
-from Inputs.MicroStripInputs import MicroStripInputs
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 from Utills.Constants import PI2
