@@ -20,12 +20,14 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.Title = "Frequency"
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
-
+        self.inputs = []
 
         # inputs for freq range and res
         self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
         for j in range(len(self.inputnames)):
-            self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j)
+            input_widget = WidgetDoubleInput(self.inputnames[j])
+            self.layout().addWidget(input_widget, 1, j)
+            self.inputs.append(input_widget)
 
 
 
@@ -39,11 +41,6 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def getValues(self):
-        res = []
-        for child in self.children():
-            try:
-                res.append(child.getTitleAndValue())
-            except:
-                pass
+        return {input.getTitleAndValue()[0]: input.getTitleAndValue()[1] for input in self.inputs}
 
         return res

@@ -1,20 +1,16 @@
-import time
-
 import matplotlib
-from PySide6.QtGui import QPalette, QColor, Qt
+from PySide6.QtGui import QPalette, QColor
 from Inputs.MicroStripInputs import MicroStripInputs
 from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
 from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget
-from python_GUI.Widgets.PlotWidget import WidgetGraph_fig
 from python_GUI.Widgets.S_Matrix_input_widget import SMatrixInputsWidget
-from python_GUI.plotData import simulate
-from python_GUI.utillsGUI import randomColorBright, randomColor
+from python_GUI.utillsGUI import randomColorBright
 from python_GUI.views.LoadVeiw import LoadSettingsWindow
 from python_GUI.views.PlotVeiw import PlotWindow
 from python_GUI.views.SaveVeiw import SaveWindow
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox, QLineEdit
+from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox
 import sys
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
@@ -69,7 +65,12 @@ class MainWindow(QMainWindow):
         self.button_load_settings = QPushButton('Load Settings')
         self.ButtonLayout.addWidget(self.button_load_settings, 1, 2)
 
+        self.testButton = QPushButton('test')
+        self.ButtonLayout.addWidget(self.testButton, 1, 0)
+        self.testButton.clicked.connect(self.get_inputs)
+
         # buttons onPress
+
         self.button_plot.clicked.connect(self.show_new_window)
         self.button_exit.clicked.connect(lambda: exit(0))
         self.button_save_settings.clicked.connect(self.showSaveWindow)
@@ -120,7 +121,7 @@ class MainWindow(QMainWindow):
         self.line_model = line_model
         self.line_model.show()
 
-        # todo will error on model woth no SCW or table temp fix for testing
+        # todo will error on model with no SCW or table temp fix for testing
         try:
             line_model.table.onchange = self.line_model.SCW.setValues
         except:
@@ -165,13 +166,10 @@ class MainWindow(QMainWindow):
         print(self.line_model.table.getFirstSelectedRow())
 
     def get_inputs(self):
-        # todo put this in line model widget class MicroStripInputsWidget() and CPWInputsWidget()
-        # what to do with classes that dont have these subwidgets
-
-        widgets = [self.WidgetGainInputs, self.freqRangeWidget, self.SCW, self.dimensionsInputWidget]
-
-        for widget in widgets:
-            print(widget.getTableValues())
+        try:
+            print(self.line_model.get_inputs())
+        except:
+            pass
 
     def show_new_window(self, checked):
 
@@ -197,10 +195,6 @@ class MainWindow(QMainWindow):
 
         self.SaveWindow = LoadSettingsWindow()
         self.SaveWindow.show()
-
-
-
-
 
 
 if __name__ == '__main__':

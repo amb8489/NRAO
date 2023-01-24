@@ -42,5 +42,6 @@ class WidgetSCInputs(QtWidgets.QWidget):
             input.setValue(values[i])
 
     def getValues(self):
-        return [input.getTitleAndValue()[1] for input in self.inputs]
+
+        return {input.getTitleAndValue()[0]:input.getTitleAndValue()[1] for input in self.inputs}
 

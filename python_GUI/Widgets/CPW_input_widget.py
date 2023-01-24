@@ -36,21 +36,18 @@ class CPWInputsWidget(QtWidgets.QWidget):
         pixmap = pixmap.scaled(400, 400, QtCore.Qt.KeepAspectRatio)
         lbl = QLabel(self)
         lbl.setPixmap(pixmap)
-
         lbl.setScaledContents(True)
 
         self.layout().addWidget(lbl, 5, 1, 1, 1)
-
         self.freqRangeWidget = WidgetFrequencyInputs()
         self.layout().addWidget(self.freqRangeWidget, 3, 0)
         self.WidgetGainInputs = WidgetGainInputs()
         self.layout().addWidget(self.WidgetGainInputs, 4, 0)
-
         line = Line(self.dimensionsInputWidget.tableInput)
         self.layout().addWidget(line, 5, 0)
 
-        self.table.onchange = self.SCW.setValues
 
+        self.table.onchange = self.SCW.setValues
         # set widget color
         self.setBackGroundColor(randomColorBright())
 
@@ -59,3 +56,13 @@ class CPWInputsWidget(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
+
+    def get_inputs(self):
+
+        print(self.SCW.getValues())
+        print(self.dimensionsInputWidget.getTableValues())
+        print(self.freqRangeWidget.getValues())
+        print(self.WidgetGainInputs.getValues())
+
+
+

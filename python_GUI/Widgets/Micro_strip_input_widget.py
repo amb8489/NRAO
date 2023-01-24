@@ -61,3 +61,9 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
+
+    def get_inputs(self):
+        print(self.SCW.getValues())
+        print(self.dimensionsInputWidget.getTableValues())
+        print(self.freqRangeWidget.getValues())
+        print(self.WidgetGainInputs.getValues())

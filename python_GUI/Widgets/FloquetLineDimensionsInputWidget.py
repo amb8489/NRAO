@@ -182,7 +182,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def getTableValues(self):
-        return self.tableInput.getData()
+        return {f"load#{i}": load for i, load in enumerate(self.tableInput.getData())}
 
     def getLengths(self):
         return self.tableInput.getLengths()

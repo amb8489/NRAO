@@ -10,7 +10,6 @@ from PySide6 import QtWidgets
 class WidgetGainInputs(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
-
         super(WidgetGainInputs, self).__init__(*args, **kwargs)
 
         self.setLayout(QGridLayout())
@@ -21,8 +20,11 @@ class WidgetGainInputs(QtWidgets.QWidget):
 
         # inputs
         self.inputnames = ["As0", "Ai0", "Ap0", "Pump Frequency [GHZ]"]
+        self.inputs = []
         for j in range(len(self.inputnames)):
-            self.layout().addWidget(WidgetDoubleInput(self.inputnames[j]), 1, j, Qt.AlignTop)
+            input_widget = WidgetDoubleInput(self.inputnames[j])
+            self.layout().addWidget(input_widget, 1, j, Qt.AlignTop)
+            self.inputs.append(input_widget)
 
         # set widget color
         self.setBackGroundColor("#057878")
@@ -34,11 +36,4 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def getValues(self):
-        res = []
-        for child in self.children():
-            try:
-                res.append(child.getTitleAndValue())
-            except:
-                pass
-
-        return res
+        return {input.getTitleAndValue()[0]: input.getTitleAndValue()[1] for input in self.inputs}
