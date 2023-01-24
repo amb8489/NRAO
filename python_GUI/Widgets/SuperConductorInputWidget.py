@@ -23,7 +23,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
         self.inputnames = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand"]
         self.inputs = []
         for j in range(len(self.inputnames)):
-            input = WidgetDoubleInput(self.inputnames[j])
+            input = WidgetDoubleInput(self.inputnames[j],widget_name=self.inputnames[j])
             self.layout().addWidget(input, 1, j)
             self.inputs.append(input)
 
@@ -39,7 +39,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
 
     def setValues(self,values):
         for i,input in enumerate(self.inputs):
-            input.setValue(values[i])
+            input.setValue(values[input.objectName()])
 
     def getValues(self):
 

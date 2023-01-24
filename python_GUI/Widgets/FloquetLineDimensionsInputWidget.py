@@ -160,9 +160,11 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
         self.inputnames = ["Unit Cell Length []", "Central Line Width []"]
-
+        self.inputs = []
         for col in range(len(self.inputnames)):
-            self.container.addWidget(WidgetDoubleInput(self.inputnames[col]))
+            input_widget = WidgetDoubleInput(self.inputnames[col])
+            self.container.addWidget(input_widget)
+            self.inputs.append(input_widget)
 
         self.InputWidget = QWidget()
         self.InputWidget.setLayout(self.container)
@@ -181,11 +183,24 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def getTableValues(self):
-        return {f"load#{i}": load for i, load in enumerate(self.tableInput.getData())}
-
     def getLengths(self):
         return self.tableInput.getLengths()
 
     def getWidths(self):
         return self.tableInput.getWidths()
+
+    def getValues(self):
+        values = {f"loads": self.tableInput.getData()}
+        for input in self.inputs:
+            values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
+
+        return values
+
+    def setValues(self, inputs):
+        loads = inputs['loads']
+
+        self.tableInput.setData(loads)
+
+        for i, input in enumerate(self.inputs):
+            input.setValue(inputs[input.objectName()])
+

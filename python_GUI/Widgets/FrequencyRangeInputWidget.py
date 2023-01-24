@@ -1,6 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
+
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QGridLayout, QLabel
 from PySide6 import QtWidgets
@@ -9,12 +10,9 @@ from PySide6 import QtWidgets
 class WidgetFrequencyInputs(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
-
         super(WidgetFrequencyInputs, self).__init__(*args, **kwargs)
 
         self.setLayout(QGridLayout())
-
-
 
         # widget title
         self.Title = "Frequency"
@@ -29,8 +27,6 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
             self.layout().addWidget(input_widget, 1, j)
             self.inputs.append(input_widget)
 
-
-
         # set widget color
         self.setBackGroundColor("#057878")
 
@@ -43,4 +39,7 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
     def getValues(self):
         return {input.getTitleAndValue()[0]: input.getTitleAndValue()[1] for input in self.inputs}
 
-        return res
+
+    def setValues(self, values):
+        for i, input in enumerate(self.inputs):
+            input.setValue(values[input.objectName()])

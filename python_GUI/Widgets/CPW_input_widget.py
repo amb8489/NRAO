@@ -46,7 +46,6 @@ class CPWInputsWidget(QtWidgets.QWidget):
         line = Line(self.dimensionsInputWidget.tableInput)
         self.layout().addWidget(line, 5, 0)
 
-
         self.table.onchange = self.SCW.setValues
         # set widget color
         self.setBackGroundColor(randomColorBright())
@@ -58,11 +57,17 @@ class CPWInputsWidget(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def get_inputs(self):
+        return {"SC": self.SCW.getValues(),
+                "Dimensions": self.dimensionsInputWidget.getValues(),
+                "Frequency Range": self.freqRangeWidget.getValues(),
+                "Gain": self.WidgetGainInputs.getValues()
+                }
 
-        print(self.SCW.getValues())
-        print(self.dimensionsInputWidget.getTableValues())
-        print(self.freqRangeWidget.getValues())
-        print(self.WidgetGainInputs.getValues())
+    def set_values(self, input):
 
+        print("loading valies into model")
 
-
+        self.SCW.setValues(input["SC"])
+        self.dimensionsInputWidget.setValues(input["Dimensions"])
+        self.freqRangeWidget.setValues(input["Frequency Range"])
+        self.WidgetGainInputs.setValues(input["Gain"])

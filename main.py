@@ -46,35 +46,30 @@ class MainWindow(QMainWindow):
         self.ButtonLayout = QGridLayout()
         self.ButtonLayoutWidget = QWidget()
 
-        self.button_exit = QPushButton('Exit')
+        # text = '', objectName = '', clicked =
+
+        self.button_exit = QPushButton(text='EXIT', objectName='EXIT_BUTTON', clicked=lambda: exit(0))
         self.ButtonLayout.addWidget(self.button_exit, 0, 0)
 
-        self.button_plot = QPushButton("Plot")
+        self.button_plot = QPushButton(text='PLOT', objectName='PLOT_BUTTON', clicked=self.show_plot_window)
         self.ButtonLayout.addWidget(self.button_plot, 0, 1)
 
         self.modelSelector = QComboBox()
         self.modelSelector.addItems(['Micro Strip', 'CPW', 'S Matrix'])
-
         self.modelSelector.currentTextChanged.connect(self.model_changed)
 
         self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
 
-        self.button_save_settings = QPushButton('Save Settings')
+        self.button_save_settings = QPushButton(text='SAVE SETTINGS', objectName='SAVE_BUTTON',
+                                                clicked=self.showSaveWindow)
         self.ButtonLayout.addWidget(self.button_save_settings, 1, 1)
 
-        self.button_load_settings = QPushButton('Load Settings')
+        self.button_load_settings = QPushButton(text='LOAD SETTINGS', objectName='SAVE_BUTTON',
+                                                clicked=self.showLoadWindow)
         self.ButtonLayout.addWidget(self.button_load_settings, 1, 2)
 
-        self.testButton = QPushButton('test')
+        self.testButton = QPushButton(text='TEST', objectName='TEST_BUTTON', clicked=self.get_inputs)
         self.ButtonLayout.addWidget(self.testButton, 1, 0)
-        self.testButton.clicked.connect(self.get_inputs)
-
-        # buttons onPress
-
-        self.button_plot.clicked.connect(self.show_new_window)
-        self.button_exit.clicked.connect(lambda: exit(0))
-        self.button_save_settings.clicked.connect(self.showSaveWindow)
-        self.button_load_settings.clicked.connect(self.showLoadWindow)
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
         self.ButtonLayoutWidget.setFixedHeight(100)
@@ -171,7 +166,7 @@ class MainWindow(QMainWindow):
         except:
             pass
 
-    def show_new_window(self, checked):
+    def show_plot_window(self, checked):
 
         # if we already have a window open redisplay the plots
         if self.plotWindow:
@@ -193,7 +188,7 @@ class MainWindow(QMainWindow):
 
     def showLoadWindow(self):
 
-        self.SaveWindow = LoadSettingsWindow()
+        self.SaveWindow = LoadSettingsWindow(self.line_model)
         self.SaveWindow.show()
 
 

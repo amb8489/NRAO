@@ -9,8 +9,10 @@ class LoadSettingsWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    def __init__(self):
+    def __init__(self, settings_model):
         super().__init__()
+
+        self.settings_model = settings_model
 
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
@@ -59,5 +61,14 @@ class LoadSettingsWindow(QScrollArea):
     def Load(self):
         # todo pass loaded inout back to main window and have them loaded into the UI
         print("loading ")
+
+        inputs = {
+            'SC': {'er': 0.0, 'h': 0.0, 'ts': 0.0, 'tg': 0.0, 't': 0.0, 'tc': 0.0, 'jc': 0.0, 'normal_resistivity': 0.0,
+                   'tand': 0.0},
+            'Dimensions': {'loads': [[0, 0], [0, 0]], 'Unit Cell Length []': 0.0, 'Central Line Width []': 0.0},
+            'Frequency Range': {'Start Freq [GHZ]': 0.0, 'End Freq [GHZ]': 0.0, 'resolution': 0.0},
+            'Gain': {'As0': 0.0, 'Ai0': 0.0, 'Ap0': 0.0, 'Pump Frequency [GHZ]': 0.0}}
+
+        self.settings_model.set_values(inputs)
         time.sleep(1)
         self.close()

@@ -15,6 +15,9 @@ class TableModel(QtCore.QAbstractTableModel):
         super(TableModel, self).__init__()
         self._data = data
 
+        self.headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand", "other"]
+
+
     def data(self, index, role):
         if role == Qt.DisplayRole:
             value = self._data.iloc[index.row(), index.column()]
@@ -30,11 +33,14 @@ class TableModel(QtCore.QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand", "other"]
-                return headers[section]
+                return self.headers[section]
 
             if orientation == Qt.Vertical:
                 return str(self._data.index[section])
+
+    def get_headers(self):
+        return self.headers
+
 
     def sectionClicked(self, int):
         print("zero")
@@ -54,7 +60,6 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.layout().addWidget(QLabel(self.Title), 0, 0)
 
         # table
-        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
         self.table = QtWidgets.QTableView()
         self.table.setSelectionBehavior(QTableView.SelectRows)
 
@@ -70,7 +75,7 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.table.setModel(self.model)
 
         # setting row selections
-        self.table.selectionModel().selectionChanged.connect(self.prow)
+        self.table.selectionModel().selectionChanged.connect(self.setRowsInSuperConductorInputsOnChange)
 
         # table size policy
         self.table.setAlternatingRowColors(True)
@@ -89,9 +94,15 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def prow(self):
+
+    def get_values(self):
+        row = self.getFirstSelectedRow()
+        row_names =  self.model.get_headers()
+        return {row_names[i]: row[i] for i in range(len(row))}
+
+    def setRowsInSuperConductorInputsOnChange(self):
         if self.onchange:
-            self.onchange(self.getFirstSelectedRow())
+            self.onchange(self.get_values())
 
     def getFirstSelectedRow(self):
         index = self.table.selectionModel().selectedRows()

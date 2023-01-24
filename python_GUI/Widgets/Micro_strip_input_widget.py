@@ -27,7 +27,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
         self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
 
-        #todo make not absoulte path
+        # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/MS_Diagram.png"
 
         actualImage = QtGui.QImage(imgPath)
@@ -38,9 +38,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         lbl.setScaledContents(True)
 
-        self.layout().addWidget(lbl,5, 1,1,1)
-
-
+        self.layout().addWidget(lbl, 5, 1, 1, 1)
 
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
@@ -63,7 +61,15 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def get_inputs(self):
-        print(self.SCW.getValues())
-        print(self.dimensionsInputWidget.getTableValues())
-        print(self.freqRangeWidget.getValues())
-        print(self.WidgetGainInputs.getValues())
+        return {"SC": self.SCW.getValues(),
+                "Dimensions": self.dimensionsInputWidget.getValues(),
+                "Frequency Range": self.freqRangeWidget.getValues(),
+                "Gain": self.WidgetGainInputs.getValues()
+                }
+
+    def set_values(self, input):
+
+        self.SCW.setValues(input["SC"])
+        self.dimensionsInputWidget.setValues(input["Dimensions"])
+        self.freqRangeWidget.setValues(input["Frequency Range"])
+        self.WidgetGainInputs.setValues(input["Gain"])

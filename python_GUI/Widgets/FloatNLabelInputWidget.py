@@ -1,15 +1,16 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor
+
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QLabel,QDoubleSpinBox, QVBoxLayout
+from PySide6.QtWidgets import QLabel, QDoubleSpinBox, QVBoxLayout
 from PySide6 import QtWidgets
 
-
+#todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
-    def __init__(self, Title, MinVal=None, DefaultVal=0, onchange=None, *args, **kwargs):
+    def __init__(self, Title, MinVal=None, DefaultVal=0, onchange=None, widget_name=None, *args, **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
-
+        self.setObjectName(widget_name if widget_name else Title)
         self.setLayout(QVBoxLayout())
         self.Title = Title
         self.label = QLabel(Title)
@@ -24,8 +25,6 @@ class WidgetDoubleInput(QtWidgets.QWidget):
 
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.input)
-
-
 
         self.setBackGroundColor("#a89b74")
 

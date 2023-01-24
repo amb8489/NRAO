@@ -37,3 +37,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
 
     def getValues(self):
         return {input.getTitleAndValue()[0]: input.getTitleAndValue()[1] for input in self.inputs}
+
+    def setValues(self, values):
+        for i, input in enumerate(self.inputs):
+            input.setValue(values[input.objectName()])

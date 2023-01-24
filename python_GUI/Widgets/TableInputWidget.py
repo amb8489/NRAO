@@ -81,6 +81,13 @@ class TableModel(QtCore.QAbstractTableModel):
             return True
         return False
 
+    def NewTableData(self,data):
+        self._data = data
+        if self.onChange:
+            self.onChange()
+
+
+
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
@@ -170,3 +177,9 @@ class TableInputWidget(QtWidgets.QWidget):
 
         mode = QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
         self.table.selectionModel().select(selection, mode)
+
+    def setData(self, data):
+        self.NloadsInput.setValue(len(data))
+
+        self.model.NewTableData(data)
+        pass
