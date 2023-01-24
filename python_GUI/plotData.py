@@ -5,7 +5,7 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib.figure import Figure
 
-from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
+from Fluqet_Line_Equations.FloquetLine import SuperConductingFloquetLine
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 from Utills.Constants import PI2

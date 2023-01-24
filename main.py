@@ -9,6 +9,9 @@ from python_GUI.Widgets.PlotWidget import WidgetGraph_fig
 from python_GUI.Widgets.S_Matrix_input_widget import SMatrixInputsWidget
 from python_GUI.plotData import simulate
 from python_GUI.utillsGUI import randomColorBright, randomColor
+from python_GUI.views.LoadVeiw import LoadSettingsWindow
+from python_GUI.views.PlotVeiw import PlotWindow
+from python_GUI.views.SaveVeiw import SaveWindow
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox, QLineEdit
@@ -178,7 +181,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.plot()
         else:
             # open a new plotting window
-            self.plotWindow = AnotherWindow(self.model_type, self.inputs)
+            self.plotWindow = PlotWindow(self.model_type, self.inputs)
 
         self.plotWindow.show()
 
@@ -196,155 +199,8 @@ class MainWindow(QMainWindow):
         self.SaveWindow.show()
 
 
-class AnotherWindow(QScrollArea):
-    """
-    This "window" is alpha_plt QWidget. If it has no parent, it
-    will appear as alpha_plt free-floating window as we want.
-    """
-
-    def __init__(self, model_type, inputs):
-        super().__init__()
-
-        self.setWindowTitle("PLOTS")
-        self.grid = QGridLayout()
-        self.vbox = QVBoxLayout()
-        self.inputs = inputs
-        self.model_type = model_type
-        holder = QWidget()
-        holder.setLayout(self.grid)
-        self.setWidgetResizable(True)
-
-        plots = simulate(self.model_type, self.inputs)
-
-        for i in range(2):
-            for j in range(3):
-                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
-
-        self.vbox.addWidget(holder)
-        self.setWidget(holder)
-        self.setMinimumWidth(900)
-        self.setMinimumHeight(700)
-
-    def plot(self):
-
-        # time.sleep(10)
-
-        self.ButtonExit = QPushButton('Close window')
-        self.grid.addWidget(self.ButtonExit, 0, 0)
-        self.ButtonExit.clicked.connect(lambda: self.close())
-
-        plots = simulate(self.model_type, self.inputs)
-
-        for i in range(2):
-            for j in range(3):
-                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
-
-    def clearPlots(self):
-        for i in range(self.grid.count()):
-            child = self.grid.itemAt(i).widget()
-            if child:
-                child.deleteLater()
 
 
-class SaveWindow(QScrollArea):
-    """
-    This "window" is alpha_plt QWidget. If it has no parent, it
-    will appear as alpha_plt free-floating window as we want.
-    """
-
-    def __init__(self, settings):
-        super().__init__()
-
-        self.settings = settings
-
-        self.setLayout(QGridLayout())
-        self.setWindowTitle("save")
-
-        self.name_label = QLabel("Setting Name:")
-        self.name_input = QLineEdit(self)
-
-        self.save_button = QPushButton('Save', self)
-        self.save_button.clicked.connect(self.Save)
-
-        self.layout().addWidget(self.name_label, 0, 0)
-        self.layout().addWidget(self.name_input, 0, 1)
-        self.layout().addWidget(self.save_button, 1, 0)
-
-        self.setFixedWidth(400)
-        self.setFixedHeight(200)
-
-    def Save(self):
-        setting_name = self.name_input.text()
-        setting_name = setting_name if setting_name else randomColor()
-
-        with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
-            print(self.settings)
-            settings_file.write(f"{setting_name} " + str(self.settings) + "\n")
-
-        print(f"saving {setting_name}")
-        # todo save setting values somewere
-        time.sleep(1)
-        self.close()
-
-
-class LoadSettingsWindow(QScrollArea):
-    """
-    This "window" is alpha_plt QWidget. If it has no parent, it
-    will appear as alpha_plt free-floating window as we want.
-    """
-
-    def __init__(self):
-        super().__init__()
-
-        self.grid = QGridLayout()
-        self.vbox = QVBoxLayout()
-
-        holder = QWidget()
-        holder.setLayout(self.grid)
-        self.setWidgetResizable(True)
-
-        self.setWindowTitle("Load")
-
-        settings = []
-        with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "r") as settings_file:
-            for line in settings_file:
-                settings.append(line)
-
-        if not settings:
-            self.layout().addWidget(QLabel("no setting have been saved"), 0, 0)
-
-        for i, setting in enumerate(settings):
-            name_label = QLabel(setting)
-            load_button = QPushButton('Load', self)
-            load_button.clicked.connect(self.Load)
-
-            delete_button = QPushButton(f'Delete {i}', self)
-            delete_button.clicked.connect(lambda: self.Delete(-1))
-
-            self.grid.addWidget(name_label, i, 0)
-            self.grid.addWidget(load_button, i, 1)
-            self.grid.addWidget(delete_button, i, 2)
-
-            self.vbox.addWidget(holder)
-            self.setWidget(holder)
-
-        self.exit_button = QPushButton('Exit', self)
-        self.exit_button.clicked.connect(lambda: self.close())
-
-        self.grid.addWidget(self.exit_button, len(settings) if len(settings) else 1, 0)
-
-        self.setFixedWidth(400)
-        self.setFixedHeight(400)
-
-    def Delete(self, idx):
-        # todo delete from file and UI will need the index in file and use that index to delete from file and UI
-        print("Deleting ", idx)
-
-    def Load(self):
-        # todo pass loaded inout back to main window and have them loaded into the UI
-        print("loading ")
-        time.sleep(1)
-        self.close()
 
 
 if __name__ == '__main__':

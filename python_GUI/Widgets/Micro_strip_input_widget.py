@@ -1,6 +1,6 @@
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton
+from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel
 
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import Line, WidgetFLineDimensionsInputs
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
@@ -26,6 +26,22 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
         self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
+
+        #todo make not absoulte path
+        imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/MS_Diagram.png"
+
+        actualImage = QtGui.QImage(imgPath)
+        pixmap = QtGui.QPixmap(imgPath)
+        pixmap = pixmap.scaled(400, 400, QtCore.Qt.KeepAspectRatio)
+        lbl = QLabel(self)
+        lbl.setPixmap(pixmap)
+
+        lbl.setScaledContents(True)
+
+        self.layout().addWidget(lbl,5, 1,1,1)
+
+
+
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
         self.layout().addWidget(self.freqRangeWidget, 3, 0)
