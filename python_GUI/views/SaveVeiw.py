@@ -18,17 +18,19 @@ class SaveWindow(QScrollArea):
         self.settings = line_model.get_inputs()
 
         self.setLayout(QGridLayout())
-        self.setWindowTitle("save")
+        self.setWindowTitle(f"saved setting for {self.line_type}")
 
         self.name_label = QLabel("Setting Name:")
         self.name_input = QLineEdit(self)
 
-        self.save_button = QPushButton('Save', self)
-        self.save_button.clicked.connect(self.Save)
+        self.save_button = QPushButton('Save', self,clicked = self.Save)
+        self.cancel_button = QPushButton('Cancel', self, clicked = lambda :self.close())
 
         self.layout().addWidget(self.name_label, 0, 0)
         self.layout().addWidget(self.name_input, 0, 1)
         self.layout().addWidget(self.save_button, 1, 0)
+        self.layout().addWidget(self.cancel_button, 1, 1)
+
 
         self.setFixedWidth(400)
         self.setFixedHeight(200)

@@ -23,9 +23,8 @@ class LoadSettingsWindow(QScrollArea):
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
 
-        self.setWindowTitle("Load")
+        self.setWindowTitle(f"saved setting for {settings_model.type}")
 
-        self.grid.addWidget(QLabel(f"saved setting for {settings_model.type}"), 0, 0, Qt.AlignTop)
 
         settings = []
         settings_type = []
@@ -57,8 +56,8 @@ class LoadSettingsWindow(QScrollArea):
                 self.grid.addWidget(load_button, i + 1, 1, Qt.AlignTop)
                 self.grid.addWidget(delete_button, i + 1, 2, Qt.AlignTop)
 
-        self.exit_button = QPushButton('Exit', self, clicked=lambda: self.close())
-        self.grid.addWidget(self.exit_button, len(settings) + 1 if len(settings) else 2, 0)
+        self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
+        self.grid.addWidget(self.cancel_button, len(settings) + 1 if len(settings) else 2, 0)
 
 
 
