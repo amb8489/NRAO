@@ -126,6 +126,7 @@ class MainWindow(QMainWindow):
 
         self.title.setText(self.modelSelector.currentText())
         self.showModel(self.line_models[modelName])
+        self.plotWindow = None
 
     def init(self):
         self.Mainlayout.insertStretch(-1, 1)
@@ -133,8 +134,10 @@ class MainWindow(QMainWindow):
         self.showModel(self.Micro_strip_inputs_widget)
 
         # todo
-        self.model_type = "MS"
+        self.model_type = self.line_model.type
         self.inputs = None
+
+        # todo when model type changed if a self.plotWindow is already made the self.plotWindow wont change to new line typr
         if self.model_type == "MS":
             self.inputs = MicroStripInputs()
         else:
@@ -166,7 +169,7 @@ class MainWindow(QMainWindow):
         except:
             pass
 
-    def show_plot_window(self, checked):
+    def show_plot_window(self):
 
         # if we already have a window open redisplay the plots
         if self.plotWindow:
@@ -174,7 +177,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.plot()
         else:
             # open a new plotting window
-            self.plotWindow = PlotWindow(self.model_type, self.inputs)
+            self.plotWindow = PlotWindow(self.line_model.type, self.inputs)
 
         self.plotWindow.show()
 

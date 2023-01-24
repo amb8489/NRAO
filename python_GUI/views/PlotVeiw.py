@@ -13,7 +13,7 @@ class PlotWindow(QScrollArea):
     def __init__(self, model_type, inputs):
         super().__init__()
 
-        self.setWindowTitle("PLOTS")
+        self.setWindowTitle(f"{model_type} PLOTS")
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
         self.inputs = inputs
