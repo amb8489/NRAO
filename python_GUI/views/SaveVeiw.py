@@ -11,10 +11,11 @@ class SaveWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    def __init__(self, settings):
+    def __init__(self, line_model):
         super().__init__()
 
-        self.settings = settings
+        self.line_type = line_model.type
+        self.settings = line_model.get_inputs()
 
         self.setLayout(QGridLayout())
         self.setWindowTitle("save")
@@ -38,7 +39,7 @@ class SaveWindow(QScrollArea):
 
         with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
             print(self.settings)
-            settings_file.write(f"{setting_name} " + str(self.settings).replace("'","\"") + "\n")
+            settings_file.write(f"{self.line_type} {setting_name} " + str(self.settings).replace("'","\"") + "\n")
 
         print(f"saving {setting_name}")
         # todo save setting values somewere

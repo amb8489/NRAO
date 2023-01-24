@@ -14,6 +14,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super(CPWInputsWidget, self).__init__(*args, **kwargs)
+        self.type = "CPW"
 
         self.setLayout(QGridLayout())
 
@@ -64,7 +65,6 @@ class CPWInputsWidget(QtWidgets.QWidget):
                 }
 
     def set_values(self, input):
-
         print("loading valies into model")
 
         self.SCW.setValues(input["SC"])

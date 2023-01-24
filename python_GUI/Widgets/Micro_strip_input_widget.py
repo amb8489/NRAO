@@ -14,6 +14,8 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super(MicroStripInputsWidget, self).__init__(*args, **kwargs)
+        self.type = "MS"
+
 
         self.setLayout(QGridLayout())
 
