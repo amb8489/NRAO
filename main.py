@@ -182,7 +182,7 @@ class MainWindow(QMainWindow):
 
         # if we already have a window open redisplay the plots
         # todo add in map of the input name to input val
-        self.SaveWindow = SaveWindow([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        self.SaveWindow = SaveWindow(self.line_model.get_inputs())
 
         self.SaveWindow.show()
 

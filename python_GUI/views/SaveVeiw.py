@@ -38,7 +38,7 @@ class SaveWindow(QScrollArea):
 
         with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
             print(self.settings)
-            settings_file.write(f"{setting_name} " + str(self.settings) + "\n")
+            settings_file.write(f"{setting_name} " + str(self.settings).replace("'","\"") + "\n")
 
         print(f"saving {setting_name}")
         # todo save setting values somewere
