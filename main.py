@@ -1,5 +1,5 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, Qt, QFont
 from Inputs.MicroStripInputs import MicroStripInputs
 from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
 from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget
@@ -10,7 +10,7 @@ from python_GUI.views.PlotVeiw import PlotWindow
 from python_GUI.views.SaveVeiw import SaveWindow
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox
+from PySide6.QtWidgets import QMainWindow, QApplication, QGridLayout, QScrollArea, QLabel, QComboBox, QSizePolicy
 import sys
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 
@@ -45,8 +45,6 @@ class MainWindow(QMainWindow):
 
         self.ButtonLayout = QGridLayout()
         self.ButtonLayoutWidget = QWidget()
-
-        # text = '', objectName = '', clicked =
 
         self.button_exit = QPushButton(text='EXIT', objectName='EXIT_BUTTON', clicked=lambda: exit(0))
         self.ButtonLayout.addWidget(self.button_exit, 0, 0)
@@ -83,13 +81,16 @@ class MainWindow(QMainWindow):
 
         # title
         self.title = QLabel(self.modelSelector.currentText())
-        self.title.setMaximumHeight(20)
+        self.title.setMaximumHeight(40)
 
         palette = self.title.palette()
-        palette.setColor(QPalette.Window, QColor(randomColorBright()))
+        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.title.setPalette(palette)
         self.title.setAutoFillBackground(True)
 
+        self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setFont(QFont('Arial', 24))
         self.Mainlayout.addWidget(self.title)
 
         # ---------------------------------- input models
@@ -126,6 +127,7 @@ class MainWindow(QMainWindow):
 
         self.title.setText(self.modelSelector.currentText())
         self.showModel(self.line_models[modelName])
+        self.model_type = self.line_models[modelName].type
         self.plotWindow = None
 
     def init(self):
@@ -160,7 +162,6 @@ class MainWindow(QMainWindow):
         self.show()
 
     def srow(self):
-        # todo get inputs from selected row
         print(self.line_model.table.getFirstSelectedRow())
 
     def get_inputs(self):
@@ -171,7 +172,6 @@ class MainWindow(QMainWindow):
 
     def show_plot_window(self):
 
-        # if we already have a window open redisplay the plots
         if self.plotWindow:
             self.plotWindow.clearPlots()
             self.plotWindow.plot()
@@ -183,10 +183,7 @@ class MainWindow(QMainWindow):
 
     def showSaveWindow(self):
 
-        # if we already have a window open redisplay the plots
-        # todo add in map of the input name to input val
         self.SaveWindow = SaveWindow(self.line_model)
-
         self.SaveWindow.show()
 
     def showLoadWindow(self):

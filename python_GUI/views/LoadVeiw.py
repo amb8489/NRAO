@@ -25,7 +25,6 @@ class LoadSettingsWindow(QScrollArea):
 
         self.setWindowTitle(f"saved setting for {settings_model.type}")
 
-
         settings = []
         settings_type = []
         settings_names = []
@@ -43,11 +42,10 @@ class LoadSettingsWindow(QScrollArea):
                     settings_type.append(setting_type)
 
         if not settings:
-            print("hre")
             self.grid.addWidget(QLabel(f"No setting have been saved for {self.settings_model.type}"), 1, 0, Qt.AlignTop)
         else:
             for i, setting_name in enumerate(settings_names):
-                # todo fix idx
+                # todo fix -1 idxs
                 load_button = QPushButton('Load', self, clicked=lambda: self.Load(settings[-1], settings_type[-1]))
                 delete_button = QPushButton(f'Delete {i}', self, clicked=lambda: self.Delete(-1))
                 name_label = QLabel(setting_name)
@@ -59,17 +57,11 @@ class LoadSettingsWindow(QScrollArea):
         self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
         self.grid.addWidget(self.cancel_button, len(settings) + 1 if len(settings) else 2, 0)
 
-
-
         self.vbox.addWidget(holder)
         self.setWidget(holder)
 
-
         self.setFixedWidth(400)
         self.setFixedHeight(400)
-
-
-
 
     def Delete(self, idx):
         # todo delete from file and UI will need the index in file and use that index to delete from file and UI

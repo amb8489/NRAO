@@ -1,5 +1,5 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, QFont
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -15,13 +15,14 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # widget title
-        self.Title = "Frequency"
-        self.layout().addWidget(QLabel(self.Title), 0, 0)
+        self.title =  QLabel("Frequency")
+        self.title.setFont(QFont('Arial', 16))
+        self.layout().addWidget(self.title, 0, 0)
 
         self.inputs = []
 
         # inputs for freq range and res
-        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "resolution"]
+        self.inputnames = ["Start Freq [GHZ]", "End Freq [GHZ]", "Resolution"]
         for j in range(len(self.inputnames)):
             input_widget = WidgetDoubleInput(self.inputnames[j])
             self.layout().addWidget(input_widget, 1, j)

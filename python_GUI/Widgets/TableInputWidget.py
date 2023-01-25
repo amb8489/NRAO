@@ -10,9 +10,11 @@ from PySide6.QtCore import Qt, QItemSelection, QItemSelectionModel
 
 class TableModel(QtCore.QAbstractTableModel):
 
-    def __init__(self, data, onChange=None):
+    def __init__(self, data, colNames, onChange=None):
         super(TableModel, self).__init__()
         self._data = data
+
+        self.colNames = colNames
 
         self.onChange = onChange
 
@@ -54,9 +56,7 @@ class TableModel(QtCore.QAbstractTableModel):
                 return str(f"Load {section + 1}")
 
             if orientation == Qt.Horizontal:
-                if section == 0:
-                    return str(f"Lengths [unit]")
-                return str(f"Widths[unit]")
+                return self.colNames[section]
 
     def removeRows(self, position, rows, QModelIndex):
         self.beginRemoveRows(QModelIndex, position, position + rows - 1)
@@ -81,12 +81,10 @@ class TableModel(QtCore.QAbstractTableModel):
             return True
         return False
 
-    def NewTableData(self,data):
+    def NewTableData(self, data):
         self._data = data
         if self.onChange:
             self.onChange()
-
-
 
     def flags(self, index):
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
@@ -100,7 +98,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 class TableInputWidget(QtWidgets.QWidget):
 
-    def __init__(self, onChange=None):
+    def __init__(self, colName, onChange=None):
         super().__init__()
         self.setLayout(QVBoxLayout())
 
@@ -118,8 +116,9 @@ class TableInputWidget(QtWidgets.QWidget):
 
         # defualt table data and table model
         defualt_n_loads = 2
-        data = [[0] * defualt_n_loads for i in range(defualt_n_loads)]
-        self.model = TableModel(data, self.onChange)
+        data = [[10] * len(colName) for i in range(defualt_n_loads)]
+
+        self.model = TableModel(data, colName, self.onChange)
         self.table.setModel(self.model)
 
         self.layout().addWidget(self.table)

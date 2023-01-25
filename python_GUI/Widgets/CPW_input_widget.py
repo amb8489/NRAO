@@ -26,7 +26,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []","Widths []","S"])
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
 
         # todo make not absoulte path

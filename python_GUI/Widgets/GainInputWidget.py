@@ -1,5 +1,5 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor, Qt
+from PySide6.QtGui import QPalette, QColor, Qt, QFont
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -15,8 +15,9 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # title
-        self.Title = "Gain"
-        self.layout().addWidget(QLabel(self.Title), 0, 0)
+        self.title =  QLabel("Gain")
+        self.title.setFont(QFont('Arial', 16))
+        self.layout().addWidget(self.title, 0, 0)
 
         # inputs
         self.inputnames = ["As0", "Ai0", "Ap0", "Pump Frequency [GHZ]"]

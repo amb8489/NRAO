@@ -14,7 +14,6 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(SMatrixInputsWidget, self).__init__(*args, **kwargs)
 
-        # todo refeactor this into there own class widget
         self.type = "SMAT"
 
         self.setLayout(QGridLayout())

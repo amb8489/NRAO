@@ -15,7 +15,7 @@ class TableModel(QtCore.QAbstractTableModel):
         super(TableModel, self).__init__()
         self._data = data
 
-        self.headers = ["er", "h", "ts", "tg", "t", "tc", "jc", "normal_resistivity", "tand", "other"]
+        self.headers = ["Er", "H", "Ts", "Tg", "T", "Tc", "Jc", "Normal Resistivity", "Tan D", "Other"]
 
 
     def data(self, index, role):

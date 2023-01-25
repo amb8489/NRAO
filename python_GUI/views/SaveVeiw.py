@@ -23,25 +23,27 @@ class SaveWindow(QScrollArea):
         self.name_label = QLabel("Setting Name:")
         self.name_input = QLineEdit(self)
 
-        self.save_button = QPushButton('Save', self,clicked = self.Save)
-        self.cancel_button = QPushButton('Cancel', self, clicked = lambda :self.close())
+        self.save_button = QPushButton('Save', self, clicked=self.Save)
+        self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
 
         self.layout().addWidget(self.name_label, 0, 0)
         self.layout().addWidget(self.name_input, 0, 1)
         self.layout().addWidget(self.save_button, 1, 0)
         self.layout().addWidget(self.cancel_button, 1, 1)
 
-
         self.setFixedWidth(400)
         self.setFixedHeight(200)
 
     def Save(self):
         setting_name = self.name_input.text()
+
         setting_name = setting_name if setting_name else randomColor()
+
+        setting_name = setting_name.replace(" ", "_")
 
         with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
             print(self.settings)
-            settings_file.write(f"{self.line_type} {setting_name} " + str(self.settings).replace("'","\"") + "\n")
+            settings_file.write(f"{self.line_type} {setting_name} " + str(self.settings).replace("'", "\"") + "\n")
 
         print(f"saving {setting_name}")
         # todo save setting values somewere

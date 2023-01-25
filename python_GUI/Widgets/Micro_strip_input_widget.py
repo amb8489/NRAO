@@ -27,7 +27,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs()
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []","Widths []"])
 
         # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/MS_Diagram.png"

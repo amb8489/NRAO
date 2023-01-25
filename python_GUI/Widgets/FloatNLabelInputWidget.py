@@ -1,5 +1,5 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, QFont
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QLabel, QDoubleSpinBox, QVBoxLayout
@@ -14,6 +14,8 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.setLayout(QVBoxLayout())
         self.Title = Title
         self.label = QLabel(Title)
+        self.label.setFont(QFont('Arial', 14))
+
         self.input = QDoubleSpinBox()
 
         if MinVal:

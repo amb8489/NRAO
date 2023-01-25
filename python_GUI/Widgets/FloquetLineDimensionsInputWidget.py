@@ -1,6 +1,6 @@
 import matplotlib
 import numpy as np
-from PySide6.QtGui import QPalette, QColor, Qt, QPixmap
+from PySide6.QtGui import QPalette, QColor, Qt, QPixmap, QFont
 from python_GUI.utillsGUI import randomColor, randomColorBright
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
@@ -145,7 +145,7 @@ class rectangleWidget(QtWidgets.QWidget):
 
 class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, colNames,*args, **kwargs):
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -154,8 +154,12 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # component title
-        self.Title = "Dimensions"
-        self.layout().addWidget(QLabel(self.Title), 0, 0)
+
+        self.title =  QLabel("Dimensions")
+        self.title.setFont(QFont('Arial', 16))
+        self.layout().addWidget(self.title, 0, 0)
+
+
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
@@ -171,7 +175,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.layout().addWidget(self.InputWidget, 1, 1, Qt.AlignVCenter)
 
         # table for load widths and lengths inputs
-        self.tableInput = TableInputWidget()
+        self.tableInput = TableInputWidget(colNames)
         self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 
         # set widget color
