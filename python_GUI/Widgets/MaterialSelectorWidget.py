@@ -1,7 +1,7 @@
 import random
 import matplotlib
 import pandas as pd
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, QFont
 from PySide6.QtWidgets import QGridLayout, QLabel, QTableView
 
 matplotlib.use('Qt5Agg')
@@ -16,7 +16,6 @@ class TableModel(QtCore.QAbstractTableModel):
         self._data = data
 
         self.headers = ["Er", "H", "Ts", "Tg", "T", "Tc", "Jc", "Normal Resistivity", "Tan D", "Other"]
-
 
     def data(self, index, role):
         if role == Qt.DisplayRole:
@@ -41,14 +40,13 @@ class TableModel(QtCore.QAbstractTableModel):
     def get_headers(self):
         return self.headers
 
-
     def sectionClicked(self, int):
         print("zero")
 
 
 class WidgetMaterialsSelect(QtWidgets.QWidget):
 
-    def __init__(self, onchange = None, *args, **kwargs):
+    def __init__(self, onchange=None, *args, **kwargs):
 
         self.onchange = onchange
 
@@ -56,8 +54,9 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        self.Title = "Material Properties"
-        self.layout().addWidget(QLabel(self.Title), 0, 0)
+        self.title = QLabel("Material Properties")
+        self.layout().addWidget(self.title, 0, 0)
+        self.title.setFont(QFont('Arial', 16))
 
         # table
         self.table = QtWidgets.QTableView()
@@ -94,10 +93,9 @@ class WidgetMaterialsSelect(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-
     def get_values(self):
         row = self.getFirstSelectedRow()
-        row_names =  self.model.get_headers()
+        row_names = self.model.get_headers()
         return {row_names[i]: row[i] for i in range(len(row))}
 
     def setRowsInSuperConductorInputsOnChange(self):

@@ -18,7 +18,6 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        # self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
         self.table = WidgetMaterialsSelect()
 
         self.layout().addWidget(self.table, 0, 0, 2, 2)
@@ -26,20 +25,20 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []","Widths []","S"])
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []", "Widths []", "S"])
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
 
         # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/CWP_Diagram.png"
 
-        actualImage = QtGui.QImage(imgPath)
         pixmap = QtGui.QPixmap(imgPath)
         pixmap = pixmap.scaled(400, 400, QtCore.Qt.KeepAspectRatio)
-        lbl = QLabel(self)
-        lbl.setPixmap(pixmap)
-        lbl.setScaledContents(True)
+        picture = QLabel(self)
+        picture.setPixmap(pixmap)
+        picture.setScaledContents(True)
 
-        self.layout().addWidget(lbl, 5, 1, 1, 1)
+
+        self.layout().addWidget(picture, 5, 1, 1, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
         self.layout().addWidget(self.freqRangeWidget, 3, 0)
         self.WidgetGainInputs = WidgetGainInputs()
@@ -65,7 +64,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
                 }
 
     def set_values(self, input):
-        print("loading valies into model")
+        print("loading values into model")
 
         self.SCW.setValues(input["SC"])
         self.dimensionsInputWidget.setValues(input["Dimensions"])

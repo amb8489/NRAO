@@ -32,15 +32,13 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/MS_Diagram.png"
 
-        actualImage = QtGui.QImage(imgPath)
         pixmap = QtGui.QPixmap(imgPath)
         pixmap = pixmap.scaled(400, 400, QtCore.Qt.KeepAspectRatio)
-        lbl = QLabel(self)
-        lbl.setPixmap(pixmap)
+        picture = QLabel(self)
+        picture.setPixmap(pixmap)
+        picture.setScaledContents(True)
 
-        lbl.setScaledContents(True)
-
-        self.layout().addWidget(lbl, 5, 1, 1, 1)
+        self.layout().addWidget(picture, 5, 1, 1, 1)
 
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
