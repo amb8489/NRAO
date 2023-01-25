@@ -24,7 +24,11 @@ class WidgetSCInputs(QtWidgets.QWidget):
         self.inputs = []
         for j in range(len(self.inputnames)):
             input = WidgetDoubleInput(self.inputnames[j], widget_name=self.inputnames[j])
-            self.layout().addWidget(input, 1, j)
+
+            x = j % 3
+            y = j // 3
+
+            self.layout().addWidget(input, y+1, x)
             self.inputs.append(input)
 
         # set widget color

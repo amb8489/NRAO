@@ -40,9 +40,9 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.layout().addWidget(picture, 5, 1, 1, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 3, 0)
+        self.layout().addWidget(self.freqRangeWidget, 4, 0)
         self.WidgetGainInputs = WidgetGainInputs()
-        self.layout().addWidget(self.WidgetGainInputs, 4, 0)
+        self.layout().addWidget(self.WidgetGainInputs, 3, 0)
         line = Line(self.dimensionsInputWidget.tableInput)
         self.layout().addWidget(line, 5, 0)
 

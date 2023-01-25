@@ -105,7 +105,7 @@ class TableInputWidget(QtWidgets.QWidget):
         self.onChange = onChange
 
         # input for load number selection
-        self.NloadsInput = WidgetDoubleInput("Number of loads", MinVal=1, DefaultVal=2, onchange=self.setNLoads)
+        self.NloadsInput = WidgetDoubleInput("Number of loads", MaxVal = 100 ,MinVal=1, DefaultVal=2, onchange=self.setNLoads)
         self.layout().addWidget(self.NloadsInput)
 
         # inputs table

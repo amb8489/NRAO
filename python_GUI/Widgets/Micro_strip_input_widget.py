@@ -42,9 +42,9 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 3, 0)
+        self.layout().addWidget(self.freqRangeWidget, 4, 0)
         self.WidgetGainInputs = WidgetGainInputs()
-        self.layout().addWidget(self.WidgetGainInputs, 4, 0)
+        self.layout().addWidget(self.WidgetGainInputs, 3, 0)
 
         line = Line(self.dimensionsInputWidget.tableInput)
         self.layout().addWidget(line, 5, 0)
