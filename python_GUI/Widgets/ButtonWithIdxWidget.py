@@ -5,7 +5,7 @@ from PySide6 import QtWidgets
 
 # todo set names for each input to the names of the dict
 class idxButton(QtWidgets.QWidget):
-    def __init__(self,text,idx ,onClick =None,onClickArgs = None, widget_name=None, *args, **kwargs):
+    def __init__(self, text, idx, onClick=None, onClickArgs=None, widget_name=None, *args, **kwargs):
         super(idxButton, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
 
@@ -17,9 +17,8 @@ class idxButton(QtWidgets.QWidget):
 
         self.onClickArgs = onClickArgs
 
-
         if onClick:
-            self.load_button.clicked.connect(lambda :onClick(self.onClickArgs) if self.onClickArgs else onClick())
+            self.load_button.clicked.connect(lambda: onClick(self.onClickArgs) if self.onClickArgs else onClick())
 
         self.layout().addWidget(self.load_button)
 
@@ -33,6 +32,6 @@ class idxButton(QtWidgets.QWidget):
 
     def DownShiftIdx(self):
 
-        self.onClickArgs[2] -=1
+        self.onClickArgs[2] -= 1
         self.onClickArgs[1] -= 1
-        return [self.onClickArgs[2],self.onClickArgs[1]]
+        return [self.onClickArgs[2], self.onClickArgs[1]]

@@ -43,17 +43,15 @@ class LoadSettingsWindow(QScrollArea):
 
                     settings.append((setting, setting_name, setting_type, line_number))
 
-
-
         if settings:
             self.rows = []
 
             for i, setting in enumerate(settings):
                 setting, setting_name, setting_type, line_number = setting
 
-                self.rows.append(Row(setting_name,i,line_number,self.Load,self.Delete,[i,setting,setting_type],[setting_name,i,line_number]))
+                self.rows.append(Row(setting_name, i, line_number, self.Load, self.Delete, [i, setting, setting_type],
+                                     [setting_name, i, line_number]))
                 self.grid.addWidget(self.rows[i], i + 1, 0, Qt.AlignTop)
-
 
         self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
         self.grid.addWidget(self.cancel_button, len(settings) + 1 if len(settings) else 2, 0)
@@ -71,19 +69,11 @@ class LoadSettingsWindow(QScrollArea):
 
         # update the rest of the rows idx and line numbers that came after idx in rows array
 
-
-        for i in range(idx,len(self.rows)):
-
-
-
+        for i in range(idx, len(self.rows)):
             self.rows[i].DownShiftIdx()
 
         self.rows[idx].deleteLater()
         del self.rows[idx]
-
-
-
-
 
         with open(self.settings_file_path, "r+") as f:
             lines = f.readlines()
@@ -92,7 +82,6 @@ class LoadSettingsWindow(QScrollArea):
                 if i != linenumner:
                     f.write(line)
             f.truncate()
-
 
     def Load(self, argsArr):
 

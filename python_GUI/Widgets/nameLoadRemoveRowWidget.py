@@ -36,11 +36,9 @@ class Row(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-
     def DownShiftIdx(self):
-
-        self.idx-=1
-        self.line_number-=1
+        self.idx -= 1
+        self.line_number -= 1
 
         return self.deleteButton.DownShiftIdx()
 
