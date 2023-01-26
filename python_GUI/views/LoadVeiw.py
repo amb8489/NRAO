@@ -4,6 +4,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QLabel, QGridLayout, QVBoxLayout, QWidget, QScrollArea
 import json
 
+from python_GUI.Widgets.ButtonWithIdxWidget import idxButton
+from python_GUI.Widgets.nameLoadRemoveRowWidget import Row
+
 
 class LoadSettingsWindow(QScrollArea):
     """
@@ -14,6 +17,7 @@ class LoadSettingsWindow(QScrollArea):
     def __init__(self, settings_model):
         super().__init__()
 
+        self.settings_file_path = "/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt"
         self.settings_model = settings_model
 
         self.grid = QGridLayout()
@@ -26,33 +30,30 @@ class LoadSettingsWindow(QScrollArea):
         self.setWindowTitle(f"saved setting for {settings_model.type}")
 
         settings = []
-        settings_type = []
-        settings_names = []
-        with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "r") as settings_file:
-            for line in settings_file:
+
+        with open(self.settings_file_path, "r") as settings_file:
+            for line_number, line in enumerate(settings_file):
                 line = line.split(" ", 2)
                 setting_type = line[0]
 
+                # filter out other model settings that are not settings for the current model
                 if setting_type == settings_model.type:
                     setting_name = f"{setting_type} {line[1]}"
                     setting = json.loads(line[2])
 
-                    settings_names.append(setting_name)
-                    settings.append(setting)
-                    settings_type.append(setting_type)
+                    settings.append((setting, setting_name, setting_type, line_number))
 
-        if not settings:
-            self.grid.addWidget(QLabel(f"No setting have been saved for {self.settings_model.type}"), 1, 0, Qt.AlignTop)
-        else:
-            for i, setting_name in enumerate(settings_names):
-                # todo fix -1 idxs
-                load_button = QPushButton('Load', self, clicked=lambda: self.Load(settings[-1], settings_type[-1]))
-                delete_button = QPushButton(f'Delete {i}', self, clicked=lambda: self.Delete(-1))
-                name_label = QLabel(setting_name)
 
-                self.grid.addWidget(name_label, i + 1, 0, Qt.AlignTop)
-                self.grid.addWidget(load_button, i + 1, 1, Qt.AlignTop)
-                self.grid.addWidget(delete_button, i + 1, 2, Qt.AlignTop)
+
+        if settings:
+            self.rows = []
+
+            for i, setting in enumerate(settings):
+                setting, setting_name, setting_type, line_number = setting
+
+                self.rows.append(Row(setting_name,i,line_number,self.Load,self.Delete,[i,setting,setting_type],[setting_name,i,line_number]))
+                self.grid.addWidget(self.rows[i], i + 1, 0, Qt.AlignTop)
+
 
         self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
         self.grid.addWidget(self.cancel_button, len(settings) + 1 if len(settings) else 2, 0)
@@ -60,22 +61,50 @@ class LoadSettingsWindow(QScrollArea):
         self.vbox.addWidget(holder)
         self.setWidget(holder)
 
-        self.setFixedWidth(400)
+        self.setFixedWidth(600)
         self.setFixedHeight(400)
 
-    def Delete(self, idx):
-        # todo delete from file and UI will need the index in file and use that index to delete from file and UI
-        print("Deleting ", idx)
+    def Delete(self, argsArr):
 
-    def Load(self, inputs, settings_model):
-        # todo pass loaded inout back to main window and have them loaded into the UI
+        name, idx, linenumner = argsArr
+        print(f"Deleting {name} idx in options list", idx, "line number in settings file", linenumner)
 
-        if settings_model != self.settings_model.type:
-            print(f"cant load  {settings_model} when currently on {self.settings_model.type}")
+        # update the rest of the rows idx and line numbers that came after idx in rows array
+
+
+        for i in range(idx,len(self.rows)):
+
+
+
+            self.rows[i].DownShiftIdx()
+
+        self.rows[idx].deleteLater()
+        del self.rows[idx]
+
+
+
+
+
+        with open(self.settings_file_path, "r+") as f:
+            lines = f.readlines()
+            f.seek(0)
+            for i, line in enumerate(lines):
+                if i != linenumner:
+                    f.write(line)
+            f.truncate()
+
+
+    def Load(self, argsArr):
+
+        idx, setting, setting_type = argsArr
+
+        print("loading:", idx)
+        if setting_type != self.settings_model.type:
+            print(f"cant load  {setting_type} when currently on {self.settings_model.type}")
+            self.close()
+
             return
 
-        inputs = inputs
-
-        self.settings_model.set_values(inputs)
+        self.settings_model.set_values(setting)
         time.sleep(1)
         self.close()

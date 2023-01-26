@@ -1,7 +1,9 @@
+import random
 import time
 
 from PySide6.QtWidgets import QScrollArea, QGridLayout, QLabel, QLineEdit, QPushButton
 
+from python_GUI import utillsGUI
 from python_GUI.utillsGUI import randomColor
 
 
@@ -31,14 +33,29 @@ class SaveWindow(QScrollArea):
         self.layout().addWidget(self.save_button, 1, 0)
         self.layout().addWidget(self.cancel_button, 1, 1)
 
+        self.random_settings_button = QPushButton(text='Random SETTINGS', objectName='rand_BUTTON',
+                                                  clicked=self.mk_Random_settings)
+        self.layout().addWidget(self.random_settings_button, 2, 0)
+
         self.setFixedWidth(400)
         self.setFixedHeight(200)
 
+    def mk_Random_settings(self):
+        with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
+            for i in range(10):
+                print(self.settings)
+
+                self.settings = utillsGUI.random_setting(self.line_type)
+                name = random.choice(["CPW", "MS"])
+                settings_file.write(
+
+                    f"{name} {randomColor()}_{i} " + str(self.settings).replace("'", "\"") + "\n")
+
+        time.sleep(1)
+        self.close()
+
     def Save(self):
-        setting_name = self.name_input.text()
-
-        setting_name = setting_name if setting_name else randomColor()
-
+        setting_name = self.name_input.text() if self.name_input.text() else randomColor()
         setting_name = setting_name.replace(" ", "_")
 
         with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
