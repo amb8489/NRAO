@@ -1,10 +1,10 @@
 import time
 
 import numpy as np
-from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
+from Fluqet_Line_Model.MicroStrip.FloquetLine import SuperConductingFloquetLine
 
-from SuperConductivityEquations.SCE import SuperConductivity
-from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from SuperConductor_Model.SCE import SuperConductivity
+from TransmissionLineModels.MicroStrip.SuperConducting_MicroStrip_Model import SuperConductingMicroStripModel
 
 
 def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, width_unloaded, width_loaded, er,

@@ -1,6 +1,6 @@
 import math
 
-from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
+from TransmissionLineModels.Abstract_SuperConducting_Line_Model import AbstractSCTL
 from Utills.Constants import PI, MU_0, SPEED_OF_LIGHT, epsilono
 
 """
@@ -12,7 +12,7 @@ from Utills.Constants import PI, MU_0, SPEED_OF_LIGHT, epsilono
 """
 
 
-class SuperConductingCPWLineModel(AbstractSCTL):
+class SuperConductingCPWLine(AbstractSCTL):
 
     def __init__(self, central_line_width, s_width, thickness):
         self.central_line_width = central_line_width

@@ -110,13 +110,13 @@ class TableInputWidget(QtWidgets.QWidget):
                                              onchange=self.setNLoads)
         self.layout().addWidget(self.NloadsInput)
 
-        # inputs table
+        # inputs materials_table
         self.table = QtWidgets.QTableView()
 
-        # table selection behavior for rows
+        # materials_table selection behavior for rows
         self.table.setSelectionBehavior(QTableView.SelectRows)
 
-        # defualt table data and table model
+        # defualt materials_table data and materials_table model
         defualt_n_loads = 2
         data = [[10] * len(colName) for i in range(defualt_n_loads)]
 

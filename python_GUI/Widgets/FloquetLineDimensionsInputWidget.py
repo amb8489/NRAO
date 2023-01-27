@@ -173,7 +173,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.InputWidget.setLayout(self.container)
         self.layout().addWidget(self.InputWidget, 1, 1, Qt.AlignVCenter)
 
-        # table for load widths and lengths inputs
+        # materials_table for load widths and lengths inputs
         self.tableInput = TableInputWidget(colNames)
         self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 

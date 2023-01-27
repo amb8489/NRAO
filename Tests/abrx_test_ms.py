@@ -7,10 +7,10 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-from Fluqet_Line_Equations.FloquetLine import SuperConductingFloquetLine
+from Fluqet_Line_Model.FloquetLine import SuperConductingFloquetLine
 from Inputs.MicroStripInputs import MicroStripInputs
-from SuperConductivityEquations.SCE import SuperConductivity
-from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from SuperConductor_Model.SCE import SuperConductivity
+from TransmissionLineModels.MicroStrip.SuperConducting_MicroStrip_Model import SuperConductingMicroStripModel
 from Utills.Constants import PI2
 
 s = time.time()

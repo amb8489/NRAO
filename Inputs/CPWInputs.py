@@ -12,7 +12,7 @@ class CPWInputs():
 
         what is g1 and g2
 
-        what are all the functions in SuperConductingCPWLineModel mapped to the the abstract model
+        what are all the functions in SuperConductingCPWLine mapped to the the abstract model
 
         '''
 

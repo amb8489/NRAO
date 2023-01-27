@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-from SuperConductivityEquations.SCE import SuperConductivity
+from SuperConductor_Model.SCE import SuperConductivity
 
 temp = 3
 tc = 14.28

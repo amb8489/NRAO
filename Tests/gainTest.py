@@ -1,12 +1,12 @@
 import time
 
-from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
+from Fluqet_Line_Model.MicroStrip.FloquetLine import SuperConductingFloquetLine
 from matplotlib import pyplot as plt
 
 from Gain.MicroStrip.FindGain import Calc_Gain
 from Inputs.MicroStripInputs import MicroStripInputs
-from SuperConductivityEquations.SCE import SuperConductivity
-from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
+from SuperConductor_Model.SCE import SuperConductivity
+from TransmissionLineModels.MicroStrip.SuperConducting_MicroStrip_Model import SuperConductingMicroStripModel
 
 if __name__ == "__main__":
     # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission_plt-lines.pdf on MS

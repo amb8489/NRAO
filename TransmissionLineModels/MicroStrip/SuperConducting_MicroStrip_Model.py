@@ -1,7 +1,7 @@
 import cmath
 import math
 
-from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
+from TransmissionLineModels.Abstract_SuperConducting_Line_Model import AbstractSCTL
 from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, C, Z0
 from Utills.Functions import sech, coth
 

@@ -4,8 +4,8 @@ import time
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 
-from Fluqet_Line_Equations.Abstract_Floquet_Line import AbstractFloquetLine
-from Fluqet_Line_Equations.FloquetLineDimensions import FloquetLineDimensions
+from Fluqet_Line_Model.Abstract_Floquet_Line import AbstractFloquetLine
+from Fluqet_Line_Model.FloquetLineDimensions import FloquetLineDimensions
 from Utills.Constants import PI, PI2
 from Utills.Functions import mult_mats
 

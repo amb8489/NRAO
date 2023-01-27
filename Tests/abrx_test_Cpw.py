@@ -7,10 +7,10 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-from Fluqet_Line_Equations.FloquetLine import SuperConductingFloquetLine
+from Fluqet_Line_Model.FloquetLine import SuperConductingFloquetLine
 from Inputs.CPWInputs import CPWInputs
-from SuperConductivityEquations.SCE import SuperConductivity
-from TransmissionLineEquations.CPW.SC_CPW_TL import SuperConductingCPWLineModel
+from SuperConductor_Model.SCE import SuperConductivity
+from TransmissionLineModels.CPW.SuperConducting_CPW_Model import SuperConductingCPWLine
 from Utills.Constants import PI2
 
 s = time.time()
@@ -21,8 +21,8 @@ CPWinputs = CPWInputs()
 # ---------------------------- dependency models ----------------------------
 super_conductivity_model = SuperConductivity(CPWinputs.op_temp, CPWinputs.crit_temp, CPWinputs.normal_resistivity)
 
-Central_line_model = SuperConductingCPWLineModel(..., ..., ...)
-Load_line_models = [SuperConductingCPWLineModel(..., ..., ...) for width in CPWinputs.load_widths]
+Central_line_model = SuperConductingCPWLine(..., ..., ...)
+Load_line_models = [SuperConductingCPWLine(..., ..., ...) for width in CPWinputs.load_widths]
 
 floquet_line = SuperConductingFloquetLine(CPWinputs.unit_cell_length, CPWinputs.D0, CPWinputs.load_lengths,
                                           Load_line_models, Central_line_model, super_conductivity_model,
