@@ -1,6 +1,6 @@
+from PySide6 import QtWidgets
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QVBoxLayout, QPushButton
-from PySide6 import QtWidgets
 
 
 # todo set names for each input to the names of the dict

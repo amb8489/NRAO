@@ -3,12 +3,29 @@ from Utills.Functions import micro_meters_to_meters, nano_meters_to_meters, toGH
 
 class CPWInputs():
     def __init__(self):
+        '''
+        todo questions on inputs vs ms inputs
+        this there still a...
+
+        central_line_width
+        load_widths
+
+        what is g1 and g2
+
+        what are all the functions in SuperConductingCPWLineModel mapped to the the abstract model
+
+        '''
+
         # ---------------------------- range and resolution inputs
         self.resoultion = 1700
         self.start_freq_GHz = toGHz(1)
         self.end_freq_GHz = toGHz(25)
 
-        # ---------------------------- unit cell inputs
+        # ---------------------------- unit cell dimensions
+
+        self.central_line_width = ...
+        self.s_width = ...
+        self.thickness = ...
 
         self.unit_cell_length = micro_meters_to_meters(2300)
         self.l1 = micro_meters_to_meters(50)

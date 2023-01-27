@@ -43,13 +43,17 @@ class SaveWindow(QScrollArea):
     def mk_Random_settings(self):
         with open("/Users/aaron/PycharmProjects/NRAO/python_GUI/Setting/settings.txt", "a") as settings_file:
             for i in range(10):
-                print(self.settings)
+                type = random.choice(["CPW", "MS"])
 
-                self.settings = utillsGUI.random_setting(self.line_type)
-                name = random.choice(["CPW", "MS"])
+                if type == "CPW":
+                    nrow = 3
+                else:
+                    nrow = 2
+                self.settings = utillsGUI.random_setting(nrow)
+
                 settings_file.write(
 
-                    f"{name} {randomColor()}_{i} " + str(self.settings).replace("'", "\"") + "\n")
+                    f"{type} {randomColor()}_{i} " + str(self.settings).replace("'", "\"") + "\n")
 
         time.sleep(1)
         self.close()

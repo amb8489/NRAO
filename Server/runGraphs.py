@@ -1,9 +1,10 @@
 import time
+
 import numpy as np
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
+
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
-from Utills.Constants import PI2
 
 
 def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, width_unloaded, width_loaded, er,

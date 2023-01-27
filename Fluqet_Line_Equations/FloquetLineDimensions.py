@@ -10,18 +10,16 @@ given:
     ex: ===|<---L1--->|=====|<---L2--->|=====|<-L3->|===
     in_order_loads_widths = [L1,L2,L3]
 '''
-from Utills.Functions import micro_meters_to_meters
 
 
 class FloquetLineDimensions():
 
-    def __init__(self, D: float, D0: float, in_order_loads_widths: [float], thickness, load_line_models, central_line_model):
+    def __init__(self, D: float, D0: float, in_order_loads_widths: [float], thickness, load_line_models,
+                 central_line_model):
 
         # param checking for correctness
         if len(in_order_loads_widths) < 1:
-            raise Exception(f"number of loads has to be >= 1: passed in {len(in_order_loads_widths) }")
-
-
+            raise Exception(f"number of loads has to be >= 1: passed in {len(in_order_loads_widths)}")
 
         # saving usefull info
         self.D = D
@@ -45,9 +43,8 @@ class FloquetLineDimensions():
             if i != self.number_of_loads:
                 self.floquet_line_segments.append(self.load_line_models[i])
 
-
             # add the load length just not thr first 0
-            if i != 0:self.floquet_line_parts_lengths.append(self.in_order_loads_widths[i])
+            if i != 0: self.floquet_line_parts_lengths.append(self.in_order_loads_widths[i])
 
             # compute and add length of the central line between load[i] and load[i+1]   [load i] ---CL--- [load i+1]
             # L = D0 - (1/2 * loadLen[i] ) - (1/2 * loadLen[i+1] )
@@ -64,9 +61,9 @@ class FloquetLineDimensions():
     def get_segment_len(self, partNumber: int):
         return self.floquet_line_parts_lengths[partNumber]
 
-
     def get_Central_line_gamma_Zc(self, freq, zs):
         return self.central_line_model.get_propagation_constant_characteristic_impedance(freq, zs)
 
     def get_gamma_Zc(self, unit_cell_segment_idx, freq, zs):
-        return self.floquet_line_segments[unit_cell_segment_idx].get_propagation_constant_characteristic_impedance(freq, zs)
+        return self.floquet_line_segments[unit_cell_segment_idx].get_propagation_constant_characteristic_impedance(freq,
+                                                                                                                   zs)

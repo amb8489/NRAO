@@ -1,11 +1,7 @@
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel, QFileDialog
+from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel, QFileDialog
 
-from python_GUI.Widgets.FloquetLineDimensionsInputWidget import Line, WidgetFLineDimensionsInputs
-from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
-from python_GUI.Widgets.GainInputWidget import WidgetGainInputs
-from python_GUI.Widgets.SuperConductorInputWidget import WidgetSCInputs
 from python_GUI.utillsGUI import randomColorBright
 
 

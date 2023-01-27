@@ -8,7 +8,7 @@ from PySide6 import QtWidgets
 
 # todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
-    def __init__(self, Title, MaxVal=10**5, MinVal=0, DefaultVal=0, onchange=None, widget_name=None, *args, **kwargs):
+    def __init__(self, Title, MaxVal=10 ** 5, MinVal=0, DefaultVal=0, onchange=None, widget_name=None, *args, **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
         self.setObjectName(widget_name if widget_name else Title)
@@ -18,7 +18,6 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.label.setFont(QFont('Arial', 14))
 
         self.input = QDoubleSpinBox()
-
 
         self.input.setMinimum(MinVal)
         self.input.setMaximum(MaxVal)

@@ -1,6 +1,6 @@
-from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QGridLayout, QLabel
 from PySide6 import QtWidgets
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtWidgets import QGridLayout, QLabel
 
 from python_GUI.Widgets.ButtonWithIdxWidget import idxButton
 
@@ -20,7 +20,7 @@ class Row(QtWidgets.QWidget):
         if widget_name:
             self.setObjectName(widget_name)
 
-        self.layout().addWidget(QLabel(f"{text}   File#:{line_number + 1}   idx:{idx}"), 0, 0)
+        self.layout().addWidget(QLabel(f"{text}"), 0, 0)
 
         self.loadButton = idxButton("Load", idx, onClick=onClickLoad, onClickArgs=LoadArgs)
         self.layout().addWidget(self.loadButton, 0, 1)

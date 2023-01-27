@@ -32,7 +32,6 @@ class AbstractSCTL(ABC):
     def propagation_constant(self, *args, **kwargs):
         pass
 
-
     @abstractmethod
     def get_propagation_constant_characteristic_impedance(self, *args, **kwargs):
         pass

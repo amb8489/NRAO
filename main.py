@@ -1,5 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
+
 from Inputs.MicroStripInputs import MicroStripInputs
 from python_GUI.Widgets.CPW_input_widget import CPWInputsWidget
 from python_GUI.Widgets.Micro_strip_input_widget import MicroStripInputsWidget

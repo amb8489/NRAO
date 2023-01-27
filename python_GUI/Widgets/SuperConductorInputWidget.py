@@ -1,5 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, QFont
+
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -28,7 +29,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
             x = j % 3
             y = j // 3
 
-            self.layout().addWidget(input, y+1, x)
+            self.layout().addWidget(input, y + 1, x)
             self.inputs.append(input)
 
         # set widget color

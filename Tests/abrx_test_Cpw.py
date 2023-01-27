@@ -3,38 +3,37 @@ Test file for calculating A B R X
 '''
 
 import time
+
 import numpy as np
 from matplotlib import pyplot as plt
-from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
-from Inputs.MicroStripInputs import MicroStripInputs
+
+from Fluqet_Line_Equations.FloquetLine import SuperConductingFloquetLine
+from Inputs.CPWInputs import CPWInputs
 from SuperConductivityEquations.SCE import SuperConductivity
+from TransmissionLineEquations.CPW.SC_CPW_TL import SuperConductingCPWLineModel
 from Utills.Constants import PI2
-from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
 
 s = time.time()
 
 # ---------------------------- inputs ----------------------------
-MSinputs = MicroStripInputs()
+CPWinputs = CPWInputs()
 
 # ---------------------------- dependency models ----------------------------
-super_conductivity_model = SuperConductivity(MSinputs.op_temp, MSinputs.crit_temp, MSinputs.normal_resistivity)
-Central_line_model = SuperConductingMicroStripModel(MSinputs.height, MSinputs.central_line_width,
-                                                    MSinputs.line_thickness, MSinputs.er, MSinputs.tangent_delta,
-                                                    MSinputs.crit_current)
-Load_line_models = [
-    SuperConductingMicroStripModel(MSinputs.height, width, MSinputs.line_thickness, MSinputs.er, MSinputs.tangent_delta,
-                                   MSinputs.crit_current) for width in MSinputs.load_widths]
-floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_lengths,
-                                          Load_line_models,
-                                          Central_line_model,
-                                          super_conductivity_model, MSinputs.central_line_width, MSinputs.load_widths,
-                                          MSinputs.line_thickness, MSinputs.crit_current)
+super_conductivity_model = SuperConductivity(CPWinputs.op_temp, CPWinputs.crit_temp, CPWinputs.normal_resistivity)
+
+Central_line_model = SuperConductingCPWLineModel(..., ..., ...)
+Load_line_models = [SuperConductingCPWLineModel(..., ..., ...) for width in CPWinputs.load_widths]
+
+floquet_line = SuperConductingFloquetLine(CPWinputs.unit_cell_length, CPWinputs.D0, CPWinputs.load_lengths,
+                                          Load_line_models, Central_line_model, super_conductivity_model,
+                                          CPWinputs.central_line_width, CPWinputs.load_widths, CPWinputs.line_thickness,
+                                          CPWinputs.crit_current)
 
 # ---------------------------- calculations -------------------
 
 
 alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
-FRange = np.linspace(MSinputs.start_freq_GHz, MSinputs.end_freq_GHz, MSinputs.resoultion)
+FRange = np.linspace(CPWinputs.start_freq_GHz, CPWinputs.end_freq_GHz, CPWinputs.resoultion)
 for F in FRange:
     aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
     RR.append(R)
@@ -76,8 +75,6 @@ plt1.plot(FRange, beta_plt)
 plt1.set_title('beta_plt Unfolded')
 plt1.plot(FRange, floquet_line.unfold(beta_plt))
 
-
-
 plt2.set_title('Alpha')
 floquet_line.FindPumpZone(3, np.array(alpha_plt))
 print(floquet_line.target_pump_zone_start)
@@ -87,9 +84,6 @@ plt2.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)], FRange[int(fl
              facecolor='g', alpha=0.5)
 plt2.plot(FRange, alpha_plt)
 
-
-
-
 plt3.set_title('R')
 plt3.plot(FRange, r)
 
@@ -98,7 +92,6 @@ plt4.plot(FRange, x)
 
 plt5.set_title('Transmission')
 plt5.plot(transmission_plt)
-
 
 plt.yscale("log")
 plt6.set_title('circuit values')

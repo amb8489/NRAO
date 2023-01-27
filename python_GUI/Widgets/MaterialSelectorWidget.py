@@ -1,4 +1,5 @@
 import random
+
 import matplotlib
 import pandas as pd
 from PySide6.QtGui import QPalette, QColor, QFont

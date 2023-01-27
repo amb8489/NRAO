@@ -1,6 +1,7 @@
 import time
+
 import numpy as np
-import matplotlib.pyplot as plt
+
 from SuperConductivityEquations.SCE import SuperConductivity
 
 temp = 3

@@ -1,18 +1,12 @@
 import time
-import numpy as np
-from matplotlib import pyplot as plt
+
 from Fluqet_Line_Equations.MicroStrip.FloquetLine import SuperConductingFloquetLine
+from matplotlib import pyplot as plt
+
 from Gain.MicroStrip.FindGain import Calc_Gain
-from Gain.MicroStrip.solveODEs import Solve_ode
-from Gain.AmplitudeEquations.AmplitudeEquations1 import AmplitudeEqs1
 from Inputs.MicroStripInputs import MicroStripInputs
 from SuperConductivityEquations.SCE import SuperConductivity
 from TransmissionLineEquations.MicroStrip.SC_MicroStrip_TL import SuperConductingMicroStripModel
-
-
-
-
-
 
 if __name__ == "__main__":
     # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission_plt-lines.pdf on MS
@@ -44,10 +38,9 @@ if __name__ == "__main__":
     
     """
 
-
     start_time = time.time()
-    L = 500 #todo where does L comefrom in mathimatica
-    f_range, gain = Calc_Gain(floquet_line, MSinputs.resoultion, MSinputs.pump_freq,MSinputs.init_amplitudes, L)
+    L = 500  # todo where does L comefrom in mathimatica
+    f_range, gain = Calc_Gain(floquet_line, MSinputs.resoultion, MSinputs.pump_freq, MSinputs.init_amplitudes, L)
     print("time to calc gains:", (time.time() - start_time))
     plt.plot(f_range, gain)
     plt.show()

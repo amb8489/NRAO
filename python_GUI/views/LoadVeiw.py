@@ -1,10 +1,9 @@
+import json
 import time
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QPushButton, QLabel, QGridLayout, QVBoxLayout, QWidget, QScrollArea
-import json
+from PySide6.QtWidgets import QPushButton, QGridLayout, QVBoxLayout, QWidget, QScrollArea
 
-from python_GUI.Widgets.ButtonWithIdxWidget import idxButton
 from python_GUI.Widgets.nameLoadRemoveRowWidget import Row
 
 
@@ -38,7 +37,7 @@ class LoadSettingsWindow(QScrollArea):
 
                 # filter out other model settings that are not settings for the current model
                 if setting_type == settings_model.type:
-                    setting_name = f"{setting_type} {line[1]}"
+                    setting_name = line[1]
                     setting = json.loads(line[2])
 
                     settings.append((setting, setting_name, setting_type, line_number))
@@ -47,9 +46,9 @@ class LoadSettingsWindow(QScrollArea):
             self.rows = []
 
             for i, setting in enumerate(settings):
-                setting, setting_name, setting_type, line_number = setting
+                setting_data, setting_name, setting_type, line_number = setting
 
-                self.rows.append(Row(setting_name, i, line_number, self.Load, self.Delete, [i, setting, setting_type],
+                self.rows.append(Row(setting_name, i, line_number, self.Load, self.Delete, [i, setting_data, setting_type],
                                      [setting_name, i, line_number]))
                 self.grid.addWidget(self.rows[i], i + 1, 0, Qt.AlignTop)
 

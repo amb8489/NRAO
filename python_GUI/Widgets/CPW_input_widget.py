@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtGui import QPalette, QColor, QPixmap
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtWidgets import QGridLayout, QLabel
 
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import Line, WidgetFLineDimensionsInputs
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
@@ -36,7 +36,6 @@ class CPWInputsWidget(QtWidgets.QWidget):
         picture = QLabel(self)
         picture.setPixmap(pixmap)
         picture.setScaledContents(True)
-
 
         self.layout().addWidget(picture, 5, 1, 1, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()

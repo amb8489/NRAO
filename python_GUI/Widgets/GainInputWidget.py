@@ -1,5 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
+
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -15,7 +16,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # title
-        self.title =  QLabel("Gain")
+        self.title = QLabel("Gain")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 

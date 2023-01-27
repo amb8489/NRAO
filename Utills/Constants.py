@@ -1,4 +1,5 @@
 import math
+
 import scipy.constants
 
 """
@@ -35,7 +36,6 @@ C = scipy.constants.speed_of_light
 SPEED_OF_LIGHT = scipy.constants.speed_of_light
 
 PI_DIV_2 = math.pi / 2
-
 
 epsilono = ...
 

@@ -1,12 +1,11 @@
 import scipy
+
 signal = 0
 idler = 1
 pump = 2
 
 
 def Solve_ode(init_amplitudes, AmplitudeEquations, AmplitudeEquationsArgs, z, L):
-
-
     """
     :param z:
     :param init_amplitudes:

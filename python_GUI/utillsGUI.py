@@ -18,11 +18,11 @@ def randomColorBright():
     return "#" + "".join([choice("689ABCD") for i in range(6)])
 
 
-def random_setting(type):
+def random_setting(ncols):
     return {'SC': {'Er': rft(), 'H': rft(), 'Ts': rft(), 'Tg': rft(), 'T': rft(), 'Tc': rft(), 'Jc': rft(),
                    'Normal Resistivity': rft(), 'Tan D': rft()},
 
-            'Dimensions': {'loads': [[fit(), fit(), fit()] for i in range(fit())], 'Unit Cell Length []': rft(),
+            'Dimensions': {'loads': [[fit() for i in range(ncols)] for i in range(fit())], 'Unit Cell Length []': rft(),
                            'Central Line Width []': rft()},
 
             'Frequency Range': {'Start Freq [GHZ]': fit(), 'End Freq [GHZ]': fit(), 'Resolution': fit()},

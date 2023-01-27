@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel
+from PySide6.QtWidgets import QGridLayout, QLabel
 
 from python_GUI.Widgets.FloquetLineDimensionsInputWidget import Line, WidgetFLineDimensionsInputs
 from python_GUI.Widgets.FrequencyRangeInputWidget import WidgetFrequencyInputs
@@ -16,7 +16,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         super(MicroStripInputsWidget, self).__init__(*args, **kwargs)
         self.type = "MS"
 
-
         self.setLayout(QGridLayout())
 
         # self.table = WidgetMaterialsSelect(onchange=self.SCW.setValues)
@@ -27,7 +26,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []","Widths []"])
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Lengths []", "Widths []"])
 
         # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_GUI/images/MS_Diagram.png"
@@ -68,7 +67,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
                 }
 
     def set_values(self, input):
-
         self.SCW.setValues(input["SC"])
         self.dimensionsInputWidget.setValues(input["Dimensions"])
         self.freqRangeWidget.setValues(input["Frequency Range"])

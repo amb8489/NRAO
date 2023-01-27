@@ -1,14 +1,13 @@
 import cmath
+import time
+
 import numpy as np
-import scipy
-from matplotlib import pyplot as plt
 from scipy.signal import find_peaks, peak_widths
 
 from Fluqet_Line_Equations.Abstract_Floquet_Line import AbstractFloquetLine
 from Fluqet_Line_Equations.FloquetLineDimensions import FloquetLineDimensions
-from Utills.Functions import mult_mats
 from Utills.Constants import PI, PI2
-import time
+from Utills.Functions import mult_mats
 
 
 class SuperConductingFloquetLine(AbstractFloquetLine):
@@ -98,8 +97,6 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         if len(peaks) < peak_number:
             self.target_pump_zone_start, self.target_pump_zone_end = 0, 0
             return
-
-
 
         y, self.target_pump_zone_start, self.target_pump_zone_end = \
             list(zip(*peak_widths(x, peaks, rel_height=.95)[1:]))[max(peak_number - 1, 0)]

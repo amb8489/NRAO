@@ -52,4 +52,3 @@ class PlotWindow(QScrollArea):
             child = self.grid.itemAt(i).widget()
             if child:
                 child.deleteLater()
-

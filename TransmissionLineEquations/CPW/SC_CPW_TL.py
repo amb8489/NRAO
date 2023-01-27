@@ -1,35 +1,22 @@
-import cmath
 import math
-from Utills.Functions import sech, coth
-from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, C, Z0, SPEED_OF_LIGHT, epsilono
+
 from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
+from Utills.Constants import PI, MU_0, SPEED_OF_LIGHT, epsilono
 
 """
 
-    MICRO STRIP MODEL FOR TRANSMISSION LINE
-    
-    
-    NRAO
+    CPW MODEL FOR TRANSMISSION LINE
 
-    Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
-
-    Penetration depth <----where is this used ?
-    Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
-        
-        
     
     
 """
 
 
-# todo somehwere i use 1/cos for arc cos not sure if thats right ....
+class SuperConductingCPWLineModel(AbstractSCTL):
 
-
-class SuperConductingMicroStripModel(AbstractSCTL):
-
-    def __init__(self, width, ground_spacing, thickness):
-        self.width = width
-        self.ground_spacing = ground_spacing
+    def __init__(self, central_line_width, s_width, thickness):
+        self.central_line_width = central_line_width
+        self.s_width = s_width
         self.thickness = thickness
 
     # geo factors ??
@@ -87,24 +74,18 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return 4 * epsilono * epsilon_eff * KK1m
 
     # geometrical inductance per unit length
-    def Lg(self,width,ground_spacing):
+    def Lg(self, width, ground_spacing):
         k = width / (width + 2 * ground_spacing)
         KK1m = self.KK1(k)
 
-        #todo make sure this is MU_0
-        return (MU_0/4)*(1/KK1m)
+        # todo make sure this is MU_0
+        return (MU_0 / 4) * (1 / KK1m)
 
+    def impedance(self, er, width, ground_spacing):
+        Lgm = self.Lg(width, ground_spacing)
+        Cgm = self.Cg(er, width, ground_spacing)
 
-    def impedance(self,er,width,ground_spacing):
-
-        Lgm = self.Lg(width,ground_spacing)
-        Cgm = self.Cg(er,width,ground_spacing)
-
-        return math.sqrt(Lgm/Cgm)
-
-
-
-
+        return math.sqrt(Lgm / Cgm)
 
     # todo
     # def G1(self, *args, **kwargs):

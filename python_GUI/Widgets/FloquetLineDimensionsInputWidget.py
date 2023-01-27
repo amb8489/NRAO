@@ -1,12 +1,13 @@
 import matplotlib
 import numpy as np
-from PySide6.QtGui import QPalette, QColor, Qt, QPixmap, QFont
-from python_GUI.utillsGUI import randomColor, randomColorBright
+from PySide6.QtGui import QPalette, QColor, Qt, QFont
+
 from python_GUI.Widgets.FloatNLabelInputWidget import WidgetDoubleInput
 from python_GUI.Widgets.TableInputWidget import TableInputWidget
+from python_GUI.utillsGUI import randomColorBright
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea, QPushButton
+from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
 from PySide6 import QtWidgets, QtCore
 
 
@@ -145,7 +146,7 @@ class rectangleWidget(QtWidgets.QWidget):
 
 class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, colNames,*args, **kwargs):
+    def __init__(self, colNames, *args, **kwargs):
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -155,11 +156,9 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
         # component title
 
-        self.title =  QLabel("Dimensions")
+        self.title = QLabel("Dimensions")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
-
-
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
@@ -207,4 +206,3 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
         for i, input in enumerate(self.inputs):
             input.setValue(inputs[input.objectName()])
-

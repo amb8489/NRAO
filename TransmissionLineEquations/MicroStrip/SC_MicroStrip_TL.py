@@ -1,22 +1,18 @@
 import cmath
 import math
-from Utills.Functions import sech, coth
-from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, C, Z0
+
 from TransmissionLineEquations.Abstract_SCTL import AbstractSCTL
+from Utills.Constants import PI, MU_0, PI2, PI4, PLANCK_CONST_REDUCEDev, K0, C, Z0
+from Utills.Functions import sech, coth
 
 """
 
     MICRO STRIP MODEL FOR TRANSMISSION LINE
     
     
-    NRAO
 
     Formulas from https://qucs.sourceforge.net/tech/node75.html#SECTION001211200000000000000
 
-    Penetration depth <----where is this used ?
-    Surface Impedance _ kautz "picoseconds pulses on super conducting strip lines"
-        
-        
     
     
 """

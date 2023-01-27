@@ -1,8 +1,8 @@
 import bisect
-import math
 import cmath
+import math
 
-from Utills.Constants import  PI2
+from Utills.Constants import PI2
 
 
 # Computes the hyperbolic secant of 𝑥
@@ -69,7 +69,6 @@ def mult_2x2_mat(mat1: [[float]], mat2: [[float]]):
         [mat1[1][0] * mat2[0][0] + mat1[1][1] * mat2[1][0], mat1[1][0] * mat2[0][1] + mat1[1][1] * mat2[1][1]]]
 
 
-
 def mult_mats(mats):
     # input is an array of 2x2 matrices
     # does alpha_plt matrix multiplication of all 2x2 matrices passed in,in array
@@ -77,5 +76,3 @@ def mult_mats(mats):
     for mat in mats[1:]:
         res = mult_2x2_mat(res, mat)
     return res
-
-
