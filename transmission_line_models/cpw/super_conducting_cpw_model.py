@@ -1,5 +1,7 @@
 import math
 
+import scipy
+
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from utills.constants import PI, MU_0, SPEED_OF_LIGHT, epsilono
 
@@ -38,7 +40,7 @@ class SuperConductingCPWLine(AbstractSCTL):
         return lk * self.gtot(width, ground_spacing, thickness)
 
     # todo what are the real name of the inputs
-    def impedance(self, Lkc, Lg, Cg):
+    def impedance_SC(self, Lkc, Lg, Cg):
         return math.sqrt((Lkc + Lg) / Cg)
 
     # todo what are the real name of the inputs
@@ -53,11 +55,12 @@ class SuperConductingCPWLine(AbstractSCTL):
     def alpha_ocpwsc(self, Lkc, Lg):
         return Lkc / (Lkc + Lg)
 
-    # ------ PEC cpw
+    # -------------------------- PEC cpw ------------------------------
 
-    # todo
+    #  elliptic integral redefined to contemplate Jochems change
     def nK(self, k):
-        pass
+        ncpw = 2
+        return scipy.special.ellipk(k ** ncpw)
 
     def KK1(self, k):
         k1 = math.sqrt(1 - k ** 2)
@@ -81,7 +84,7 @@ class SuperConductingCPWLine(AbstractSCTL):
         # todo make sure this is MU_0
         return (MU_0 / 4) * (1 / KK1m)
 
-    def impedance(self, er, width, ground_spacing):
+    def impedance_PEC(self, er, width, ground_spacing):
         Lgm = self.Lg(width, ground_spacing)
         Cgm = self.Cg(er, width, ground_spacing)
 

@@ -2,12 +2,12 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton
 
+from python_gui.utills_gui import randomColorBright
 from python_gui.widgets.floquet_line_dimensions_input_widget import Line, WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
 from python_gui.widgets.material_selector_widget import WidgetMaterialsSelect
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
-from python_gui.utills_gui import randomColorBright
 
 
 class MicroStripInputsWidget(QtWidgets.QWidget):
@@ -22,8 +22,10 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
-        self.toggel_materials_table_button = QPushButton(text='Hide materials table', objectName='toggel_materials_table_button',clicked= self.toggel_materials_table)
-        self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
+        self.toggel_materials_table_button = QPushButton(text='Hide Materials List',
+                                                         objectName='toggel_materials_table_button',
+                                                         clicked=self.toggel_materials_table)
+        self.layout().addWidget(self.toggel_materials_table_button, 0, 2, 1, 1)
         # ---------------------------------- model_inputs MS
 
         self.SCW = WidgetSCInputs()
@@ -52,7 +54,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.materials_table.onchange = self.SCW.setValues
 
-
         # set widget color
         self.setBackGroundColor(randomColorBright())
 
@@ -69,19 +70,14 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
                 "gain_models": self.WidgetGainInputs.getValues()
                 }
 
-
     def toggel_materials_table(self):
         if self.materials_table.isVisible():
             self.materials_table.hide()
-            self.toggel_materials_table_button.setText("Show materials table")
+            self.toggel_materials_table_button.setText("Show Materials Table")
 
         else:
             self.materials_table.show()
-            self.toggel_materials_table_button.setText("Hide materials table")
-
-
-
-
+            self.toggel_materials_table_button.setText("Hide Materials Table")
 
     def set_values(self, input):
         self.SCW.setValues(input["SC"])

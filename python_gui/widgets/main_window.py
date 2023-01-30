@@ -103,10 +103,9 @@ class MainWindow(QMainWindow):
         self.Mainlayout.addWidget(self.S_matrix_inputs_widget)
 
         self.line_model = self.Micro_strip_inputs_widget
-
-        self.line_models = {"Micro Strip": self.Micro_strip_inputs_widget,
-                            "cpw": self.CPW_inputs_widget,
-                            "S Matrix": self.S_matrix_inputs_widget}
+        self.line_models = {'Micro Strip': self.Micro_strip_inputs_widget,
+                            'Coplanar Waveguide': self.CPW_inputs_widget,
+                            'S Matrix File': self.S_matrix_inputs_widget}
         self.init()
 
     def showModel(self, line_model):
