@@ -1,7 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from model_inputs.micro_strip_inputs import MicroStripInputs
 from python_gui.utills_gui import randomColorBright
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
@@ -126,27 +125,11 @@ class MainWindow(QMainWindow):
 
         self.title.setText(self.modelSelector.currentText())
         self.showModel(self.line_models[modelName])
-        self.model_type = self.line_models[modelName].type
-        self.plotWindow = None
 
     def init(self):
         self.Mainlayout.insertStretch(-1, 1)
 
         self.showModel(self.Micro_strip_inputs_widget)
-
-        # todo
-        self.model_type = self.line_model.type
-        self.inputs = None
-
-        # todo when model type changed if a self.plotWindow is already made the self.plotWindow wont change to new line typr
-
-        if self.model_type == "MS":
-
-            # todo - inputs make from self.linemodel.getinputs()
-            self.inputs = MicroStripInputs()
-        else:
-            print(f"model_type {self.model_type} is not supported")
-            exit(1)
 
         self.setWindowTitle("TKIPA DESIGN TOOL")
         palette = self.palette()
@@ -176,7 +159,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.plot()
         else:
             # open a new plotting window
-            self.plotWindow = PlotWindow(self.line_model.type, self.inputs)
+            self.plotWindow = PlotWindow(self.line_model)
 
         self.plotWindow.show()
 

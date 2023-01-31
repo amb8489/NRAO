@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QPushButton, QGridLayout, QWidget, QVBoxLayout, QScrollArea
 
-from python_gui.widgets.plot_widget import WidgetGraph_fig
+from model_inputs.micro_strip_inputs import MicroStripInputs
 from python_gui.plot_data import simulate
+from python_gui.widgets.plot_widget import WidgetGraph_fig
 
 
 class PlotWindow(QScrollArea):
@@ -10,14 +11,18 @@ class PlotWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    def __init__(self, model_type, inputs):
+    def __init__(self, line_model):
         super().__init__()
 
-        self.setWindowTitle(f"{model_type} PLOTS")
+        self.setWindowTitle(f"{line_model.type} PLOTS")
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
-        self.inputs = inputs
-        self.model_type = model_type
+
+        # todo change based on line model
+        self.inputs = MicroStripInputs()
+
+        self.model_type = line_model.type
+
         holder = QWidget()
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
