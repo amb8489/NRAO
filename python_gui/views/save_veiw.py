@@ -18,7 +18,7 @@ class SaveWindow(QScrollArea):
         super().__init__()
 
         self.line_type = line_model.type
-        self.settings = line_model.get_inputs()
+        self.settings = line_model.print_inputs()
 
         self.setLayout(QGridLayout())
         self.setWindowTitle(f"saved setting for {self.line_type}")

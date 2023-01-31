@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
                                                 clicked=self.showLoadWindow)
         self.ButtonLayout.addWidget(self.button_load_settings, 1, 2)
 
-        self.testButton = QPushButton(text='TEST', objectName='TEST_BUTTON', clicked=self.get_inputs)
+        self.testButton = QPushButton(text='print inputs', objectName='TEST_BUTTON', clicked=self.print_inputs)
         self.ButtonLayout.addWidget(self.testButton, 1, 0)
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
@@ -139,7 +139,10 @@ class MainWindow(QMainWindow):
         self.inputs = None
 
         # todo when model type changed if a self.plotWindow is already made the self.plotWindow wont change to new line typr
+
         if self.model_type == "MS":
+
+            # todo - inputs make from self.linemodel.getinputs()
             self.inputs = MicroStripInputs()
         else:
             print(f"model_type {self.model_type} is not supported")
@@ -163,7 +166,7 @@ class MainWindow(QMainWindow):
     def srow(self):
         print(self.line_model.materials_table.getFirstSelectedRow())
 
-    def get_inputs(self):
+    def print_inputs(self):
         print(self.line_model.get_inputs())
 
     def show_plot_window(self):
@@ -173,7 +176,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.plot()
         else:
             # open a new plotting window
-            self.plotWindow = PlotWindow(self.line_model)
+            self.plotWindow = PlotWindow(self.line_model.type, self.inputs)
 
         self.plotWindow.show()
 

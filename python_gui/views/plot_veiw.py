@@ -10,14 +10,14 @@ class PlotWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    def __init__(self, line_model):
+    def __init__(self, model_type, inputs):
         super().__init__()
 
-        self.setWindowTitle(f"{line_model.type} PLOTS")
+        self.setWindowTitle(f"{model_type} PLOTS")
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
-        self.inputs = line_model.get_inputs()
-        self.model_type = line_model.type
+        self.inputs = inputs
+        self.model_type = model_type
         holder = QWidget()
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
