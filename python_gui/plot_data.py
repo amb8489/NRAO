@@ -18,28 +18,26 @@ def simulate(model_type, inputs):
     # todo make this into its own class to parse the line tpye and return a floquet line following SOLID principles
     # todo change based on model type
     if model_type == MICRO_STRIP_TYPE:
-        pass
+        # todo change based on model type
+        # ---------------------------- dependency models ----------------------------
+        super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
+        Central_line_model = SuperConductingMicroStripModel(inputs.height, inputs.central_line_width,
+                                                            inputs.line_thickness, inputs.er, inputs.tangent_delta,
+                                                            inputs.crit_current)
+        Load_line_models = [
+            SuperConductingMicroStripModel(inputs.height, width, inputs.line_thickness, inputs.er,
+                                           inputs.tangent_delta,
+                                           inputs.crit_current) for width in inputs.load_widths]
+        floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_lengths,
+                                                  Load_line_models,
+                                                  Central_line_model,
+                                                  super_conductivity_model, inputs.central_line_width,
+                                                  inputs.load_widths,
+                                                  inputs.line_thickness, inputs.crit_current)
     elif model_type == CPW_TYPE:
         pass
     else:
         return f"unknown model type {model_type}"
-
-    # todo change based on model type
-    # ---------------------------- dependency models ----------------------------
-    super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
-    Central_line_model = SuperConductingMicroStripModel(inputs.height, inputs.central_line_width,
-                                                        inputs.line_thickness, inputs.er, inputs.tangent_delta,
-                                                        inputs.crit_current)
-    Load_line_models = [
-        SuperConductingMicroStripModel(inputs.height, width, inputs.line_thickness, inputs.er,
-                                       inputs.tangent_delta,
-                                       inputs.crit_current) for width in inputs.load_widths]
-    floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_lengths,
-                                              Load_line_models,
-                                              Central_line_model,
-                                              super_conductivity_model, inputs.central_line_width,
-                                              inputs.load_widths,
-                                              inputs.line_thickness, inputs.crit_current)
 
     # ---------------------------- calculations -------------------
     alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
