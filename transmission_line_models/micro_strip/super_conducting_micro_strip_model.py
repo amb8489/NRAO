@@ -350,7 +350,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
     # ------------------  OUTPUTS ------------------
 
-    # Geometrical factors #checked
+    # todo should we swap these to JAVIER paper Geometrical factors
     def G1(self, w, h, t):
         return h / (w * self.Kf(w, h, t))
 

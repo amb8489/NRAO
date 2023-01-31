@@ -57,10 +57,12 @@ class SuperConductingCPWLine(AbstractSCTL):
     def G1(self, k, k_prime):
         return ellip_k(k_prime) / (4 * ellip_k(k))
 
+    # todo move this into the abstract class or make the this class inhearet from a new class
     # Zc
     def characteristic_impedance(self, Z, Y):
         return cmath.sqrt(Z / Y)
 
+    # todo move this into the abstract class or make the this class inhearet from a new class
     # gamma
     def propagation_constant(self, Z, Y):
         return cmath.sqrt(Z * Y)
