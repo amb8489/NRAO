@@ -65,5 +65,4 @@ class FloquetLineDimensions():
         return self.central_line_model.get_propagation_constant_characteristic_impedance(freq, zs)
 
     def get_gamma_Zc(self, unit_cell_segment_idx, freq, zs):
-        return self.floquet_line_segments[unit_cell_segment_idx].get_propagation_constant_characteristic_impedance(freq,
-                                                                                                                   zs)
+        return self.floquet_line_segments[unit_cell_segment_idx].get_propagation_constant_characteristic_impedance(freq,zs)

@@ -2,13 +2,13 @@ import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
 from model_inputs.micro_strip_inputs import MicroStripInputs
-from python_gui.widgets.cpw_input_widget import CPWInputsWidget
-from python_gui.widgets.micro_strip_input_widget import MicroStripInputsWidget
-from python_gui.widgets.s_matrix_input_widget import SMatrixInputsWidget
 from python_gui.utills_gui import randomColorBright
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
 from python_gui.views.save_veiw import SaveWindow
+from python_gui.widgets.cpw_input_widget import CPWInputsWidget
+from python_gui.widgets.micro_strip_input_widget import MicroStripInputsWidget
+from python_gui.widgets.s_matrix_input_widget import SMatrixInputsWidget
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QGridLayout, QScrollArea, QLabel, QComboBox, QSizePolicy
@@ -164,7 +164,7 @@ class MainWindow(QMainWindow):
         print(self.line_model.materials_table.getFirstSelectedRow())
 
     def get_inputs(self):
-        self.line_model.materials_table.hide() if self.line_model.materials_table.isVisible() else self.line_model.materials_table.show()
+        print(self.line_model.get_inputs())
 
     def show_plot_window(self):
 
@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
             self.plotWindow.plot()
         else:
             # open a new plotting window
-            self.plotWindow = PlotWindow(self.line_model.type, self.inputs)
+            self.plotWindow = PlotWindow(self.line_model)
 
         self.plotWindow.show()
 

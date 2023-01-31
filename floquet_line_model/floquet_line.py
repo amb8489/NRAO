@@ -21,8 +21,8 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         self.load_widths = load_widths
 
         # model of FloquetLineDimensions dimensions
-        self.FlLineDims = FloquetLineDimensions(unit_cell_length, D0, load_lengths, line_thickness,
-                                                load_line_models, central_line_model)
+        self.floquet_line_dimensions = FloquetLineDimensions(unit_cell_length, D0, load_lengths, line_thickness,
+                                                             load_line_models, central_line_model)
 
         # ---------------------------- model of the Super conductor
         self.super_conductivity_model = super_conductivity_model
@@ -149,14 +149,14 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         conductivity = self.super_conductivity_model.conductivity(freq)
         self.tot += time.time() - s
 
-        zs = self.super_conductivity_model.Zs(freq, conductivity, self.FlLineDims.thickness)
+        zs = self.super_conductivity_model.Zs(freq, conductivity, self.floquet_line_dimensions.thickness)
 
         # making all the ABCD matrices for each subsection of unit cell
         abcd_mats = []
-        for unit_cell_segment_idx in range(0, self.FlLineDims.number_of_loads * 2 + 1):
+        for unit_cell_segment_idx in range(0, self.floquet_line_dimensions.number_of_loads * 2 + 1):
             # abcd mat
-            gamma, Zc = self.FlLineDims.get_gamma_Zc(unit_cell_segment_idx, freq, zs)
-            abcd_mats.append(self.ABCD_TL(Zc, gamma, self.FlLineDims.get_segment_len(unit_cell_segment_idx)))
+            gamma, Zc = self.floquet_line_dimensions.get_gamma_Zc(unit_cell_segment_idx, freq, zs)
+            abcd_mats.append(self.ABCD_TL(Zc, gamma, self.floquet_line_dimensions.get_segment_len(unit_cell_segment_idx)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
         Unitcell_ABCD_Mat = mult_mats(abcd_mats)

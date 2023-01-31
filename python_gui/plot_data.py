@@ -15,13 +15,16 @@ from utills.constants import PI2
 
 
 def simulate(model_type, inputs):
+
+    # todo change based on model type
     if model_type == "MS":
         pass
-    elif model_type == "cpw":
+    elif model_type == "CPW":
         pass
     else:
         return f"unknown model type {model_type}"
 
+    # todo change based on model type
     # ---------------------------- dependency models ----------------------------
     super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
     Central_line_model = SuperConductingMicroStripModel(inputs.height, inputs.central_line_width,

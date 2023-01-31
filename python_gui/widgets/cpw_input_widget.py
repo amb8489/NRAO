@@ -14,7 +14,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super(CPWInputsWidget, self).__init__(*args, **kwargs)
-        self.type = "cpw"
+        self.type = "CPW"
 
         self.setLayout(QGridLayout())
 
