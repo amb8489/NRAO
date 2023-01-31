@@ -8,18 +8,18 @@ from matplotlib.figure import Figure
 from floquet_line_model.floquet_line import SuperConductingFloquetLine
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.micro_strip.super_conducting_micro_strip_model import SuperConductingMicroStripModel
-from utills.constants import PI2
+from utills.constants import PI2, CPW_TYPE, MICRO_STRIP_TYPE
 
 
 # ---------------------------- unit cell inputs from paper
 
 
 def simulate(model_type, inputs):
-
+    # todo make this into its own class to parse the line tpye and return a floquet line following SOLID principles
     # todo change based on model type
-    if model_type == "MS":
+    if model_type == MICRO_STRIP_TYPE:
         pass
-    elif model_type == "CPW":
+    elif model_type == CPW_TYPE:
         pass
     else:
         return f"unknown model type {model_type}"

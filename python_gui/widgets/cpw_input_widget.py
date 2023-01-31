@@ -8,13 +8,14 @@ from python_gui.widgets.gain_input_widget import WidgetGainInputs
 from python_gui.widgets.material_selector_widget import WidgetMaterialsSelect
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
 from python_gui.utills_gui import randomColorBright
+from utills.constants import CPW_TYPE
 
 
 class CPWInputsWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super(CPWInputsWidget, self).__init__(*args, **kwargs)
-        self.type = "CPW"
+        self.type = CPW_TYPE
 
         self.setLayout(QGridLayout())
 

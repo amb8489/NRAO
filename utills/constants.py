@@ -52,3 +52,10 @@ MM = 10 ** -3
 # wave number
 def K0(f):
     return PI2 / (C / f)
+
+
+
+MICRO_STRIP_TYPE = "MICRO_STRIP"
+CPW_TYPE = "CPW"
+
+
