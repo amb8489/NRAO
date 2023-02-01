@@ -1,7 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.utills_gui import randomColorBright
+from python_gui.utills.utills_gui import randomColorBright
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
 from python_gui.views.save_veiw import SaveWindow

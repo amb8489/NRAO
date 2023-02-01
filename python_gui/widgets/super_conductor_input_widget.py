@@ -1,6 +1,8 @@
 import matplotlib
-from PySide6.QtGui import QPalette, QColor, QFont
+from PySide6.QtGui import QPalette, QColor, QFont, Qt
 
+from python_gui.utills.utills_gui import Er, SC_thickness, SC_height, SC_ground_thickness, SC_critical_current, \
+    SC_critical_temperature, SC_operation_temperature, SC_normal_resistivity, SC_tangent_delta
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -21,19 +23,22 @@ class WidgetSCInputs(QtWidgets.QWidget):
         self.layout().addWidget(self.title, 0, 0)
 
         # inputs
-        self.inputnames = ["Er", "H", "Ts", "Tg", "T", "Tc", "Jc", "Normal Resistivity", "Tan D"]
+        self.input_unit_names = [Er, SC_height, SC_thickness, SC_ground_thickness, SC_operation_temperature,
+                                 SC_critical_temperature, SC_critical_current, SC_normal_resistivity, SC_tangent_delta]
         self.inputs = []
-        for j in range(len(self.inputnames)):
-            input = WidgetDoubleInput(self.inputnames[j], widget_name=self.inputnames[j])
+        for j in range(len(self.input_unit_names)):
+            input = WidgetDoubleInput(self.input_unit_names[j].get_name(),
+                                      unit_type=self.input_unit_names[j].get_unit(),
+                                      widget_name=self.input_unit_names[j].get_name())
 
             x = j % 3
             y = j // 3
-
-            self.layout().addWidget(input, y + 1, x)
+            self.layout().addWidget(input, y + 1, x, Qt.AlignLeft)
             self.inputs.append(input)
 
         # set widget color
         self.setBackGroundColor("#057878")
+        self.layout().setSpacing(5)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

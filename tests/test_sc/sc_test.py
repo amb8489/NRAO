@@ -21,7 +21,7 @@ for x in range(trials):
     for freq in freqs:
         val = sc.conductivity(freq)
         # condut.append(val.real)
-        # zss.append(sc.Zs(freq,val, ts))
+        # zss.append(sc.Zs(freq,val, sc_film_thickness))
     average += time.time() - startTime
 
 print("avg time per run:", average / trials)

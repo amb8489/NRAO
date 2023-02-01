@@ -1,6 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.utills.utills_gui import pump_frequency, signal_amplitude, idler_amplitude, pump_amplitude
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -21,10 +22,10 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.layout().addWidget(self.title, 0, 0)
 
         # inputs
-        self.inputnames = ["As0", "Ai0", "Ap0", "Pump Frequency [GHZ]"]
+        self.inputnames = [signal_amplitude, idler_amplitude, pump_amplitude, pump_frequency]
         self.inputs = []
         for j in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[j])
+            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(), unit_type=self.inputnames[j].get_unit())
             self.layout().addWidget(input_widget, 1, j, Qt.AlignTop)
             self.inputs.append(input_widget)
 

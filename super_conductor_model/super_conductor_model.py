@@ -17,7 +17,7 @@ class SuperConductivity():
     ---INPUTS---
     freq range    : the range of DC frequency to test in units of GHZ
     conductivity  : the temperature of operation in Kelvin
-    ts            : thickness of super conductor
+    sc_film_thickness            : thickness of super conductor
     Pn            : normal resistivity
     TempK         : temp of operation in kelvin
     ---OUT---
@@ -165,11 +165,11 @@ class SuperConductivity():
     -INPUTS-
     freq          : frequency of DC i units of GHZ
     conductivity  : conductivity
-    ts            : thickness of super conductor
+    sc_film_thickness            : thickness of super conductor
     -OUT-
     Zs - surface impedance           
     """
 
-    def Zs(self, freq, conductivity, ts):
+    def Zs(self, freq, conductivity, sc_film_thickness):
         return cmath.sqrt(self.jPI2MU_0 * freq / conductivity) * ccoth(
-            cmath.sqrt(self.jPI2MU_0 * freq * conductivity) * ts)
+            cmath.sqrt(self.jPI2MU_0 * freq * conductivity) * sc_film_thickness)

@@ -5,43 +5,27 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib.figure import Figure
 
-from floquet_line_model.floquet_line import SuperConductingFloquetLine
-from super_conductor_model.super_conductor_model import SuperConductivity
-from transmission_line_models.micro_strip.super_conducting_micro_strip_model import SuperConductingMicroStripModel
-from utills.constants import PI2, CPW_TYPE, MICRO_STRIP_TYPE
+from python_gui.floquet_line_builder import floquet_line_builder
+from utills.constants import PI2
+from utills.functions import toGHz
 
 
 # ---------------------------- unit cell inputs from paper
 
 
-def simulate(model_type, inputs):
-    # todo make this into its own class to parse the line tpye and return a floquet line following SOLID principles
-    # todo change based on model type
-    if model_type == MICRO_STRIP_TYPE:
-        # todo change based on model type
-        # ---------------------------- dependency models ----------------------------
-        super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
-        Central_line_model = SuperConductingMicroStripModel(inputs.height, inputs.central_line_width,
-                                                            inputs.line_thickness, inputs.er, inputs.tangent_delta,
-                                                            inputs.crit_current)
-        Load_line_models = [
-            SuperConductingMicroStripModel(inputs.height, width, inputs.line_thickness, inputs.er,
-                                           inputs.tangent_delta,
-                                           inputs.crit_current) for width in inputs.load_widths]
-        floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_lengths,
-                                                  Load_line_models,
-                                                  Central_line_model,
-                                                  super_conductivity_model, inputs.central_line_width,
-                                                  inputs.load_widths,
-                                                  inputs.line_thickness, inputs.crit_current)
-    elif model_type == CPW_TYPE:
-        pass
-    else:
-        return f"unknown model type {model_type}"
-
+def simulate(line_model):
+    floquet_line = floquet_line_builder(line_model)
     # ---------------------------- calculations -------------------
     alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
-    FRange = np.linspace(inputs.start_freq_GHz, inputs.end_freq_GHz, inputs.resoultion)
+
+    inputs = line_model.get_inputs()
+
+    res = int(inputs["Frequency Range"]["Resolution"])
+    start_freq_GHz = toGHz(int(inputs["Frequency Range"]["Start Freq [GHZ]"]))
+    end_freq_GHz = toGHz(int(inputs["Frequency Range"]["End Freq [GHZ]"]))
+
+    # todo
+    FRange = np.linspace(start_freq_GHz, end_freq_GHz, res)
     for F in FRange:
         aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
         RR.append(R)
@@ -125,17 +109,3 @@ def simulate(model_type, inputs):
     axes6.plot(FRange, FRange)
 
     return [[fig1, fig2], [fig3, fig4], [fig5, fig6]]
-
-    # return {
-    #     "freqs": FRange.tolist(),
-    #     "alpha": [alpha_plt],
-    #     "beta_plt": [beta_plt],
-    #     "r": [r],
-    #     "x": [x],
-    #
-    #     "transmission_plt": [transmission_plt],
-    #     "circuit": [CLWWI, CRwI, GLwI, RGI, GLIIIwDiv3, CLIIIWWDiv3, YYI],
-    #
-    #     "target_pump_zone_start": [floquet_line.target_pump_zone_start],
-    #     "target_pump_zone_end": [floquet_line.target_pump_zone_end],
-    # }

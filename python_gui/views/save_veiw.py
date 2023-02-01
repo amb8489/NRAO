@@ -1,10 +1,8 @@
-import random
 import time
 
 from PySide6.QtWidgets import QScrollArea, QGridLayout, QLabel, QLineEdit, QPushButton
 
-from python_gui import utills_gui
-from python_gui.utills_gui import randomColor, SETTINGS_FILE_PATH, random_setting
+from python_gui.utills.utills_gui import SETTINGS_FILE_PATH, randomColor
 
 
 class SaveWindow(QScrollArea):
@@ -13,12 +11,12 @@ class SaveWindow(QScrollArea):
     will appear as alpha_plt free-floating window as we want.
     """
 
-    #todo make not relitive to my computer
+    # todo make not relitive to my computer
     def __init__(self, line_model):
         super().__init__()
 
         self.line_type = line_model.type
-        self.settings = line_model.print_inputs()
+        self.settings = line_model.get_inputs()
 
         self.setLayout(QGridLayout())
         self.setWindowTitle(f"saved setting for {self.line_type}")
@@ -34,27 +32,10 @@ class SaveWindow(QScrollArea):
         self.layout().addWidget(self.save_button, 1, 0)
         self.layout().addWidget(self.cancel_button, 1, 1)
 
-        self.random_settings_button = QPushButton(text='Random SETTINGS', objectName='rand_BUTTON',
-                                                  clicked=self.mk_Random_settings)
-        self.layout().addWidget(self.random_settings_button, 2, 0)
+
 
         self.setFixedWidth(400)
         self.setFixedHeight(200)
-
-    def mk_Random_settings(self):
-        with open(SETTINGS_FILE_PATH, "a") as settings_file:
-            for i in range(10):
-                type = random.choice(["cpw", "MS"])
-
-                if type == "cpw":
-                    nrow = 3
-                else:
-                    nrow = 2
-                self.settings = random_setting(nrow)
-
-                settings_file.write(
-
-                    f"{type} {randomColor()}_{i} " + str(self.settings).replace("'", "\"") + "\n")
 
         time.sleep(1)
         self.close()
@@ -68,6 +49,4 @@ class SaveWindow(QScrollArea):
             settings_file.write(f"{self.line_type} {setting_name} " + str(self.settings).replace("'", "\"") + "\n")
 
         print(f"saving {setting_name}")
-        # todo save setting values somewere
-        time.sleep(1)
         self.close()

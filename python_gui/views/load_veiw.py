@@ -4,7 +4,7 @@ import time
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QGridLayout, QVBoxLayout, QWidget, QScrollArea
 
-from python_gui.utills_gui import SETTINGS_FILE_PATH
+from python_gui.utills.utills_gui import SETTINGS_FILE_PATH
 from python_gui.widgets.name_load_remove_row_widget import Row
 
 

@@ -1,10 +1,7 @@
 from PySide6.QtWidgets import QPushButton, QGridLayout, QWidget, QVBoxLayout, QScrollArea
 
-from model_inputs.cpw_inputs import CPWInputs
-from model_inputs.micro_strip_inputs import MicroStripInputs
 from python_gui.plot_data import simulate
 from python_gui.widgets.plot_widget import WidgetGraph_fig
-from utills.constants import MICRO_STRIP_TYPE, CPW_TYPE
 
 
 class PlotWindow(QScrollArea):
@@ -21,13 +18,11 @@ class PlotWindow(QScrollArea):
         self.vbox = QVBoxLayout()
         self.line_model = line_model
 
-        self.inputs = self.line_model_to_input_obj(line_model)
-
         holder = QWidget()
         holder.setLayout(self.grid)
         self.setWidgetResizable(True)
 
-        plots = simulate(line_model.type, self.inputs)
+        plots = simulate(line_model)
 
         for i in range(2):
             for j in range(3):
@@ -48,7 +43,7 @@ class PlotWindow(QScrollArea):
 
         # todo update inputs
 
-        plots = simulate(self.line_model.type, self.inputs)
+        plots = simulate(self.line_model)
 
         for i in range(2):
             for j in range(3):
@@ -59,29 +54,3 @@ class PlotWindow(QScrollArea):
             child = self.grid.itemAt(i).widget()
             if child:
                 child.deleteLater()
-
-    # todo refactor this into the indiviucal line model to be able to return its own input obj
-
-    """
-    what we are doing is getting the inputs from the GUI and simulating them 
-    
-    curretnly when getting the inputs they are in json form and we neeed to go from json to the inputObj according to the
-    line type and pass that to the simulate function
-    
-    """
-
-    def line_model_to_input_obj(self, line_model):
-
-        inputs = line_model.get_inputs()
-
-        # todo change based on line model
-
-        # make inputs based on the line type
-        if line_model.type == MICRO_STRIP_TYPE:
-            self.inputs = MicroStripInputs()
-        elif line_model.type == CPW_TYPE:
-            self.inputs = CPWInputs()
-        else:
-            pass
-
-        return

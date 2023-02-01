@@ -2,7 +2,7 @@ from PySide6 import QtWidgets
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel, QFileDialog
 
-from python_gui.utills_gui import randomColorBright
+from python_gui.utills.utills_gui import randomColorBright
 
 
 class SMatrixInputsWidget(QtWidgets.QWidget):

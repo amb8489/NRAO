@@ -8,20 +8,22 @@ from PySide6 import QtWidgets
 
 # todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
-    def __init__(self, Title, MaxVal=10 ** 5, MinVal=0, DefaultVal=0, onchange=None, widget_name=None, *args, **kwargs):
+    def __init__(self, Title, unit_type="", MaxVal=10 ** 10, MinVal=0, DefaultVal=0, onchange=None, widget_name=None,
+                 *args,
+                 **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
         self.setObjectName(widget_name if widget_name else Title)
         self.setLayout(QVBoxLayout())
         self.Title = Title
-        self.label = QLabel(Title)
+        self.label = QLabel(Title + (f" [{unit_type}]" if unit_type else ""))
         self.label.setFont(QFont('Arial', 14))
 
         self.input = QDoubleSpinBox()
 
         self.input.setMinimum(MinVal)
         self.input.setMaximum(MaxVal)
-        self.input.setDecimals(6)
+        self.input.setDecimals(15)
 
         self.input.setValue(DefaultVal)
 
@@ -30,6 +32,8 @@ class WidgetDoubleInput(QtWidgets.QWidget):
 
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.input)
+        self.setFixedHeight(70)
+        # self.setFixedWidth(150)
 
         self.setBackGroundColor("#a89b74")
 
@@ -50,3 +54,6 @@ class WidgetDoubleInput(QtWidgets.QWidget):
             self.input.setValue(float(val))
         except:
             print("error setting val in float inputs")
+
+    def get_value(self):
+        return float(self.input.value())

@@ -1,29 +1,11 @@
-import cmath
-import math
+class superConductingLineEquations():
 
-from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from utills.constants import K0, Z0, PI
-from utills.functions import ellip_k
-
-"""
-
-
-CPW MODEL FOR TRANSMISSION LINE
-
-
-"""
-
-
-class SuperConductingCPWLine(AbstractSCTL):
-
-    def __init__(self, central_line_width, s_width, thickness):
+    # todo
+    def __init__(self, g1, g2, efm):
         self.efm = ...
         self.g2_ground = ...
         self.g2_central_line = ...
         self.g1 = ...
-        self.central_line_width = central_line_width
-        self.s_width = s_width
-        self.thickness = thickness
         self.g2_list = [self.g2_ground, self.g2_central_line]
 
     # -----------------------
@@ -33,8 +15,8 @@ class SuperConductingCPWLine(AbstractSCTL):
     TESIS PARA OPTAR AL GRADO DE
     MAGÍSTER EN CIENCIAS DE LA INGENIERÍA, MENCIÓN ELÉCTRICA
     JAVIER ALEJANDRO CARRASCO ÁVILA
-
-
+    
+    
     UNIVERSIDAD DE CHILE
     FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS DEPARTAMENTO DE INGENIERÍA ELÉCTRICA
     

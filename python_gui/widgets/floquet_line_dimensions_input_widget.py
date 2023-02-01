@@ -2,9 +2,9 @@ import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.utills.utills_gui import randomColorBright
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 from python_gui.widgets.table_input_widget import TableInputWidget
-from python_gui.utills_gui import randomColorBright
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
@@ -13,17 +13,17 @@ from PySide6 import QtWidgets, QtCore
 
 class Line(QtWidgets.QWidget):
 
-    def __init__(self, table, *args, **kwargs):
+    def __init__(self, table, dimensions_widget, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.lengths = []
         self.widths = []
         self.table = table
+        self.dimensions_widget = dimensions_widget
 
         self.table.setOnChange(self.updateLine)
-        # todo add input connection in for central line
-        self.centralLineW = 5
-        self.maxsize = self.centralLineW
+        self.centralLineW = dimensions_widget.get_central_line_width()
+        self.maxsize = 5
 
         self.layO = QGridLayout()
         self.scroll = QScrollArea()  # Scroll Area which contains the widgets, set as the centralWidget
@@ -60,8 +60,8 @@ class Line(QtWidgets.QWidget):
         for i in range(len(self.lengths) * 2 + 1):
             if i % 2 == 0:
 
-                r = rectangleWidget(False, i, self.centralLineW, self.centralLineW)
-                r.setMaximumHeight(self.centralLineW)
+                r = rectangleWidget(False, i, self.maxsize, self.maxsize)
+                r.setMaximumHeight(self.maxsize)
                 self.grid.addWidget(r, 1, i)
 
             else:
@@ -88,7 +88,10 @@ class Line(QtWidgets.QWidget):
                 child.deleteLater()
 
     def updateLine(self):
+
         self.clearBars()
+
+        self.centralLineW = self.dimensions_widget.get_central_line_width()
         self.setLengths(self.table.get_lengths())
         self.setWidths(self.table.get_widths())
         self.Draw()
@@ -97,15 +100,13 @@ class Line(QtWidgets.QWidget):
 
         load_lengths = np.array(lengths)
         w = (load_lengths / self.centralLineW)
-        # self.centralLineW = 10
-        self.lengths = w * self.centralLineW
+        self.lengths = w * self.maxsize
 
     def setWidths(self, widths):
 
         load_widths = np.array(widths)
         h = (load_widths / self.centralLineW)
-        # self.centralLineW = 10
-        self.widths = h * self.centralLineW
+        self.widths = h * self.maxsize
 
 
 # widget for rectangleWidget
@@ -146,7 +147,7 @@ class rectangleWidget(QtWidgets.QWidget):
 
 class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, colNames, *args, **kwargs):
+    def __init__(self, column_names, input_names, *args, **kwargs):
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -160,22 +161,21 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
+        # materials_table for load widths and lengths inputs
+        self.tableInput = TableInputWidget(column_names)
+        self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
+
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
-        self.inputnames = ["Unit Cell Length []", "Central Line Width []"]
+        self.inputnames = input_names
+
+        print(input_names)
         self.inputs = []
+
         for col in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[col])
-            self.container.addWidget(input_widget)
+            input_widget = WidgetDoubleInput(self.inputnames[col].get_name(), unit_type=self.inputnames[col].get_unit())
+            self.layout().addWidget(input_widget, 3, col, Qt.AlignTop)
             self.inputs.append(input_widget)
-
-        self.InputWidget = QWidget()
-        self.InputWidget.setLayout(self.container)
-        self.layout().addWidget(self.InputWidget, 1, 1, Qt.AlignVCenter)
-
-        # materials_table for load widths and lengths inputs
-        self.tableInput = TableInputWidget(colNames)
-        self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 
         # set widget color
         self.setBackGroundColor("#057878")
@@ -198,6 +198,9 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
             values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
 
         return values
+
+    def get_central_line_width(self):
+        return self.inputs[1].get_value()
 
     def setValues(self, inputs):
         loads = inputs['loads']

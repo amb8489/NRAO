@@ -156,7 +156,7 @@ class TableInputWidget(QtWidgets.QWidget):
 
         for i in range(int(abs(numOfCurrLoads - numOfWantedLoads))):
             function()
-        if self.onChange():
+        if self.onChange:
             self.onChange()
 
     def insert_row(self):
