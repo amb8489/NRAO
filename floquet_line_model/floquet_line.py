@@ -1,5 +1,4 @@
 import cmath
-import time
 
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
@@ -42,7 +41,7 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
     # ABCD matrix of TLs
     # Z characteristic impedance; k wavenumber; l length
-    def make_ABCD_Matrix(self, Z, Gamma, L):
+    def ABCD_Mat(self, Z, Gamma, L):
         GL = Gamma * L
         coshGL = cmath.cosh(GL)
         sinhGL = cmath.sinh(GL)
@@ -138,46 +137,41 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
         return res
 
-    def abrx(self, freq):
+    def calc_factors(self, freq):
         # frequency cant be too low
         freq = max(freq, 1e9)
 
-        # opt would be to store after first run all conductivity values for alpha_plt given  freq rannge for alpha_plt given  self.op_temp, self.critical_Temp, self.normal_resistivity
-        # calc surface impedence Zs for super conductor
+        # calculate Zs for given frequency and line thickness
+        zs = self.super_conductivity_model.Zs(freq, self.super_conductivity_model.conductivity(freq),
+                                              self.unit_cell_segments.thickness)
 
-        s = time.time()
-        conductivity = self.super_conductivity_model.conductivity(freq)
-        self.tot += time.time() - s
-
-        zs = self.super_conductivity_model.Zs(freq, conductivity, self.unit_cell_segments.thickness)
-
-        # making all the ABCD matrices for each subsection of unit cell
+        # making all the ABCD matrices for each subsection line of unit cell
         abcd_mats = []
         for unit_cell_segment_idx in range(len(self.unit_cell_segments.floquet_line_segment_lengths)):
-            # abcd mat
             gamma, Zc = self.unit_cell_segments.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
             abcd_mats.append(
-                self.make_ABCD_Matrix(Zc, gamma, self.unit_cell_segments.get_segment_len(unit_cell_segment_idx)))
+                self.ABCD_Mat(Zc, gamma, self.unit_cell_segments.get_segment_len(unit_cell_segment_idx)))
 
-        # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
-        Unitcell_ABCD_Mat = mult_mats(abcd_mats)
+        # matrix multiply all the abcd mats
+        unit_cell_abcd_mat = mult_mats(abcd_mats)
 
-        # ---------------------------- calc bloch impedance and propagation const for unit cell
+        # calc bloch impedance and propagation const for unit cell
+        bloch_impedance1, bloch_impedance2 = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
+        propagation_const = self.Pd(unit_cell_abcd_mat)
 
-        Bloch_impedance1, Bloch_impedance2 = self.Bloch_impedance_Zb(Unitcell_ABCD_Mat)
-        propagation_const = self.Pd(Unitcell_ABCD_Mat)
+        alpha = propagation_const.real
+        bta = propagation_const.imag
+        r = bloch_impedance1.real
+        x = bloch_impedance1.imag
 
         # calculate circuit factors
-        R, L, G, C = self.RLGC(propagation_const, Bloch_impedance1)
+        circuit_R, circuit_L, circuit_G, circuit_C = self.RLGC(propagation_const, bloch_impedance1)
 
-        t = self.Transmission(100, 50, Bloch_impedance1, Bloch_impedance2, self.unit_cell_length, propagation_const)
-
-        a = propagation_const.real
-        bta = propagation_const.imag
-        r = Bloch_impedance1.real
-        x = Bloch_impedance1.imag
+        # calc transmission
+        transmission = self.Transmission(100, 50, bloch_impedance1, bloch_impedance2, self.unit_cell_length,
+                                         propagation_const)
 
         # CentralLineMat = self.ABCD_TL(Unloaded_Zc, Unloaded_propagation,self.unit_cell_length)
         # alpha_plt =  Unloaded_propagation.imag
 
-        return a, t, bta, r, x, R, L, G, C
+        return alpha, transmission, bta, r, x, circuit_R, circuit_L, circuit_G, circuit_C

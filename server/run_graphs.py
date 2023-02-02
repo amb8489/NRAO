@@ -28,7 +28,7 @@ def mkGraphs(StartFreq, EndFreq, resolution, unit_Cell_Len, D0, loads_Widths, wi
 
     a, r, x, beta, betaUf, freqs, RR, LL, GG, CC, gamma, transmission = [], [], [], [], [], [], [], [], [], [], [], []
     for F in FreqRange:
-        aa, t, bta, rr, xx, R, L, G, C = Floquet_line.abrx(F)
+        aa, t, bta, rr, xx, R, L, G, C = Floquet_line.calc_factors(F)
 
         RR.append(R)
         LL.append(L)

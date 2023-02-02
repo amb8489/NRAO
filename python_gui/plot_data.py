@@ -28,7 +28,7 @@ def simulate(line_model):
     # todo
     FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
     for F in FRange:
-        aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
+        aa, t, bta, rr, xx, R, L, G, C = floquet_line.calc_factors(F)
         RR.append(R)
         LL.append(L)
         GG.append(G)

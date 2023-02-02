@@ -51,6 +51,10 @@ def mm_to_meters(n):
     return n / 1000
 
 
+def micro_ohms_cm_to_ohms_cm(n):
+    return n / 1e+6
+
+
 def find_idx_of_closest_value(list, value):
     """Returns the closest value to value in alpha_plt sorted list.
 

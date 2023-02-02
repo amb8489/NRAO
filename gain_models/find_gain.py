@@ -13,7 +13,7 @@ from gain_models.microstrip.solve_ode import Solve_ode
 def CalculateBetas(FloquetLine, FreqRange):
     Betas = []
     for F in FreqRange:
-        a, t, beta, r, x, R, L, G, C = FloquetLine.abrx(F)
+        a, t, beta, r, x, R, L, G, C = FloquetLine.calc_factors(F)
         Betas.append(beta)
     return Betas
 

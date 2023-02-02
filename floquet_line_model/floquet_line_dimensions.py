@@ -53,7 +53,7 @@ class FloquetLineDimensions():
         self.line_segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
                                     for model in b] + [central_line_model]
 
-        assert abs(D - sum(self.floquet_line_segment_lengths)) <= .0001, "sum of parts lengths != total line length"
+        assert abs(D - sum(self.floquet_line_segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.floquet_line_segment_lengths))}"
 
     def calc_central_line_length_between_two_loads(self, left_load_D, D0, right_load_D):
         return D0 - (left_load_D / 2) - (right_load_D / 2)
@@ -68,3 +68,15 @@ class FloquetLineDimensions():
     def get_segment_gamma_Zc(self, segment_idx, freq, zs):
         return self.line_segment_models[segment_idx].get_propagation_constant_characteristic_impedance(freq,
                                                                                                        zs)
+
+
+if __name__ == '__main__':
+    D = 6
+    D0 = 2
+    load_D_lengths = [1,1,.5]
+    central_line_model= []
+    floquet_line_thickness = 0
+    load_line_models = []
+
+    d = FloquetLineDimensions(D,D0,load_D_lengths,[],0,[])
+    print(sum(d.floquet_line_segment_lengths))

@@ -18,8 +18,7 @@ from utills.functions import sech, coth
 """
 
 
-# todo somehwere i use 1/cos for arc cos not sure if thats right ....
-
+# todo refactor this into the equations used in paper
 
 class SuperConductingMicroStripModel(AbstractSCTL):
 
@@ -31,7 +30,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
-        print(type(thickness),thickness, type(width))
+        print(type(thickness), thickness, type(width))
         self.ic = thickness * width * crit_current
 
         # calc geometric factors
