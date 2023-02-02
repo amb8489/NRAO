@@ -2,12 +2,10 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton
 
-
 from python_gui.utills.utills_gui import ground_spacing, central_line_width, D0, unit_cell_length, randomColorBright
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
-from python_gui.widgets.material_selector_widget import WidgetMaterialsSelect
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
 from utills.constants import CPW_TYPE
 
@@ -54,7 +52,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
         # line = Line(self.dimensionsInputWidget.tableInput,self.dimensionsInputWidget)
         # self.layout().addWidget(line, 5, 0)
         # self.materials_table.onchange = self.SCW.setValues
-
+        self.layout().setSpacing(5)
 
         # set widget color
         self.setBackGroundColor(randomColorBright())

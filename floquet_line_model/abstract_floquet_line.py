@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class AbstractFloquetLine(ABC):
     # 2x2 ABCD matrix of TLs
     @abstractmethod
-    def ABCD_TL(self, *args, **kwargs):
+    def make_ABCD_Matrix(self, *args, **kwargs):
         pass
 
     # gamma for TL

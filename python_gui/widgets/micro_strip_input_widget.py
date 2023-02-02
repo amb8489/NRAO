@@ -19,7 +19,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # self.materials_table = WidgetMaterialsSelect()
-
         # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
         self.toggel_materials_table_button = QPushButton(text='Hide Materials List',
@@ -31,8 +30,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
         self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["D [μm]", "Widths [μm]"],
-                                                                 [unit_cell_length, central_line_width, D0
-                                                                  ])
+                                                                 [unit_cell_length, central_line_width, D0])
         # todo make not absoulte path
         imgPath = "/Users/aaron/PycharmProjects/NRAO/python_gui/images/micro_strip_diagram_img.png"
 

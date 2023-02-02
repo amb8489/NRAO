@@ -20,9 +20,9 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         self.central_Line_width = central_line_width
         self.load_widths = load_widths
 
-        # model of FloquetLineDimensions dimensions
-        self.floquet_line_dimensions = FloquetLineDimensions(unit_cell_length, D0, load_lengths, line_thickness,
-                                                             load_line_models, central_line_model)
+        # model of the dimensions for the floquet line
+        self.unit_cell_segments = FloquetLineDimensions(unit_cell_length, D0, load_lengths, central_line_model,
+                                                        line_thickness, load_line_models)
 
         # ---------------------------- model of the Super conductor
         self.super_conductivity_model = super_conductivity_model
@@ -42,7 +42,7 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
     # ABCD matrix of TLs
     # Z characteristic impedance; k wavenumber; l length
-    def ABCD_TL(self, Z, Gamma, L):
+    def make_ABCD_Matrix(self, Z, Gamma, L):
         GL = Gamma * L
         coshGL = cmath.cosh(GL)
         sinhGL = cmath.sinh(GL)
@@ -149,14 +149,15 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         conductivity = self.super_conductivity_model.conductivity(freq)
         self.tot += time.time() - s
 
-        zs = self.super_conductivity_model.Zs(freq, conductivity, self.floquet_line_dimensions.thickness)
+        zs = self.super_conductivity_model.Zs(freq, conductivity, self.unit_cell_segments.thickness)
 
         # making all the ABCD matrices for each subsection of unit cell
         abcd_mats = []
-        for unit_cell_segment_idx in range(0, self.floquet_line_dimensions.number_of_loads * 2 + 1):
+        for unit_cell_segment_idx in range(len(self.unit_cell_segments.floquet_line_segment_lengths)):
             # abcd mat
-            gamma, Zc = self.floquet_line_dimensions.get_gamma_Zc(unit_cell_segment_idx, freq, zs)
-            abcd_mats.append(self.ABCD_TL(Zc, gamma, self.floquet_line_dimensions.get_segment_len(unit_cell_segment_idx)))
+            gamma, Zc = self.unit_cell_segments.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
+            abcd_mats.append(
+                self.make_ABCD_Matrix(Zc, gamma, self.unit_cell_segments.get_segment_len(unit_cell_segment_idx)))
 
         # ---- ABCD FOR UNIT CELL  - abcd1 * abcd2 * abcd3 ... abcdN
         Unitcell_ABCD_Mat = mult_mats(abcd_mats)

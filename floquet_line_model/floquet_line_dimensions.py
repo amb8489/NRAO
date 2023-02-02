@@ -7,62 +7,64 @@ given:
  -D0: spacing between centers of loads
  -number_of_loads : the number of loads in unit cell
  -in_order_loads_widths: the lengths of each load from left to right in Floquet line
-    ex: ===|<---L1--->|=====|<---L2--->|=====|<-L3->|===
-    in_order_loads_widths = [L1,L2,L3]
+    ex: ===|<---D1--->|=====|<---D2--->|=====|<-D3->|===
+
+    in_order_loads_widths = [D1,D2,D3]
+
+     ===CL-Len=== |<---D1 --->|=====CL-Len===== |<---D2 --->|=====CL-Len=====|<---D3 --->|===CL-Len===
+    |--------D0/2-------|------------ D0 -------------|----------- D0 ------------ |-------D0/2-------|
+     starting special case                                                            ending special case
+
+Central line length equations:
+        d0/2 - d1/2            d0 - d1/2 - d2/2               d0 - d2/2 - d3/2              d0/2 - d3/2
 '''
 
 
 class FloquetLineDimensions():
+    # todo remove thickness
+    def __init__(self, D: float, D0: float, load_D_lengths: [float], central_line_model, floquet_line_thickness,
+                 load_line_models):
+        self.central_line_model = central_line_model
+        self.thickness = floquet_line_thickness
+        self.load_line_models = load_line_models
 
-    def __init__(self, D: float, D0: float, in_order_loads_widths: [float], thickness, load_line_models,
-                 central_line_model):
+        central_line_lengths = []
 
-        # param checking for correctness
-        if len(in_order_loads_widths) < 1:
-            raise Exception(f"number of loads has to be >= 1: passed in {len(in_order_loads_widths)}")
+        # first central line length (special case where D0 is = to : D0/2)
+        central_line_lengths.append((D0 / 2) - (load_D_lengths[0] / 2))
 
-        # saving usefull info
-        self.D = D
-        self.D0 = D0
-        self.load_line_models, self.central_line_model = load_line_models, central_line_model
-        self.number_of_loads = len(in_order_loads_widths)
-        self.in_order_loads_widths = in_order_loads_widths
-        self.thickness = thickness
-        # array to hold lengths of line segments of the FL
-        self.floquet_line_parts_lengths = []
-        self.floquet_line_segments = []
+        # normal case calculating central line length between two loads
+        # [<---D-left-load--->] ====central line==== [<---D-right-load--->]
+        # ---------|---------------------D0--------------------|-----------
 
-        # add D0 widths loads to front and back to simplify code in calculating segments
-        self.in_order_loads_widths = [D0] + self.in_order_loads_widths + [D0]
+        for i in range(len(load_D_lengths) - 1):
+            left_load_D, right_load_D = load_D_lengths[i], load_D_lengths[i + 1]
+            central_line_lengths.append(self.calc_central_line_length_between_two_loads(left_load_D, D0, right_load_D))
 
-        # compute the lengths of the ccentral lines between the loads
-        for i in range(self.number_of_loads + 1):
+        # last central line length (special case where D0 is = to : D0/2)
+        central_line_lengths.append((D0 / 2) - (load_D_lengths[-1] / 2))
 
-            self.floquet_line_segments.append(self.central_line_model)
+        # weaving the central line and loads lengths together into one list
+        # load D's [D1, D2] , cental line lenghts = [cl1,cl2,cl3]
+        # floquet_line_segment_lengths = [cl1,D1,cl2,D2,cl3]
+        self.floquet_line_segment_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
+                                             for length in b] + [central_line_lengths[-1]]
 
-            if i != self.number_of_loads:
-                self.floquet_line_segments.append(self.load_line_models[i])
+        self.line_segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
+                                    for model in b] + [central_line_model]
 
-            # add the load length just not thr first 0
-            if i != 0: self.floquet_line_parts_lengths.append(self.in_order_loads_widths[i])
+        assert abs(D - sum(self.floquet_line_segment_lengths)) <= .0001, "sum of parts lengths != total line length"
 
-            # compute and add length of the central line between load[i] and load[i+1]   [load i] ---CL--- [load i+1]
-            # L = D0 - (1/2 * loadLen[i] ) - (1/2 * loadLen[i+1] )
-            self.floquet_line_parts_lengths.append(
-                D0 - (self.in_order_loads_widths[i] / 2) - (self.in_order_loads_widths[i + 1] / 2))
+    def calc_central_line_length_between_two_loads(self, left_load_D, D0, right_load_D):
+        return D0 - (left_load_D / 2) - (right_load_D / 2)
 
-        # check to make sure sum of lengths adds up to unit cell length
-        if abs(D - sum(self.floquet_line_parts_lengths)) > 0.001:
-            raise Exception(
-                f"sum of loads and central line lenths do not add to expected total length of line D {D - sum(self.floquet_line_parts_lengths)}")
-        self.in_order_loads_widths = in_order_loads_widths
-
-    # returns the length of the wanted segment in FL
-    def get_segment_len(self, partNumber: int):
-        return self.floquet_line_parts_lengths[partNumber]
+    # returns the length of the wanted segment in floquet line
+    def get_segment_len(self, segment_idx: int):
+        return self.floquet_line_segment_lengths[segment_idx]
 
     def get_Central_line_gamma_Zc(self, freq, zs):
         return self.central_line_model.get_propagation_constant_characteristic_impedance(freq, zs)
 
-    def get_gamma_Zc(self, unit_cell_segment_idx, freq, zs):
-        return self.floquet_line_segments[unit_cell_segment_idx].get_propagation_constant_characteristic_impedance(freq,zs)
+    def get_segment_gamma_Zc(self, segment_idx, freq, zs):
+        return self.line_segment_models[segment_idx].get_propagation_constant_characteristic_impedance(freq,
+                                                                                                       zs)

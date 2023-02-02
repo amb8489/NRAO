@@ -16,19 +16,24 @@ CPW MODEL FOR TRANSMISSION LINE
 
 class SuperConductingCPWLine(AbstractSCTL):
 
-    def __init__(self, central_line_width, s_width, thickness):
-        self.efm = ...
-        self.g2_ground = ...
-        self.g2_central_line = ...
-        self.g1 = ...
-        self.central_line_width = central_line_width
+    def __init__(self, line_width, s_width, thickness):
         self.s_width = s_width
         self.thickness = thickness
-        self.g2_list = [self.g2_ground, self.g2_central_line]
+        self.line_width = line_width
+
+        self.efm = ...
+
+        self.g1 = self.G1(line_width, s_width, thickness)
+
+        self.g2_line, self.g2_ground = self.G2(self.g1, line_width, s_width, thickness, thickness)
+
+        self.g2_list = [self.g2_ground, self.g2_line]
 
     # -----------------------
 
     '''
+    Equations from:
+    
     PARAMETRIC AMPLIFICATION OF ELECTROMAGNETIC SIGNALS WITH SUPERCONDUCTING TRANSMISSION LINES
     TESIS PARA OPTAR AL GRADO DE
     MAGÍSTER EN CIENCIAS DE LA INGENIERÍA, MENCIÓN ELÉCTRICA
@@ -40,8 +45,11 @@ class SuperConductingCPWLine(AbstractSCTL):
     
     '''
 
-    # equations from
-    def G2(self, g1, width, ground_spacing, thickness, a, b, thickness_sc):
+    def G2(self, g1, width, ground_spacing, thickness, thickness_sc):
+        a = width / 2
+
+        b = (width + 2 * ground_spacing) / 2
+
         dsc = thickness_sc / PI
 
         w1 = a + (dsc / 2) - ((dsc / 2) * math.log(dsc / a) + (3 / 2) * dsc * math.log(2)) - (dsc / 2) * math.log(
@@ -68,7 +76,21 @@ class SuperConductingCPWLine(AbstractSCTL):
 
         return [G2_central_line, G2_ground_surfaces]
 
-    def G1(self, k, k_prime):
+    def G1(self, width, ground_spacing, thickness):
+        a = width / 2
+        b = (width + 2 * ground_spacing) / 2
+
+        dsc = thickness / PI
+
+        w1 = a + (dsc / 2) - ((dsc / 2) * math.log(dsc / a) + (3 / 2) * dsc * math.log(2)) - (dsc / 2) * math.log(
+            (a + b) / (b - a))
+
+        w2 = b - (dsc / 2) + ((dsc / 2) * math.log(dsc / b) - ((3 / 2) * dsc * math.log(2))) + (dsc / 2) * math.log(
+            (a + b) / (b - a))
+
+        k = w1 / w2
+        k_prime = math.sqrt(1 - k ** 2)
+
         return ellip_k(k_prime) / (4 * ellip_k(k))
 
     # todo move this into the abstract class or make the this class inhearet from a new class

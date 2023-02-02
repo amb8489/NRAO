@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib.figure import Figure
 
 from python_gui.floquet_line_builder import floquet_line_builder
+from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
 from utills.constants import PI2
 from utills.functions import toGHz
 
@@ -20,12 +21,12 @@ def simulate(line_model):
 
     inputs = line_model.get_inputs()
 
-    res = int(inputs["Frequency Range"]["Resolution"])
-    start_freq_GHz = toGHz(int(inputs["Frequency Range"]["Start Freq [GHZ]"]))
-    end_freq_GHz = toGHz(int(inputs["Frequency Range"]["End Freq [GHZ]"]))
+    resoultion = int(inputs["Frequency Range"][resolution.get_name()])
+    start_freq_GHz = toGHz(int(inputs["Frequency Range"][start_frequency.get_name()]))
+    end_freq_GHz = toGHz(int(inputs["Frequency Range"][end_frequency.get_name()]))
 
     # todo
-    FRange = np.linspace(start_freq_GHz, end_freq_GHz, res)
+    FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
     for F in FRange:
         aa, t, bta, rr, xx, R, L, G, C = floquet_line.abrx(F)
         RR.append(R)
