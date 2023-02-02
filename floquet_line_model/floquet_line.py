@@ -3,13 +3,12 @@ import cmath
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 
-from floquet_line_model.abstract_floquet_line import AbstractFloquetLine
-from floquet_line_model.floquet_line_dimensions import FloquetLineDimensions
+from floquet_line_model.floquet_line_dimensions import UnitCellLineSegments
 from utills.constants import PI, PI2
 from utills.functions import mult_mats
 
 
-class SuperConductingFloquetLine(AbstractFloquetLine):
+class SuperConductingFloquetLine():
 
     def __init__(self, unit_cell_length, D0, load_lengths, load_line_models, central_line_model,
                  super_conductivity_model, central_line_width, load_widths, line_thickness, crit_current):
@@ -20,8 +19,8 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         self.load_widths = load_widths
 
         # model of the dimensions for the floquet line
-        self.unit_cell_segments = FloquetLineDimensions(unit_cell_length, D0, load_lengths, central_line_model,
-                                                        line_thickness, load_line_models)
+        self.unit_cell_segments = UnitCellLineSegments(unit_cell_length, D0, load_lengths, central_line_model,
+                                                       line_thickness, load_line_models)
 
         # ---------------------------- model of the Super conductor
         self.super_conductivity_model = super_conductivity_model
@@ -39,15 +38,6 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
 
     '''
 
-    # ABCD matrix of TLs
-    # Z characteristic impedance; k wavenumber; l length
-    def ABCD_Mat(self, Z, Gamma, L):
-        GL = Gamma * L
-        coshGL = cmath.cosh(GL)
-        sinhGL = cmath.sinh(GL)
-
-        return [[coshGL, Z * sinhGL],
-                [(1 / Z) * sinhGL, coshGL]]
 
     def Pd(self, ABCD_mat):
         A = ABCD_mat[0][0]
@@ -148,9 +138,9 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         # making all the ABCD matrices for each subsection line of unit cell
         abcd_mats = []
         for unit_cell_segment_idx in range(len(self.unit_cell_segments.floquet_line_segment_lengths)):
-            gamma, Zc = self.unit_cell_segments.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
-            abcd_mats.append(
-                self.ABCD_Mat(Zc, gamma, self.unit_cell_segments.get_segment_len(unit_cell_segment_idx)))
+
+            abcd_mat = self.unit_cell_segments.get_segment_ABCD_mat(unit_cell_segment_idx, freq, zs)
+            abcd_mats.append(abcd_mat)
 
         # matrix multiply all the abcd mats
         unit_cell_abcd_mat = mult_mats(abcd_mats)
@@ -159,15 +149,17 @@ class SuperConductingFloquetLine(AbstractFloquetLine):
         bloch_impedance1, bloch_impedance2 = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
         propagation_const = self.Pd(unit_cell_abcd_mat)
 
-        alpha = propagation_const.real
+
+        # get alpha beta r x
         bta = propagation_const.imag
+        alpha = propagation_const.real
         r = bloch_impedance1.real
         x = bloch_impedance1.imag
 
         # calculate circuit factors
         circuit_R, circuit_L, circuit_G, circuit_C = self.RLGC(propagation_const, bloch_impedance1)
 
-        # calc transmission
+        # calc transmission todo 100 50  v     v
         transmission = self.Transmission(100, 50, bloch_impedance1, bloch_impedance2, self.unit_cell_length,
                                          propagation_const)
 
