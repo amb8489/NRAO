@@ -17,7 +17,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # title
-        self.title = QLabel("gain_models")
+        self.title = QLabel("Gain")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 

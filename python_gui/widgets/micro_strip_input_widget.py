@@ -18,12 +18,13 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
+
         # self.materials_table = WidgetMaterialsSelect()
         # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
-        self.toggel_materials_table_button = QPushButton(text='Hide Materials List',
-                                                         objectName='toggel_materials_table_button',
-                                                         clicked=self.toggel_materials_table)
+        # self.toggel_materials_table_button = QPushButton(text='Hide Materials List',
+        #                                                  objectName='toggel_materials_table_button',
+        #                                                  clicked=self.toggel_materials_table)
         # self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
         # ---------------------------------- model_inputs MS
 
@@ -40,7 +41,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         picture.setPixmap(pixmap)
         picture.setScaledContents(True)
 
-        self.layout().addWidget(picture, 5, 1, 1, 1)
+        self.layout().addWidget(picture, 5, 0, 1, 1)
 
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
@@ -54,6 +55,8 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         # set widget color
         self.setBackGroundColor(randomColorBright())
+        self.layout().setSpacing(5)
+
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

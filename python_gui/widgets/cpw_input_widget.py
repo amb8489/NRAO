@@ -44,7 +44,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
         picture.setPixmap(pixmap)
         picture.setScaledContents(True)
 
-        self.layout().addWidget(picture, 5, 1, 1, 1)
+        self.layout().addWidget(picture, 5, 0, 1, 1)
         self.freqRangeWidget = WidgetFrequencyInputs()
         self.layout().addWidget(self.freqRangeWidget, 4, 0)
         self.WidgetGainInputs = WidgetGainInputs()

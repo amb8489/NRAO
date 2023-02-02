@@ -157,25 +157,28 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
         # component title
 
-        self.title = QLabel("Dimensions")
+        self.title = QLabel("Unit Cell Dimensions")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
         # materials_table for load widths and lengths inputs
         self.tableInput = TableInputWidget(column_names)
-        self.layout().addWidget(self.tableInput, 1, 0, Qt.AlignTop)
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
         self.inputnames = input_names
 
-        print(input_names)
         self.inputs = []
 
-        for col in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[col].get_name(), unit_type=self.inputnames[col].get_unit())
-            self.layout().addWidget(input_widget, 3, col, Qt.AlignTop)
+        for i in range(len(self.inputnames)):
+            input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit())
+            x = i % 2
+            y = i // 2
+            self.layout().addWidget(input_widget, 1+y,x)
             self.inputs.append(input_widget)
+
+        self.layout().addWidget(self.tableInput, 3, 0,1,2, Qt.AlignTop)
+
 
         # set widget color
         self.setBackGroundColor("#057878")

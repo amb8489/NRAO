@@ -35,7 +35,7 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.setFixedHeight(70)
         # self.setFixedWidth(150)
 
-        self.setBackGroundColor("#a89b74")
+        self.setBackGroundColor("#AAAAAA")
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

@@ -1,7 +1,6 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.utills.utills_gui import randomColorBright
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
 from python_gui.views.save_veiw import SaveWindow
@@ -31,6 +30,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
+
+        self.widnow_width = 600
         self.showWidget = False
         self.showMS = True
         self.showMaterialsWidget = False
@@ -70,9 +71,10 @@ class MainWindow(QMainWindow):
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
         self.ButtonLayoutWidget.setFixedHeight(100)
+        self.ButtonLayoutWidget.setFixedWidth(self.widnow_width)
 
         palette = self.ButtonLayoutWidget.palette()
-        palette.setColor(QPalette.Window, QColor(randomColorBright()))
+        palette.setColor(QPalette.Window, QColor("#777777"))
         self.ButtonLayoutWidget.setPalette(palette)
         self.ButtonLayoutWidget.setAutoFillBackground(True)
 
@@ -81,6 +83,8 @@ class MainWindow(QMainWindow):
         # title
         self.title = QLabel(self.modelSelector.currentText())
         self.title.setMaximumHeight(40)
+        self.title.setMaximumWidth(self.widnow_width)
+
 
         palette = self.title.palette()
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
@@ -97,6 +101,8 @@ class MainWindow(QMainWindow):
         self.CPW_inputs_widget = CPWInputsWidget()
         self.S_matrix_inputs_widget = SMatrixInputsWidget()
 
+
+        self.Micro_strip_inputs_widget.setFixedWidth(1250)
         self.Mainlayout.addWidget(self.Micro_strip_inputs_widget)
         self.Mainlayout.addWidget(self.CPW_inputs_widget)
         self.Mainlayout.addWidget(self.S_matrix_inputs_widget)
@@ -141,7 +147,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.scroll)
 
-        self.setFixedWidth(1350)
+        self.setFixedWidth(1300)
         self.setFixedHeight(800)
 
         self.show()

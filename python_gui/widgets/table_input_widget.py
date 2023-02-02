@@ -132,6 +132,7 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.setMaximumHeight(100)
         # set widget color
         self.setBackGroundColor("#FFFFFF")
+        # self.setFixedWidth(300)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

@@ -1,9 +1,9 @@
 import time
 
 from floquet_line_model.MicroStrip.FloquetLine import SuperConductingFloquetLine
+from gain_models.microstrip.find_gain import Calc_Gain
 from matplotlib import pyplot as plt
 
-from gain_models.microstrip.find_gain import Calc_Gain
 from model_inputs.micro_strip_inputs import MicroStripInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.micro_strip.super_conducting_micro_strip_model import SuperConductingMicroStripModel

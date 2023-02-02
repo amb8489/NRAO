@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QGridLayout, QWidget, QVBoxLayout, QScrollArea
 
 from python_gui.plot_data import simulate
@@ -30,16 +31,16 @@ class PlotWindow(QScrollArea):
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
-        self.setMinimumWidth(900)
-        self.setMinimumHeight(700)
+        self.setMinimumWidth(1300)
+        self.setMinimumHeight(900)
 
     def plot(self):
 
         # time.sleep(10)
 
-        self.ButtonExit = QPushButton('Close window')
-        self.grid.addWidget(self.ButtonExit, 0, 0)
-        self.ButtonExit.clicked.connect(lambda: self.close())
+        # self.ButtonExit = QPushButton('Close window')
+        # self.grid.addWidget(self.ButtonExit, 0, 0,Qt.AlignTop)
+        # self.ButtonExit.clicked.connect(lambda: self.close())
 
         # todo update inputs
 
@@ -47,7 +48,7 @@ class PlotWindow(QScrollArea):
 
         for i in range(2):
             for j in range(3):
-                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
+                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j+1, i )
 
     def clearPlots(self):
         for i in range(self.grid.count()):
