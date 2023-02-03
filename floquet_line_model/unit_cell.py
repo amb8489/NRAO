@@ -13,21 +13,24 @@ given:
 
      ===CL-Len=== |<---D1 --->|=====CL-Len===== |<---D2 --->|=====CL-Len=====|<---D3 --->|===CL-Len===
     |--------D0/2-------|------------ D0 -------------|----------- D0 ------------ |-------D0/2-------|
-     starting special case                                                            ending special case
+     start special case                                                              end special case
 
 Central line length equations:
-        d0/2 - d1/2            d0 - d1/2 - d2/2               d0 - d2/2 - d3/2              d0/2 - d3/2
+        d0/2 - d1/2            d0 - d1/2 - d2/2               d0 - d2/2 - d3/2          d0/2 - d3/2
 '''
 import cmath
 
+from utills.functions import mult_mats
 
-class UnitCellLineSegments():
+
+class UnitCell():
     # todo remove thickness
     def __init__(self, D: float, D0: float, load_D_lengths: [float], central_line_model, floquet_line_thickness,
                  load_line_models):
         self.central_line_model = central_line_model
         self.thickness = floquet_line_thickness
-        self.load_line_models = load_line_models
+        self.load_segment_models = load_line_models
+        self.unit_cell_length = D
 
         central_line_lengths = []
 
@@ -47,31 +50,30 @@ class UnitCellLineSegments():
 
         # weaving the central line and loads lengths together into one list
         # load D's [D1, D2] , cental line lenghts = [cl1,cl2,cl3]
-        # floquet_line_segment_lengths = [cl1,D1,cl2,D2,cl3]
-        self.floquet_line_segment_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
-                                             for length in b] + [central_line_lengths[-1]]
+        # segment_lengths = [cl1,D1,cl2,D2,cl3]
+        self.segment_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
+                                for length in b] + [central_line_lengths[-1]]
 
-        self.line_segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
-                                    for model in b] + [central_line_model]
+        self.segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
+                               for model in b] + [central_line_model]
 
         assert abs(D - sum(
-            self.floquet_line_segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.floquet_line_segment_lengths))}"
+            self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
 
     def calc_central_line_length_between_two_loads(self, left_load_D, D0, right_load_D):
         return D0 - (left_load_D / 2) - (right_load_D / 2)
 
     # returns the length of the wanted segment in floquet line
     def get_segment_len(self, segment_idx: int):
-        return self.floquet_line_segment_lengths[segment_idx]
+        return self.segment_lengths[segment_idx]
 
-    def get_Central_line_gamma_Zc(self, freq, zs):
+    def get_central_line_gamma_Zc(self, freq, zs):
         return self.central_line_model.get_propagation_constant_characteristic_impedance(freq, zs)
 
     def get_segment_gamma_Zc(self, segment_idx, freq, zs):
-        return self.line_segment_models[segment_idx].get_propagation_constant_characteristic_impedance(freq, zs)
+        return self.segment_models[segment_idx].get_propagation_constant_characteristic_impedance(freq, zs)
 
     # todo checjk this matrix is correct with the inputs params
-
     # ABCD matrix of unit sell line segment
     # Z characteristic impedance; k wavenumber; l length
     def ABCD_Mat(self, Z, Gamma, L):
@@ -83,9 +85,20 @@ class UnitCellLineSegments():
                 [(1 / Z) * sinhGL, coshGL]]
 
     def get_segment_ABCD_mat(self, unit_cell_segment_idx, freq, zs):
-        gamma, Zc = self.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
+        segment_gamma, segment_Zc = self.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
         segment_length = self.get_segment_len(unit_cell_segment_idx)
-        return self.ABCD_Mat(Zc, gamma, segment_length)
+        return self.ABCD_Mat(segment_Zc, segment_gamma, segment_length)
+
+    def get_unit_cell_ABCD_mat(self, freq, zs):
+
+        segment_abcd_mats = []
+        for segment_idx in range(len(self.segment_lengths)):
+            # 3) for each  line segment of unit cell make ABCD matrices
+            segment_gamma, segment_Zc = self.get_segment_gamma_Zc(segment_idx, freq, zs)
+            segment_abcd_mats.append(self.ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
+
+        # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
+        return mult_mats(segment_abcd_mats)
 
 
 if __name__ == '__main__':
@@ -96,5 +109,5 @@ if __name__ == '__main__':
     floquet_line_thickness = 0
     load_line_models = []
 
-    d = UnitCellLineSegments(D, D0, load_D_lengths, [], 0, [])
-    print(sum(d.floquet_line_segment_lengths))
+    d = UnitCell(D, D0, load_D_lengths, [], 0, [])
+    print(d.segment_lengths)

@@ -68,7 +68,7 @@ def find_idx_of_closest_value(list, value):
     return idx
 
 
-def mult_2x2_mat(mat1: [[float]], mat2: [[float]]):
+def mult_2x2_mat(mat1, mat2):
     # definition of matrix mult for 2x2 * 2x2
     return [
         [mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0], mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1]],

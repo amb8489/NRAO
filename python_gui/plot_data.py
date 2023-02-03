@@ -5,6 +5,7 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib.figure import Figure
 
+from floquet_line_model.floquet_line import unfold
 from python_gui.floquet_line_builder import floquet_line_builder
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
 from utills.constants import PI2
@@ -28,7 +29,7 @@ def simulate(line_model):
     # todo
     FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
     for F in FRange:
-        aa, t, bta, rr, xx, R, L, G, C = floquet_line.calc_factors(F)
+        aa, t, bta, rr, xx, R, L, G, C = floquet_line.simulate(F)
         RR.append(R)
         LL.append(L)
         GG.append(G)
@@ -78,7 +79,7 @@ def simulate(line_model):
     axes2.set_xlabel('Frequency [GHz]')
     axes2.set_ylabel('Frequency [GHz]')
     axes2.plot(FRange, beta_plt)
-    axes2.plot(FRange, floquet_line.unfold(beta_plt))
+    axes2.plot(FRange, unfold(beta_plt))
 
     fig3 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
     axes3 = fig3.add_subplot(111)
