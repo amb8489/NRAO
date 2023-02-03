@@ -97,5 +97,4 @@ class LoadSettingsWindow(QScrollArea):
             return
 
         self.settings_model.set_values(setting)
-        time.sleep(1)
         self.close()

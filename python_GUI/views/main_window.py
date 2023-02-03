@@ -85,7 +85,6 @@ class MainWindow(QMainWindow):
         self.title.setMaximumHeight(40)
         self.title.setMaximumWidth(self.widnow_width)
 
-
         palette = self.title.palette()
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.title.setPalette(palette)
@@ -100,7 +99,6 @@ class MainWindow(QMainWindow):
         self.Micro_strip_inputs_widget = MicroStripInputsWidget()
         self.CPW_inputs_widget = CPWInputsWidget()
         self.S_matrix_inputs_widget = SMatrixInputsWidget()
-
 
         self.Micro_strip_inputs_widget.setFixedWidth(1250)
         self.Mainlayout.addWidget(self.Micro_strip_inputs_widget)
@@ -120,6 +118,10 @@ class MainWindow(QMainWindow):
 
         self.line_model = line_model
         self.line_model.show()
+
+        # resetting the plot window
+        self.plotWindow = None
+
 
         # todo will error on model with no SCW or materials_table temp fix for testing
         try:

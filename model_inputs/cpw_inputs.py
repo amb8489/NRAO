@@ -23,11 +23,11 @@ class CPWInputs():
         self.D0 = mm_to_meters(float(inputs["Dimensions"][D0.get_name()]))
         self.ground_spacing = micro_meters_to_meters(float(inputs["Dimensions"][ground_spacing.get_name()]))
 
-        self.load_lengths, self.load_widths = [], []
-        for D, width in inputs["Dimensions"]["loads"]:
-            self.load_lengths.append(micro_meters_to_meters(float(D)))
+        self.load_D_vals, self.load_widths = [], []
+        for D_len, width in inputs["Dimensions"]["loads"]:
+            self.load_D_vals.append(micro_meters_to_meters(float(D_len)))
             self.load_widths.append(micro_meters_to_meters(float(width)))
-        self.number_of_loads = len(self.load_lengths)
+        self.number_of_loads = len(self.load_D_vals)
 
         # ---------------------------- Super Conductor Inputs
         self.er = float(inputs["SC"][Er.get_name()])

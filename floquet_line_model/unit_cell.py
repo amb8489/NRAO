@@ -101,7 +101,6 @@ class UnitCell():
             # 3) for each  line segment of unit cell make ABCD matrices
             segment_gamma, segment_Zc = self.get_segment_gamma_Zc(segment_idx, freq, zs)
             segment_abcd_mats.append(ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
-
         # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
         return mult_mats(segment_abcd_mats)
 

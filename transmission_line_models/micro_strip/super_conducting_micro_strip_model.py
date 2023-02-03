@@ -392,6 +392,65 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
         Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
 
+        propagation_constant = self.propagation_constant(Z, Y)
+        characteristic_impedance_Zc = self.characteristic_impedance(Z, Y)
+        return propagation_constant, characteristic_impedance_Zc
+
+
+'''
+todo get values from 
+class SuperConductingMicroStripModel(AbstractSCTL):
+
+    def __init__(self, height, width, thickness, epsilon_r, tan_delta, crit_current):
+
+        self.height = height
+        self.width = width
+        self.thickness = thickness
+        self.epsilon_r = epsilon_r
+        self.tan_delta = tan_delta
+
+        # calc geometric factors
+        self.g1 = self.G1(...)
+        self.g2 = self.G2(...)
+
+        # calc dialectic constant
+        self.epsilon_fm = self.efm(...)
+
+  
+
+    # todo should we swap these to JAVIER paper Geometrical factors
+    def G1(self, w, h, t):
+        return None
+
+    def G2(self, w, h, t):
+        return None
+
+    
+    
+    def efm(self):
+        pass
+
+    def series_impedance_Z(self, Zs, g1, g2, f):
+        return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
+
+
+
+    def shunt_admittance_Y(self, epsilon_fm, g1, f):
+        return 1j * (K0(f) / Z0) * (epsilon_fm / g1)
+
+    def characteristic_impedance(self, Z, Y):
+        return cmath.sqrt(Z / Y)
+
+    def propagation_constant(self, Z, Y):
+        return cmath.sqrt(Z * Y)
+
+    def get_propagation_constant_characteristic_impedance(self, freq, zs):
+
+        Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
+        Y = self.shunt_admittance_Y(self.epsilon_fm, self.g1, freq)
+
         propagation_constant = self.propagation_constant (Z,Y)
         characteristic_impedance_Zc = self.characteristic_impedance(Z,Y)
         return propagation_constant, characteristic_impedance_Zc
+
+'''

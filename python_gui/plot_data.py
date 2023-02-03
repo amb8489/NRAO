@@ -78,7 +78,7 @@ def simulate(line_model):
 
     fig2, ax12 = plt.subplots()
     color = 'tab:blue'
-    ax12.set_ylabel('r', color=color)
+    ax12.set_ylabel('r Blue -- x orange', color=color)
     ax12.plot(FRange, r, color=color)
     ax12.tick_params(axis='y', labelcolor=color)
     ax12.set_xlabel('Frequency [GHz]')

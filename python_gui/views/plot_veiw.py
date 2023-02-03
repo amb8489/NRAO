@@ -33,10 +33,9 @@ class PlotWindow(QScrollArea):
         self.setWidget(holder)
 
         self.setMinimumWidth(1200)
-        self.setMinimumHeight(1200)
-
-        self.setMaximumHeight(1200)
+        self.setMinimumHeight(600)
         self.setMaximumWidth(1200)
+        self.setMaximumHeight(600)
 
     def plot(self):
 
