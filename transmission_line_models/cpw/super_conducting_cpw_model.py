@@ -20,16 +20,14 @@ CPW MODEL FOR TRANSMISSION LINE
 class SuperConductingCPWLine(AbstractSCTL):
 
     def __init__(self, line_width, s_width, thickness, er, tand):
-
         self.ncpw = 2
 
-        self.eta_free_c = self.eta_free(er,line_width,s_width)
+        self.eta_free_c = self.eta_free(er, line_width, s_width)
         self.s_width = s_width
         self.thickness = thickness
         self.line_width = line_width
         self.er = er
         self.sqrtlgcg = math.sqrt(self.Lg(line_width, s_width) * self.Cg(er, line_width, s_width))
-
 
         self.efm = self.epsilon_fm(er, tand)
 
@@ -39,16 +37,14 @@ class SuperConductingCPWLine(AbstractSCTL):
 
         self.g2_list = [self.g2_ground, self.g2_line]
 
-
     # ------ PEC --------------
     def Cg(self, er, width, s):
         k = width / (width + 2 * s)
 
         epsilon_eff = (er + 1) / 2
 
-
         kk1m = self.KK1(k)
-        #todo epsilon_0 correct
+        # todo epsilon_0 correct
         return 4 * epsilon_0 * epsilon_eff * kk1m
 
     def Lg(self, width, s):
@@ -67,13 +63,8 @@ class SuperConductingCPWLine(AbstractSCTL):
     def eta_free(self, er, width, s):
         return math.sqrt(self.Lg(width, s) / self.Cg(er, width, s))
 
-
-    def beta_free(self,frequency):
-
-        return PI2*frequency*self.sqrtlgcg
-
-
-
+    def beta_free(self, frequency):
+        return PI2 * frequency * self.sqrtlgcg
 
     '''
     Equations from:
@@ -150,24 +141,13 @@ class SuperConductingCPWLine(AbstractSCTL):
     def epsilon_fm(self, er, tand):
         return ((er + 1) / 2) * (1 - 1j * tand)
 
-
-
-    # def shunt_admittance_Y(self, epsilon_fm, g1, f):
-    #     return 1j * (self.beta_free(f) / self.eta_free_c) * (epsilon_fm / g1)
-    #
-    # def series_impedance_Z(self, g1, list_of_g2, list_of_Zs, f):
-    #     assert len(list_of_Zs) == len(list_of_g2), f"should be an equal number of g2 and Zs"
-    #
-    #     return (1j * (self.beta_free(f) * self.eta_free_c) * g1) + (
-    #             2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
-
     def shunt_admittance_Y(self, epsilon_fm, g1, f):
         return 1j * (K0(f) / Z0) * (epsilon_fm / g1)
 
     def series_impedance_Z(self, g1, list_of_g2, list_of_Zs, f):
         assert len(list_of_Zs) == len(list_of_g2), f"should be an equal number of g2 and Zs"
 
-        return (1j * (K0(f)* Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
+        return (1j * (K0(f) * Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
 
     # this will need to be refactored to take some list of Zs to be made general
     def get_propagation_constant_characteristic_impedance(self, freq, zs):

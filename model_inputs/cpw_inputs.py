@@ -3,7 +3,7 @@ from python_gui.utills.utills_gui import resolution, start_frequency, end_freque
     SC_normal_resistivity, SC_critical_current, SC_critical_temperature, SC_operation_temperature, SC_ground_thickness, \
     SC_thickness, SC_height, ground_spacing
 from utills.functions import micro_meters_to_meters, nano_meters_to_meters, toGHz, mm_to_meters, \
-    micro_ohms_cm_to_ohms_cm
+    micro_ohms_cm_to_ohms_m
 
 
 class CPWInputs():
@@ -37,7 +37,7 @@ class CPWInputs():
         self.op_temp = float(inputs["SC"][SC_operation_temperature.get_name()])
         self.crit_temp = float(inputs["SC"][SC_critical_temperature.get_name()])
         self.crit_current = float(inputs["SC"][SC_critical_current.get_name()])
-        self.normal_resistivity = micro_ohms_cm_to_ohms_cm(float(inputs["SC"][SC_normal_resistivity.get_name()]))
+        self.normal_resistivity = micro_ohms_cm_to_ohms_m(float(inputs["SC"][SC_normal_resistivity.get_name()]))
         self.tangent_delta = float(inputs["SC"][SC_tangent_delta.get_name()])
 
         # ---------------------------- gain_models inputs

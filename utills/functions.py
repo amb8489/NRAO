@@ -1,7 +1,6 @@
 import bisect
 import cmath
 import math
-import random
 
 import scipy
 
@@ -52,13 +51,8 @@ def mm_to_meters(n):
     return n / 1000
 
 
-def micro_ohms_cm_to_ohms_cm(n):
-    return n/100000000
-    return n / 1e+6
-
-
-
-
+def micro_ohms_cm_to_ohms_m(n):
+    return n / 100000000
 
 
 def find_idx_of_closest_value(list, value):
@@ -93,5 +87,3 @@ def mult_mats(mats):
     for mat in mats[1:]:
         res = mult_2x2_mat(res, mat)
     return res
-
-
