@@ -3,7 +3,7 @@ import cmath
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 
-from floquet_line_model.unit_cell import UnitCell
+from floquet_line_model.unit_cell import UnitCell, ABCD_Mat
 from utills.constants import PI, PI2
 
 
@@ -130,7 +130,7 @@ class SuperConductingFloquetLine():
         propagation_const = Pd(unit_cell_abcd_mat)
 
         # get alpha beta r x
-        bta = propagation_const.imag
+        beta = propagation_const.imag
         alpha = propagation_const.real
         r = bloch_impedance1.real
         x = bloch_impedance1.imag
@@ -142,8 +142,14 @@ class SuperConductingFloquetLine():
         transmission = Transmission(100, 50, bloch_impedance1, bloch_impedance2, self.unit_cell.unit_cell_length,
                                     propagation_const)
 
-        CentralLineMat = self.unit_cell.get_segment_ABCD_mat(0, freq, zs)
-        bloch_impedancecl1, bloch_impedancecl2 = Bloch_impedance_Zb(CentralLineMat)
-        propagation_constcl = Pd(CentralLineMat)
 
-        return alpha, transmission, bta, r, x, circuit_R, circuit_L, circuit_G, circuit_C
+
+
+
+        segment_gamma, segment_Zc = self.unit_cell.get_segment_gamma_Zc(0, freq, zs)
+        CentralLineMat = ABCD_Mat(segment_Zc, segment_gamma, self.unit_cell.unit_cell_length)
+        propagation_constcl = Pd(CentralLineMat)
+        beta_cl = propagation_constcl.imag
+        alpha_cl = propagation_constcl.real
+
+        return alpha - alpha_cl, beta - beta_cl, r, x

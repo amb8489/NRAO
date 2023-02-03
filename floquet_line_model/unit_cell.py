@@ -23,6 +23,15 @@ import cmath
 from utills.functions import mult_mats
 
 
+def ABCD_Mat(Z, Gamma, L):
+    GL = Gamma * L
+    coshGL = cmath.cosh(GL)
+    sinhGL = cmath.sinh(GL)
+
+    return [[coshGL, Z * sinhGL],
+            [(1 / Z) * sinhGL, coshGL]]
+
+
 class UnitCell():
     # todo remove thickness
     def __init__(self, D: float, D0: float, load_D_lengths: [float], central_line_model, floquet_line_thickness,
@@ -57,6 +66,9 @@ class UnitCell():
         self.segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
                                for model in b] + [central_line_model]
 
+
+
+        print(len(self.segment_models))
         assert abs(D - sum(
             self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
 
@@ -76,18 +88,11 @@ class UnitCell():
     # todo checjk this matrix is correct with the inputs params
     # ABCD matrix of unit sell line segment
     # Z characteristic impedance; k wavenumber; l length
-    def ABCD_Mat(self, Z, Gamma, L):
-        GL = Gamma * L
-        coshGL = cmath.cosh(GL)
-        sinhGL = cmath.sinh(GL)
-
-        return [[coshGL, Z * sinhGL],
-                [(1 / Z) * sinhGL, coshGL]]
 
     def get_segment_ABCD_mat(self, unit_cell_segment_idx, freq, zs):
         segment_gamma, segment_Zc = self.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
         segment_length = self.get_segment_len(unit_cell_segment_idx)
-        return self.ABCD_Mat(segment_Zc, segment_gamma, segment_length)
+        return ABCD_Mat(segment_Zc, segment_gamma, segment_length)
 
     def get_unit_cell_ABCD_mat(self, freq, zs):
 
@@ -95,7 +100,7 @@ class UnitCell():
         for segment_idx in range(len(self.segment_lengths)):
             # 3) for each  line segment of unit cell make ABCD matrices
             segment_gamma, segment_Zc = self.get_segment_gamma_Zc(segment_idx, freq, zs)
-            segment_abcd_mats.append(self.ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
+            segment_abcd_mats.append(ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
 
         # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
         return mult_mats(segment_abcd_mats)

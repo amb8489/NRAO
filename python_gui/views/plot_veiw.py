@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QPushButton, QGridLayout, QWidget, QVBoxLayout, QScrollArea
+from PySide6.QtWidgets import QGridLayout, QWidget, QVBoxLayout, QScrollArea
 
 from python_gui.plot_data import simulate
 from python_gui.widgets.plot_widget import WidgetGraph_fig
@@ -25,14 +25,18 @@ class PlotWindow(QScrollArea):
 
         plots = simulate(line_model)
 
-        for i in range(2):
-            for j in range(3):
-                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j, i + 1)
+        for i in range(len(plots)):
+            x, y = i % 2, i // 2
+            self.grid.addWidget(WidgetGraph_fig(plots[i]), y + 1, x, Qt.AlignTop)
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
-        self.setMinimumWidth(1300)
-        self.setMinimumHeight(900)
+
+        self.setMinimumWidth(1200)
+        self.setMinimumHeight(1200)
+
+        self.setMaximumHeight(1200)
+        self.setMaximumWidth(1200)
 
     def plot(self):
 
@@ -46,9 +50,9 @@ class PlotWindow(QScrollArea):
 
         plots = simulate(self.line_model)
 
-        for i in range(2):
-            for j in range(3):
-                self.grid.addWidget(WidgetGraph_fig(plots[j][i]), j+1, i )
+        for i in range(len(plots)):
+            x, y = i % 2, i // 2
+            self.grid.addWidget(WidgetGraph_fig(plots[i]), y + 1, x, Qt.AlignTop)
 
     def clearPlots(self):
         for i in range(self.grid.count()):
