@@ -23,7 +23,7 @@ if __name__ == "__main__":
                                        MSinputs.tangent_delta,
                                        MSinputs.crit_current) for width in MSinputs.load_widths]
 
-    floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_lengths,
+    floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_D_vals,
                                               Load_line_models,
                                               Central_line_model,
                                               super_conductivity_model, MSinputs.central_line_width,

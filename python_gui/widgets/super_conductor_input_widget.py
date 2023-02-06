@@ -2,7 +2,8 @@ import matplotlib
 from PySide6.QtGui import QPalette, QColor, QFont, Qt
 
 from python_gui.utills.utills_gui import Er, SC_thickness, SC_height, SC_ground_thickness, SC_critical_current, \
-    SC_critical_temperature, SC_operation_temperature, SC_normal_resistivity, SC_tangent_delta
+    SC_critical_temperature, SC_operation_temperature, SC_normal_resistivity, SC_tangent_delta, \
+    SUPER_CONDUCTOR_WIDGET_COLOR
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -29,7 +30,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
         for j in range(len(self.input_unit_names)):
             input = WidgetDoubleInput(self.input_unit_names[j].get_name(),
                                       unit_type=self.input_unit_names[j].get_unit(),
-                                      widget_name=self.input_unit_names[j].get_name())
+                                      widget_name=self.input_unit_names[j].get_name(),color=SUPER_CONDUCTOR_WIDGET_COLOR)
 
             x = j % 3
             y = j // 3
@@ -37,7 +38,7 @@ class WidgetSCInputs(QtWidgets.QWidget):
             self.inputs.append(input)
 
         # set widget color
-        self.setBackGroundColor("#057878")
+        self.setBackGroundColor(SUPER_CONDUCTOR_WIDGET_COLOR)
         self.layout().setSpacing(5)
 
     def setBackGroundColor(self, hex_color: str):

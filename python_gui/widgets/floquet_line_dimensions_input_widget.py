@@ -2,7 +2,7 @@ import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.utills.utills_gui import randomColorBright
+from python_gui.utills.utills_gui import randomColorBright, GAIN_WIDGET_COLOR, DIMS_WIDGET_COLOR
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 from python_gui.widgets.table_input_widget import TableInputWidget
 
@@ -171,7 +171,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.inputs = []
 
         for i in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit())
+            input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit(),color=DIMS_WIDGET_COLOR)
             x = i % 2
             y = i // 2
             self.layout().addWidget(input_widget, 1+y,x)
@@ -181,7 +181,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
 
 
         # set widget color
-        self.setBackGroundColor("#057878")
+        self.setBackGroundColor(DIMS_WIDGET_COLOR)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

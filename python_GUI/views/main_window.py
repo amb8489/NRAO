@@ -1,12 +1,14 @@
 import matplotlib
+from PySide6 import QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.utills.utills_gui import BASE_COLOR
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
 from python_gui.views.save_veiw import SaveWindow
-from python_gui.widgets.cpw_input_widget import CPWInputsWidget
-from python_gui.widgets.micro_strip_input_widget import MicroStripInputsWidget
-from python_gui.widgets.s_matrix_input_widget import SMatrixInputsWidget
+from python_gui.line_model_inputs.cpw_input_widget import CPWInputsWidget
+from python_gui.line_model_inputs.micro_strip_input_widget import MicroStripInputsWidget
+from python_gui.line_model_inputs.s_matrix_input_widget import SMatrixInputsWidget
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QGridLayout, QScrollArea, QLabel, QComboBox, QSizePolicy
@@ -60,31 +62,33 @@ class MainWindow(QMainWindow):
 
         self.button_save_settings = QPushButton(text='SAVE SETTINGS', objectName='SAVE_BUTTON',
                                                 clicked=self.showSaveWindow)
-        self.ButtonLayout.addWidget(self.button_save_settings, 1, 1)
+        self.ButtonLayout.addWidget(self.button_save_settings, 1, 0)
 
         self.button_load_settings = QPushButton(text='LOAD SETTINGS', objectName='SAVE_BUTTON',
                                                 clicked=self.showLoadWindow)
-        self.ButtonLayout.addWidget(self.button_load_settings, 1, 2)
+        self.ButtonLayout.addWidget(self.button_load_settings, 1, 1)
 
         self.testButton = QPushButton(text='print inputs', objectName='TEST_BUTTON', clicked=self.print_inputs)
-        self.ButtonLayout.addWidget(self.testButton, 1, 0)
+        self.ButtonLayout.addWidget(self.testButton, 1, 2)
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
-        self.ButtonLayoutWidget.setFixedHeight(100)
-        self.ButtonLayoutWidget.setFixedWidth(self.widnow_width)
+        # self.ButtonLayoutWidget.setFixedHeight(100)
+        # self.ButtonLayoutWidget.setFixedWidth(self.widnow_width)
 
         palette = self.ButtonLayoutWidget.palette()
-        palette.setColor(QPalette.Window, QColor("#777777"))
+        palette.setColor(QPalette.Window, QColor(BASE_COLOR))
         self.ButtonLayoutWidget.setPalette(palette)
         self.ButtonLayoutWidget.setAutoFillBackground(True)
+
+
+
+
 
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
         # title
         self.title = QLabel(self.modelSelector.currentText())
         self.title.setMaximumHeight(40)
-        self.title.setMaximumWidth(self.widnow_width)
-
         palette = self.title.palette()
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.title.setPalette(palette)
@@ -92,7 +96,7 @@ class MainWindow(QMainWindow):
 
         self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.title.setAlignment(Qt.AlignCenter)
-        self.title.setFont(QFont('Arial', 24))
+        self.title.setFont(QFont('Arial', 28))
         self.Mainlayout.addWidget(self.title)
 
         # ---------------------------------- input models
@@ -141,7 +145,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("TKIPA DESIGN TOOL")
         palette = self.palette()
-        palette.setColor(QPalette.Window, QColor("#AAAAAA"))
+        palette.setColor(QPalette.Window, QColor(BASE_COLOR))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
         self.ROOT.setLayout(self.Mainlayout)
@@ -149,7 +153,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.scroll)
 
-        self.setFixedWidth(1300)
+        self.setFixedWidth(1275)
         self.setFixedHeight(800)
 
         self.show()

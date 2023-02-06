@@ -39,13 +39,8 @@ class PlotWindow(QScrollArea):
 
     def plot(self):
 
-        # time.sleep(10)
 
-        # self.ButtonExit = QPushButton('Close window')
-        # self.grid.addWidget(self.ButtonExit, 0, 0,Qt.AlignTop)
-        # self.ButtonExit.clicked.connect(lambda: self.close())
-
-        # todo update inputs
+        # todo destory all open plots
 
         plots = simulate(self.line_model)
 

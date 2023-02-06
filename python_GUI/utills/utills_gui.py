@@ -57,4 +57,13 @@ pump_amplitude =  nameUnit("Pump Amplitude")
 
 
 
+BASE_COLOR = "#2A363B"
+
+
+SUPER_CONDUCTOR_WIDGET_COLOR = "#99B898"
+GAIN_WIDGET_COLOR = "#FECEAB"
+FREQ_WIDGET_COLOR = "#FF847C"
+DIMS_WIDGET_COLOR = "#E84A5F"
+
+
 

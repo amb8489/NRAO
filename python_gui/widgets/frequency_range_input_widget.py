@@ -1,7 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, QFont
 
-from python_gui.utills.utills_gui import start_frequency, end_frequency, resolution
+from python_gui.utills.utills_gui import start_frequency, end_frequency, resolution, FREQ_WIDGET_COLOR
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -17,7 +17,7 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.setLayout(QGridLayout())
 
         # widget title
-        self.title = QLabel("Frequency")
+        self.title = QLabel("Frequency Range")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
@@ -26,12 +26,12 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         # inputs for freq range and res
         self.inputnames = [start_frequency,end_frequency,resolution]
         for j in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(),unit_type=self.inputnames[j].get_unit())
+            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(),unit_type=self.inputnames[j].get_unit(),color=FREQ_WIDGET_COLOR)
             self.layout().addWidget(input_widget, 1, j)
             self.inputs.append(input_widget)
 
         # set widget color
-        self.setBackGroundColor("#057878")
+        self.setBackGroundColor(FREQ_WIDGET_COLOR)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

@@ -1,7 +1,8 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.utills.utills_gui import pump_frequency, signal_amplitude, idler_amplitude, pump_amplitude
+from python_gui.utills.utills_gui import pump_frequency, signal_amplitude, idler_amplitude, pump_amplitude, \
+    GAIN_WIDGET_COLOR
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -25,12 +26,12 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.inputnames = [signal_amplitude, idler_amplitude, pump_amplitude, pump_frequency]
         self.inputs = []
         for j in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(), unit_type=self.inputnames[j].get_unit())
+            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(), unit_type=self.inputnames[j].get_unit(),color = GAIN_WIDGET_COLOR)
             self.layout().addWidget(input_widget, 1, j, Qt.AlignTop)
             self.inputs.append(input_widget)
 
         # set widget color
-        self.setBackGroundColor("#057878")
+        self.setBackGroundColor(GAIN_WIDGET_COLOR)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

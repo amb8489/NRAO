@@ -9,7 +9,7 @@ from PySide6 import QtWidgets
 # todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
     def __init__(self, Title, unit_type="", MaxVal=10 ** 10, MinVal=0, DefaultVal=0, onchange=None, widget_name=None,
-                 *args,
+                 color=None, *args,
                  **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
@@ -35,7 +35,8 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.setFixedHeight(70)
         # self.setFixedWidth(150)
 
-        self.setBackGroundColor("#AAAAAA")
+        color = color if color else "#AAAAAA"
+        self.setBackGroundColor(color)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

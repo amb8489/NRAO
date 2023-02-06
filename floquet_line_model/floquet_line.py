@@ -124,7 +124,6 @@ class SuperConductingFloquetLine():
         # 5) get unit cell ABCD -- steps 3 - 4 inside get_unit_cell_ABCD_mat()
         unit_cell_abcd_mat = self.unit_cell.get_unit_cell_ABCD_mat(freq, zs)
 
-
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
         bloch_impedance1, bloch_impedance2 = Bloch_impedance_Zb(unit_cell_abcd_mat)
@@ -143,14 +142,12 @@ class SuperConductingFloquetLine():
         transmission = Transmission(100, 50, bloch_impedance1, bloch_impedance2, self.unit_cell.unit_cell_length,
                                     propagation_const)
 
-
-
-
-
         segment_gamma, segment_Zc = self.unit_cell.get_segment_gamma_Zc(0, freq, zs)
         CentralLineMat = ABCD_Mat(segment_Zc, segment_gamma, self.unit_cell.unit_cell_length)
         propagation_constcl = Pd(CentralLineMat)
         beta_cl = propagation_constcl.imag
         alpha_cl = propagation_constcl.real
 
-        return alpha - alpha_cl, beta - beta_cl, r, x
+        return alpha , beta , r, x
+
+        # return alpha - alpha_cl, beta - beta_cl, r, x
