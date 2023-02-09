@@ -148,6 +148,5 @@ class SuperConductingFloquetLine():
         beta_cl = propagation_constcl.imag
         alpha_cl = propagation_constcl.real
 
-        return alpha , beta , r, x
 
-        # return alpha - alpha_cl, beta - beta_cl, r, x
+        return alpha, beta, alpha_cl, beta_cl, r,x

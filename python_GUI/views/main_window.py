@@ -1,14 +1,13 @@
 import matplotlib
-from PySide6 import QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.line_model_inputs.cpw_input_widget import CPWInputsWidget
+from python_gui.line_model_inputs.micro_strip_input_widget import MicroStripInputsWidget
+from python_gui.line_model_inputs.s_matrix_input_widget import SMatrixInputsWidget
 from python_gui.utills.utills_gui import BASE_COLOR
 from python_gui.views.load_veiw import LoadSettingsWindow
 from python_gui.views.plot_veiw import PlotWindow
 from python_gui.views.save_veiw import SaveWindow
-from python_gui.line_model_inputs.cpw_input_widget import CPWInputsWidget
-from python_gui.line_model_inputs.micro_strip_input_widget import MicroStripInputsWidget
-from python_gui.line_model_inputs.s_matrix_input_widget import SMatrixInputsWidget
 
 matplotlib.use('Qt5Agg')
 from PySide6.QtWidgets import QMainWindow, QGridLayout, QScrollArea, QLabel, QComboBox, QSizePolicy
@@ -80,9 +79,7 @@ class MainWindow(QMainWindow):
         self.ButtonLayoutWidget.setPalette(palette)
         self.ButtonLayoutWidget.setAutoFillBackground(True)
 
-
-
-
+        # todo loading different settings is not working ???
 
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
@@ -125,7 +122,6 @@ class MainWindow(QMainWindow):
 
         # resetting the plot window
         self.plotWindow = None
-
 
         # todo will error on model with no SCW or materials_table temp fix for testing
         try:

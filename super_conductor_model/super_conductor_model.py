@@ -1,7 +1,7 @@
 """
 
 
-
+BCS theory on conductivity
 """
 import cmath
 import math
@@ -15,7 +15,10 @@ from utills.functions import ccoth
 class SuperConductivity():
     """
     ---INPUTS---
-    freq range    : the range of DC frequency to test in units of GHZ
+    freq range    : the range of DC frequency to
+
+
+    test in units of GHZ
     conductivity  : the temperature of operation in Kelvin
     sc_film_thickness            : thickness of super conductor
     Pn            : normal resistivity
@@ -40,7 +43,10 @@ class SuperConductivity():
         self.OpTempTimesKB = operation_temperature_k * KB
 
     def fermiDistrib(self, E, temp_k):
+
         if temp_k == 0:
+            # todo retur 0 or .5 if E >= 0
+
             return 0 if E >= 0 else 1
 
         EdivT = E / temp_k

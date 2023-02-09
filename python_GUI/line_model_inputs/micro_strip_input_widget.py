@@ -6,6 +6,7 @@ from python_gui.utills.utills_gui import randomColorBright, unit_cell_length, ce
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
+from python_gui.widgets.material_selector_widget import WidgetMaterialsSelect
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
 from utills.constants import MICRO_STRIP_TYPE
 

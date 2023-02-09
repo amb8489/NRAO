@@ -5,6 +5,7 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib import pyplot as plt
 
+from floquet_line_model.floquet_line import unfold
 from python_gui.floquet_line_builder import floquet_line_builder
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
 from utills.functions import toGHz
@@ -17,7 +18,8 @@ def simulate(line_model):
     floquet_line = floquet_line_builder(line_model)
     # ---------------------------- calculations -------------------
     alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
-
+    cl_beta = []
+    cl_alpha = []
     inputs = line_model.get_inputs()
 
     resoultion = int(inputs["Frequency Range"][resolution.get_name()])
@@ -27,15 +29,16 @@ def simulate(line_model):
     # todo
     FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
     for F in FRange:
-        alpha_sub_alpha0, beta_sub_beta0, r_, x_ = floquet_line.simulate(F)
+        alpha, beta, alphaCl, betaCL, r_, x_ = floquet_line.simulate(F)
         # RR.append(R)
         # LL.append(L)
         # GG.append(G)
         # CC.append(C)
         # transmission_plt.append(t)
-
-        beta_plt.append(beta_sub_beta0)
-        alpha_plt.append(alpha_sub_alpha0)
+        cl_beta.append(betaCL)
+        cl_alpha.append(alphaCl)
+        beta_plt.append(beta)
+        alpha_plt.append(alpha)
         r.append(r_)
         x.append(x_)
 
@@ -54,28 +57,23 @@ def simulate(line_model):
 
     # ---------------------------- plots----------------------------
 
-    plot_width = 1
-    plot_height = 1
-    dpi = 100
-
     # ------- test ------
     # Create some mock data
 
     fig1, ax1 = plt.subplots()
     color = 'tab:blue'
     ax1.set_ylabel('alpha - alpha0', color=color)
-    ax1.plot(FRange, alpha_plt, color=color)
+    ax1.plot(FRange, np.array(alpha_plt) - np.array(cl_alpha), color=color)
     ax1.tick_params(axis='y', labelcolor=color)
     ax1.set_xlabel('Frequency [GHz]')
     ax2 = ax1.twinx()
     color = 'tab:orange'
     ax2.set_ylabel('beta - beta0', color=color)
-    ax2.plot(FRange, beta_plt, color=color)
+    ax2.plot(FRange, np.array(unfold(beta_plt)) - np.array(unfold(cl_beta)), color=color)
     ax2.tick_params(axis='y', labelcolor=color)
     fig1.tight_layout()
 
-    #
-
+    # --------------------------------------------------------------------
     fig2, ax12 = plt.subplots()
     color = 'tab:blue'
     ax12.set_ylabel('r Blue -- x orange', color=color)
@@ -84,15 +82,6 @@ def simulate(line_model):
     ax12.set_xlabel('Frequency [GHz]')
     ax12.plot(FRange, x, color='tab:orange')
     fig2.tight_layout()
-
-    # fig1 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes1 = fig1.add_subplot(111)
-    # fig1.suptitle("alpha beta deltas")
-    # axes1.set_xlabel('Frequency [GHz]')
-    #
-    # axes1.set_ylabel('Frequency [GHz]')
-    # axes1.plot(FRange, alpha_plt)
-    # axes1.plot(FRange, beta_plt)
 
     # ---------------------------------
 

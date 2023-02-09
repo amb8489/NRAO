@@ -36,7 +36,7 @@ def floquet_line_builder(line_model):
                                            inputs.tangent_delta,
                                            inputs.crit_current) for width in inputs.load_widths]
 
-        floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_lengths,
+        floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
                                                   Load_line_models, Central_line_model, super_conductivity_model,
                                                   inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
                                                   inputs.crit_current)

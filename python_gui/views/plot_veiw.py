@@ -4,7 +4,8 @@ from PySide6.QtWidgets import QGridLayout, QWidget, QVBoxLayout, QScrollArea
 from python_gui.plot_data import simulate
 from python_gui.widgets.plot_widget import WidgetGraph_fig
 
-
+ROWS = 2
+COLS = 2
 class PlotWindow(QScrollArea):
     """
     This "window" is alpha_plt QWidget. If it has no parent, it
@@ -26,7 +27,7 @@ class PlotWindow(QScrollArea):
         plots = simulate(line_model)
 
         for i in range(len(plots)):
-            x, y = i % 2, i // 2
+            x, y = i % ROWS, i // COLS
             self.grid.addWidget(WidgetGraph_fig(plots[i]), y + 1, x, Qt.AlignTop)
 
         self.vbox.addWidget(holder)
@@ -34,8 +35,8 @@ class PlotWindow(QScrollArea):
 
         self.setMinimumWidth(1200)
         self.setMinimumHeight(600)
-        self.setMaximumWidth(1200)
-        self.setMaximumHeight(600)
+        # self.setMaximumWidth(1200)
+        # self.setMaximumHeight(600)
 
     def plot(self):
 
@@ -45,7 +46,7 @@ class PlotWindow(QScrollArea):
         plots = simulate(self.line_model)
 
         for i in range(len(plots)):
-            x, y = i % 2, i // 2
+            x, y = i % ROWS, i // COLS
             self.grid.addWidget(WidgetGraph_fig(plots[i]), y + 1, x, Qt.AlignTop)
 
     def clearPlots(self):

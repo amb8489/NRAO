@@ -20,7 +20,6 @@ class MicroStripInputs():
         self.unit_cell_length = mm_to_meters(float(inputs["Dimensions"][unit_cell_length.get_name()]))
         self.central_line_width = micro_meters_to_meters(float(inputs["Dimensions"][central_line_width.get_name()]))
         self.D0 = mm_to_meters(float(inputs["Dimensions"][D0.get_name()]))
-        # self.ground_spacing = micro_meters_to_meters(float(inputs["Dimensions"].get(ground_spacing.get_name(), None)))
 
         self.load_D_vals, self.load_widths = [], []
         for D_len, width in inputs["Dimensions"]["loads"]:
