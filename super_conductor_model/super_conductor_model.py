@@ -15,7 +15,7 @@ from utills.functions import ccoth
 class SuperConductivity():
     """
     ---INPUTS---
-    freq range    : the range of DC frequency to
+    frequency range    : the range of DC frequency to
 
 
     test in units of GHZ
@@ -155,7 +155,7 @@ class SuperConductivity():
 
     """
     -INPUTS-
-    freq                    : frequency of DC i units of GHZ
+    frequency                    : frequency of DC i units of GHZ
     operation_temperature_k  : the temperature of operation in Kelvin
     critical_temp           : the temperature of transition between normal and super conductor in Kelvin
     Pn                      : normal resistivity in micro ohms / cm
@@ -169,7 +169,7 @@ class SuperConductivity():
 
     """
     -INPUTS-
-    freq          : frequency of DC i units of GHZ
+    frequency          : frequency of DC i units of GHZ
     conductivity  : conductivity
     sc_film_thickness            : thickness of super conductor
     -OUT-

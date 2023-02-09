@@ -45,35 +45,6 @@ def Transmission(Ncells, z0, zb1, zb2, Unit_Cell_Len, pb):
              (- 1 + cmath.exp(2 * Unit_Cell_Len * Ncells * pb)) * (zb1 * zb2 - (z0 ** 2))))
 
 
-def unfold(betas):
-    betas = np.abs(betas)
-    prev_beta = 0
-    scale_factor = -PI2
-    should_flip = False
-    res = []
-    for b in betas:
-
-        temp = b
-
-        if b <= prev_beta:
-            # REFLACTION OVER Y = PI
-            b += 2 * (PI - b)
-
-            if should_flip:
-                should_flip = not should_flip
-
-        elif b > prev_beta:
-            if not should_flip:
-                # TRANSLATE UP NO REFLECTION
-                scale_factor += PI2
-                should_flip = not should_flip
-
-        res.append(b + scale_factor)
-
-        prev_beta = temp
-
-    return res
-
 
 class SuperConductingFloquetLine():
 
@@ -88,7 +59,6 @@ class SuperConductingFloquetLine():
 
         # todo are these even being used in any calculations
         self.load_widths = load_widths
-        print("-----> ", self.load_widths)
 
         # model of the dimensions for the floquet line
         self.unit_cell = UnitCell(unit_cell_length, D0, load_lengths, central_line_model,
@@ -111,18 +81,18 @@ class SuperConductingFloquetLine():
         y, self.target_pump_zone_start, self.target_pump_zone_end = \
             list(zip(*peak_widths(x, peaks, rel_height=.95)[1:]))[max(peak_number - 1, 0)]
 
-    def simulate(self, freq):
+    def simulate(self, frequency):
         # frequency cant be too low
-        freq = max(freq, 1e7)
+        frequency = max(frequency, 1e7)
 
         # 1) calculate Zs
-        conductivity = self.super_conductivity_model.conductivity(freq)
+        conductivity = self.super_conductivity_model.conductivity(frequency)
 
         # 2) calculate Zs for given frequency, conductivity ,line thickness
-        zs = self.super_conductivity_model.Zs(freq, conductivity, self.unit_cell.thickness)
+        zs = self.super_conductivity_model.Zs(frequency, conductivity, self.unit_cell.thickness)
 
         # 5) get unit cell ABCD -- steps 3 - 4 inside get_unit_cell_ABCD_mat()
-        unit_cell_abcd_mat = self.unit_cell.get_unit_cell_ABCD_mat(freq, zs)
+        unit_cell_abcd_mat = self.unit_cell.get_unit_cell_ABCD_mat(frequency, zs)
 
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
@@ -142,11 +112,10 @@ class SuperConductingFloquetLine():
         transmission = Transmission(100, 50, bloch_impedance1, bloch_impedance2, self.unit_cell.unit_cell_length,
                                     propagation_const)
 
-        segment_gamma, segment_Zc = self.unit_cell.get_segment_gamma_Zc(0, freq, zs)
+        segment_gamma, segment_Zc = self.unit_cell.get_segment_gamma_Zc(0, frequency, zs)
         CentralLineMat = ABCD_Mat(segment_Zc, segment_gamma, self.unit_cell.unit_cell_length)
         propagation_constcl = Pd(CentralLineMat)
         beta_cl = propagation_constcl.imag
         alpha_cl = propagation_constcl.real
 
-
-        return alpha, beta, alpha_cl, beta_cl, r,x
+        return alpha, beta, alpha_cl, beta_cl, r, x

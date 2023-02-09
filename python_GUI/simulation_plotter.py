@@ -5,10 +5,9 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib import pyplot as plt
 
-from floquet_line_model.floquet_line import unfold
-from python_gui.floquet_line_builder import floquet_line_builder
+from floquet_line_model.floquet_line_builder import floquet_line_builder
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
-from utills.functions import toGHz
+from utills.functions import toGHz, unfold
 
 
 # ---------------------------- unit cell inputs from paper
@@ -83,61 +82,4 @@ def simulate(line_model):
     ax12.plot(FRange, x, color='tab:orange')
     fig2.tight_layout()
 
-    # ---------------------------------
-
-    # fig1 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes1 = fig1.add_subplot(111)
-    # fig1.suptitle("ALPHAS")
-    # axes1.set_xlabel('Frequency [GHz]')
-    # axes1.set_ylabel('Frequency [GHz]')
-    # axes1.plot(FRange, alpha_plt)
-    #
-    # floquet_line.FindPumpZone(3, alpha_plt)
-    # axes1.axvspan(FRange[int(floquet_line.target_pump_zone_start)], FRange[int(floquet_line.target_pump_zone_end)],
-    #               facecolor='b', alpha=0.3)
-    # axes1.axvspan(FRange[int(floquet_line.target_pump_zone_start / 3)],
-    #               FRange[int(floquet_line.target_pump_zone_end / 3)],
-    #               facecolor='g', alpha=0.5)
-    #
-    # fig2 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes2 = fig2.add_subplot(111)
-    # fig2.suptitle("BETAS")
-    # axes2.set_xlabel('Frequency [GHz]')
-    # axes2.set_ylabel('Frequency [GHz]')
-    # axes2.plot(FRange, beta_plt)
-    # axes2.plot(FRange, unfold(beta_plt))
-    #
-    # fig3 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes3 = fig3.add_subplot(111)
-    # fig3.suptitle("R")
-    # axes3.set_xlabel('Frequency [GHz]')
-    # axes3.set_ylabel('Frequency [GHz]')
-    # axes3.plot(FRange, r)
-    #
-    # fig4 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes4 = fig4.add_subplot(111)
-    # fig4.suptitle("X")
-    # axes4.set_xlabel('Frequency [GHz]')
-    # axes4.set_ylabel('Frequency [GHz]')
-    # axes4.plot(FRange, x)
-    #
-    # fig5 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes5 = fig5.add_subplot(111)
-    # fig5.suptitle("TRANSMISSION")
-    # axes5.set_xlabel('Frequency [GHz]')
-    # axes5.set_ylabel('Frequency [GHz]')
-    # axes5.plot(FRange, transmission_plt)
-    #
-    # # todo
-    # fig6 = Figure(figsize=(plot_width, plot_height), dpi=dpi)
-    # axes6 = fig6.add_subplot(111)
-    # fig6.suptitle("CIRCUIT")
-    # axes6.set_xlabel('Frequency [GHz]')
-    # axes6.set_ylabel('Frequency [GHz]')
-    # axes6.plot(FRange, FRange)
-
     return [fig1, fig2]
-
-    # return [[fig1, fig2], [fig3, fig4]]
-
-    # return [[fig1, fig2], [fig3, fig4], [fig5, fig6]]

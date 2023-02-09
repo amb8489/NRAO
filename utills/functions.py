@@ -2,9 +2,10 @@ import bisect
 import cmath
 import math
 
+import numpy as np
 import scipy
 
-from utills.constants import PI2
+from utills.constants import PI2, PI
 
 
 # Computes the hyperbolic secant of 𝑥
@@ -30,7 +31,7 @@ def ccoth(x):
 PI20 = PI2 * 10
 
 
-# wave number if freq in Ghz
+# wave number if frequency in Ghz
 def K0_GHz(freq):
     return (PI20 * freq) / 3
 
@@ -78,6 +79,36 @@ def mult_2x2_mat(mat1, mat2):
 #  elliptic integral redefined to contemplate Jochems change
 def ellip_k(n):
     return scipy.special.ellipk(n)
+
+
+def unfold(betas):
+    betas = np.abs(betas)
+    prev_beta = 0
+    scale_factor = -PI2
+    should_flip = False
+    res = []
+    for b in betas:
+
+        temp = b
+
+        if b <= prev_beta:
+            # REFLACTION OVER Y = PI
+            b += 2 * (PI - b)
+
+            if should_flip:
+                should_flip = not should_flip
+
+        elif b > prev_beta:
+            if not should_flip:
+                # TRANSLATE UP NO REFLECTION
+                scale_factor += PI2
+                should_flip = not should_flip
+
+        res.append(b + scale_factor)
+
+        prev_beta = temp
+
+    return res
 
 
 def mult_mats(mats):

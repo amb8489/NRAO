@@ -1,36 +1,28 @@
 import time
 
-from floquet_line_model.MicroStrip.FloquetLine import SuperConductingFloquetLine
-from gain_models.microstrip.find_gain import Calc_Gain
 from matplotlib import pyplot as plt
 
-from model_inputs.micro_strip_inputs import MicroStripInputs
+from floquet_line_model.floquet_line import SuperConductingFloquetLine
+from gain_models.find_gain import Calc_Gain
+from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
-from transmission_line_models.micro_strip.super_conducting_micro_strip_model import SuperConductingMicroStripModel
+from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 
 if __name__ == "__main__":
-    # INPUTS FROM Parametric-amplification-of-electromagnetic-signals-with-superconducting-transmission_plt-lines.pdf on MS
 
-    MSinputs = MicroStripInputs()
+    json_inputs = {'gain_models': {'Signal Amplitude': 0.0000001, 'Idler Amplitude': 0.0000001, 'Pump Amplitude': 0.0000001, 'Pump Frequency': 11.61},'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 300.0, 'Super Conductor Operation Temperature': 0.0, 'Super Conductor Critical Temperature': 14.7, 'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0, 'Super Conductor Tangent Delta': 1.48351e-05}, 'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734, 'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0}, 'Frequency Range': {'Start Frequency': 1.0, 'End Frequency': 25.0, 'Resolution': 1000.0}}
+    inputs = CPWInputs(json_inputs)
+    super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
+    Central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
+                                                inputs.line_thickness, inputs.er, inputs.tangent_delta)
+    Load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,
+                                               inputs.tangent_delta) for load_width in inputs.load_widths]
+    floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
+                                              Load_line_models, Central_line_model, super_conductivity_model,
+                                              inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
+                                              inputs.crit_current)
 
-    # ---------------------------- dependency models ----------------------------
-    super_conductivity_model = SuperConductivity(MSinputs.op_temp, MSinputs.crit_temp, MSinputs.normal_resistivity)
-    Central_line_model = SuperConductingMicroStripModel(MSinputs.height, MSinputs.central_line_width,
-                                                        MSinputs.line_thickness, MSinputs.er, MSinputs.tangent_delta,
-                                                        MSinputs.crit_current)
-    Load_line_models = [
-        SuperConductingMicroStripModel(MSinputs.height, width, MSinputs.line_thickness, MSinputs.er,
-                                       MSinputs.tangent_delta,
-                                       MSinputs.crit_current) for width in MSinputs.load_widths]
-
-    floquet_line = SuperConductingFloquetLine(MSinputs.unit_cell_length, MSinputs.D0, MSinputs.load_D_vals,
-                                              Load_line_models,
-                                              Central_line_model,
-                                              super_conductivity_model, MSinputs.central_line_width,
-                                              MSinputs.load_widths,
-                                              MSinputs.line_thickness, MSinputs.crit_current)
-
-    # ---------------------------- gain inputs
+    # step 3) gain
 
     """
     The term I∗ is proportional to I∗′/√α∗, where I∗′ is alpha_plt parameter comparable to the critical current ic, and α∗ is 
@@ -40,7 +32,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     L = 500  # todo where does L comefrom in mathimatica
-    f_range, gain = Calc_Gain(floquet_line, MSinputs.resoultion, MSinputs.pump_freq, MSinputs.init_amplitudes, L)
+    f_range, gain = Calc_Gain(floquet_line, inputs.resoultion, inputs.pump_freq, inputs.init_amplitudes, L)
     print("time to calc gains:", (time.time() - start_time))
     plt.plot(f_range, gain)
     plt.show()

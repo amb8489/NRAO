@@ -517,9 +517,9 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 #     def propagation_constant(self, Z, Y):
 #         return cmath.sqrt(Z * Y)
 #
-#     def get_propagation_constant_characteristic_impedance(self, freq, zs):
-#         Z = self.series_impedance_Z(zs, self.g1, self.g2, freq)
-#         Y = self.shunt_admittance_Y(self.g1, freq, self.epsilon_r, self.tan_delta, self.sc_height, self.sc_width)
+#     def get_propagation_constant_characteristic_impedance(self, frequency, zs):
+#         Z = self.series_impedance_Z(zs, self.g1, self.g2, frequency)
+#         Y = self.shunt_admittance_Y(self.g1, frequency, self.epsilon_r, self.tan_delta, self.sc_height, self.sc_width)
 #
 #         propagation_constant = self.propagation_constant(Z, Y)
 #         characteristic_impedance_Zc = self.characteristic_impedance(Z, Y)
