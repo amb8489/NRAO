@@ -5,9 +5,9 @@
 #   calc for each frequency the gain using betas calced above and other init vars
 #   turn gain into dB, mult back by Istar*, calc power
 import numpy as np
-from floquet_line_model.floquet_line import unfold
 from gain_models.amplitude_equations.amplitude_equations1 import AmplitudeEqs1
 from gain_models.solve_ode import Solve_ode
+from utills.functions import unfold
 
 
 def CalculateBetas(FloquetLine, FreqRange):

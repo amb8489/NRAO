@@ -27,10 +27,27 @@ from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 # {} style
 
 
+
+def gen(n):
+    for i in range(n):
+        yield i
+n = 10
+
+
+
+
+
+
 class MainWindow(QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
+
+
+
+        self.iter = gen(10)
+
+
 
         self.widnow_width = 600
         self.showWidget = False
@@ -158,7 +175,7 @@ class MainWindow(QMainWindow):
         print(self.line_model.materials_table.getFirstSelectedRow())
 
     def print_inputs(self):
-        print(self.line_model.get_inputs())
+        print(next(self.iter))
 
     def show_plot_window(self):
 

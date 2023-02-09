@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QWidget, QVBoxLayout, QScrollArea
 
-from python_gui.simulation_plotter import simulate
+from python_gui.utills.simulation_plotter import simulate
 from python_gui.widgets.plot_widget import WidgetGraph_fig
 
 ROWS = 2

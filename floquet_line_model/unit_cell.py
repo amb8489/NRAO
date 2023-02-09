@@ -23,7 +23,7 @@ import cmath
 from utills.functions import mult_mats
 
 
-def ABCD_Mat(Z, Gamma, L):
+def mk_ABCD_Mat(Z, Gamma, L):
     GL = Gamma * L
     coshGL = cmath.cosh(GL)
     sinhGL = cmath.sinh(GL)
@@ -31,6 +31,8 @@ def ABCD_Mat(Z, Gamma, L):
     return [[coshGL, Z * sinhGL],
             [(1 / Z) * sinhGL, coshGL]]
 
+
+# todo refactor and document all
 
 class UnitCell():
     # todo remove thickness
@@ -66,8 +68,6 @@ class UnitCell():
         self.segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
                                for model in b] + [central_line_model]
 
-
-
         print(len(self.segment_models))
         assert abs(D - sum(
             self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
@@ -82,7 +82,7 @@ class UnitCell():
     def get_central_line_gamma_Zc(self, freq, zs):
         return self.central_line_model.get_propagation_constant_characteristic_impedance(freq, zs)
 
-    def get_segment_gamma_Zc(self, segment_idx, freq, zs):
+    def get_segment_gamma_and_characteristic_impedance(self, segment_idx, freq, zs):
         return self.segment_models[segment_idx].get_propagation_constant_characteristic_impedance(freq, zs)
 
     # todo checjk this matrix is correct with the inputs params
@@ -90,17 +90,17 @@ class UnitCell():
     # Z characteristic impedance; k wavenumber; l length
 
     def get_segment_ABCD_mat(self, unit_cell_segment_idx, freq, zs):
-        segment_gamma, segment_Zc = self.get_segment_gamma_Zc(unit_cell_segment_idx, freq, zs)
+        segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(unit_cell_segment_idx, freq, zs)
         segment_length = self.get_segment_len(unit_cell_segment_idx)
-        return ABCD_Mat(segment_Zc, segment_gamma, segment_length)
+        return mk_ABCD_Mat(segment_Zc, segment_gamma, segment_length)
 
     def get_unit_cell_ABCD_mat(self, freq, zs):
 
         segment_abcd_mats = []
         for segment_idx in range(len(self.segment_lengths)):
             # 3) for each  line segment of unit cell make ABCD matrices
-            segment_gamma, segment_Zc = self.get_segment_gamma_Zc(segment_idx, freq, zs)
-            segment_abcd_mats.append(ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
+            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, freq, zs)
+            segment_abcd_mats.append(mk_ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
         # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
         return mult_mats(segment_abcd_mats)
 
