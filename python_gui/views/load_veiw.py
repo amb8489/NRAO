@@ -87,7 +87,7 @@ class LoadSettingsWindow(QScrollArea):
 
         idx, setting, setting_type = argsArr
 
-        print(f"Loading type {setting_type} at idx {idx}: {setting}")
+        print(f"Loading type {setting_type} from idx {idx}: {setting}")
 
         if setting_type != self.settings_model.type:
             print(f"cant load  {setting_type} when currently on {self.settings_model.type}")

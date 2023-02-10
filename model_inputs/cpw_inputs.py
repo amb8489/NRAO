@@ -48,4 +48,3 @@ class CPWInputs():
         self.Ap_init = float(inputs["gain_models"][pump_amplitude.get_name()])  # todo make inputs complex
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)
 
-        print(self.__dict__)

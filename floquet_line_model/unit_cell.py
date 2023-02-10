@@ -68,7 +68,6 @@ class UnitCell():
         self.segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
                                for model in b] + [central_line_model]
 
-        print(len(self.segment_models))
         assert abs(D - sum(
             self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
 

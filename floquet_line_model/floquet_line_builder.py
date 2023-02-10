@@ -46,7 +46,6 @@ def floquet_line_builder(line_model):
     elif model_type == CPW_TYPE:
         inputs = CPWInputs(json_inputs)
 
-        print("inputs ---- > ", json_inputs)
         super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
 
         # todo is this taking in both width and D??

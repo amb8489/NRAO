@@ -30,7 +30,6 @@ class PlotWindow(QScrollArea):
 
         plots = [plots[c:c + ROWS] for c in range(0, len(plots), ROWS)]
 
-        print(plots)
 
         for x in range(len(plots)):
             for y in range(len(plots[0])):
