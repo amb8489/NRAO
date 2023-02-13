@@ -37,8 +37,7 @@ SPEED_OF_LIGHT = scipy.constants.speed_of_light
 
 PI_DIV_2 = math.pi / 2
 
-epsilono = ...
-
+epsilon_0 = 8.854187*10**-12
 # nano meter
 NANO_METER = 10 ** -9
 

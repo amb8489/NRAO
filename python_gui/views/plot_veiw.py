@@ -4,8 +4,8 @@ from PySide6.QtWidgets import QGridLayout, QWidget, QVBoxLayout, QScrollArea
 from python_gui.utills.simulation_plotter import simulate
 from python_gui.widgets.plot_widget import WidgetGraph_fig
 
-ROWS = 2
-COLS = 1
+ROWS = 1
+COLS = 2
 
 
 class PlotWindow(QScrollArea):
