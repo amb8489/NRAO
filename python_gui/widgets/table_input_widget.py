@@ -113,7 +113,7 @@ class TableInputWidget(QtWidgets.QWidget):
         # inputs materials_table
         self.table = QtWidgets.QTableView()
 
-        # materials_table selection behavior for rows
+        # materials_table selection behavior for setting_rows
         self.table.setSelectionBehavior(QTableView.SelectRows)
 
         # defualt materials_table data and materials_table model

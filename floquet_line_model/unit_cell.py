@@ -97,7 +97,7 @@ class UnitCell():
 
         segment_abcd_mats = []
         for segment_idx in range(len(self.segment_lengths)):
-            # 3) for each  line segment of unit cell make ABCD matrices
+            # 3) for each  line segment of unit cell make sub ABCD matrices
             segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, freq, zs)
             segment_abcd_mats.append(mk_ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
         # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat

@@ -23,7 +23,7 @@ def CapacitanceModel1(n, ep_r, sg, s1, gg, gendg, h, l, t):
     g = gg - delta_s
     gend = 2 * gendg
 
-    # Calculating C1
+    # Calculating capacitance
     k01 = math.sqrt(1 - ((g) / (g + s)) ** 2)
 
     k11 = math.sqrt(1 - ((math.sinh((math.pi * g) / (2 * h))) ** 2 / (math.sinh((math.pi * (s + g)) / (2 * h))) ** 2))

@@ -8,7 +8,7 @@ from utills.constants import MICRO_STRIP_TYPE, CPW_TYPE
 
 
 # takes a line model from ...
-#todo refactor and document all
+# todo refactor and document all
 
 def floquet_line_builder(line_model):
     json_inputs = line_model.get_inputs()

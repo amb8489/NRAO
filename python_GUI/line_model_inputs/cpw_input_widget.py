@@ -1,9 +1,8 @@
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton
+from PySide6.QtGui import QPalette, QColor, QFont, Qt
+from PySide6.QtWidgets import QGridLayout, QLabel, QSizePolicy
 
-from python_gui.utills.utills_gui import ground_spacing, central_line_width, D0, unit_cell_length, randomColorBright, \
-    BASE_COLOR
+from python_gui.utills.utills_gui import ground_spacing, central_line_width, D0, unit_cell_length, BASE_COLOR
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
@@ -22,11 +21,24 @@ class CPWInputsWidget(QtWidgets.QWidget):
         # self.materials_table = WidgetMaterialsSelect()
         # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
-        self.toggel_materials_table_button = QPushButton(text='Hide materials table',
-                                                         objectName='toggel_materials_table_button',
-                                                         clicked=self.toggel_materials_table)
+        # self.toggel_materials_table_button = QPushButton(text='Hide materials table',
+        #                                                  objectName='toggel_materials_table_button',
+        #                                                  clicked=self.toggel_materials_table)
         # self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
         # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
+
+        # settings title
+        self.title = QLabel("settings: ")
+        self.title.setMaximumHeight(40)
+        palette = self.title.palette()
+        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
+        self.title.setPalette(palette)
+        self.title.setAutoFillBackground(True)
+        self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setFont(QFont('Arial', 28))
+        self.layout().addWidget(self.title)
+
         # ---------------------------------- model_inputs MS
 
         self.SCW = WidgetSCInputs()
@@ -36,8 +48,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
                                                                   ground_spacing])
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
 
-        # todo make not absoulte path
-        imgPath = "/Users/aaron/PycharmProjects/NRAO/python_gui/images/cpw_diagram_img.png"
+        imgPath = "images/cpw_diagram_img.png"
 
         pixmap = QtGui.QPixmap(imgPath)
         pixmap = pixmap.scaled(800, 400, QtCore.Qt.KeepAspectRatio)
@@ -78,6 +89,9 @@ class CPWInputsWidget(QtWidgets.QWidget):
         self.dimensionsInputWidget.setValues(input["Dimensions"])
         self.freqRangeWidget.setValues(input["Frequency Range"])
         self.WidgetGainInputs.setValues(input["gain_models"])
+
+    def set_setting(self, setting):
+        self.title.setText(f"setting: {setting.name}")
 
     def toggel_materials_table(self):
         if self.materials_table.isVisible():

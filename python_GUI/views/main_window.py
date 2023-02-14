@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
 
         self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
 
-        self.button_save_settings = QPushButton(text='SAVE SETTINGS', objectName='SAVE_BUTTON',
+        self.button_save_settings = QPushButton(text='SAVE NEW SETTINGS', objectName='SAVE_BUTTON',
                                                 clicked=self.showSaveWindow)
         self.ButtonLayout.addWidget(self.button_save_settings, 1, 0)
 
@@ -107,7 +107,6 @@ class MainWindow(QMainWindow):
         palette.setColor(QPalette.Window, QColor("#FFFFFF"))
         self.title.setPalette(palette)
         self.title.setAutoFillBackground(True)
-
         self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setFont(QFont('Arial', 28))

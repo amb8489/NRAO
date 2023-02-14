@@ -150,13 +150,14 @@ class SuperConductingCPWLine(AbstractSCTL):
         return (1j * (K0(f) * Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
 
     # this will need to be refactored to take some list of Zs to be made general
-    def get_propagation_constant_characteristic_impedance(self, freq, zs):
-        # todo what is zs for ground and line g2
-        zs_ground = zs
-        zs_line = zs
+    def get_propagation_constant_characteristic_impedance(self, frequency, surface_impedance):
+        # todo what is surface_impedance for ground and line g2
+        zs_ground = surface_impedance
+        zs_line = surface_impedance
+        surface_impedance_list = [zs_line, zs_ground]
 
-        Z = self.series_impedance_Z(self.g1, self.g2_list, [zs_line, zs_ground], freq)
-        Y = self.shunt_admittance_Y(self.efm, self.g1, freq)
+        Z = self.series_impedance_Z(self.g1, self.g2_list, surface_impedance_list, frequency)
+        Y = self.shunt_admittance_Y(self.efm, self.g1, frequency)
 
         propagation_constant = cmath.sqrt(Z * Y)
         characteristic_impedance_Zc = cmath.sqrt(Z / Y)

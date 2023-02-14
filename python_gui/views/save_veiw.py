@@ -45,8 +45,7 @@ class SaveWindow(QScrollArea):
         setting_name = setting_name.replace(" ", "_")
 
         with open(SETTINGS_FILE_PATH, "a") as settings_file:
-            print(self.settings)
             settings_file.write(f"{self.line_type} {setting_name} " + str(self.settings).replace("'", "\"") + "\n")
 
-        print(f"saving {setting_name}")
+        print(f"saving {setting_name}:  {self.settings}")
         self.close()

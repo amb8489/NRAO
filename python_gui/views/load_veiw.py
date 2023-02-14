@@ -3,8 +3,9 @@ import json
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPushButton, QGridLayout, QVBoxLayout, QWidget, QScrollArea
 
+from python_gui.utills.setting_gui import GUI_setting
 from python_gui.utills.utills_gui import SETTINGS_FILE_PATH
-from python_gui.widgets.name_load_remove_row_widget import Row
+from python_gui.widgets.setting_button_row import Setting_Button_Row
 
 
 class LoadSettingsWindow(QScrollArea):
@@ -30,69 +31,97 @@ class LoadSettingsWindow(QScrollArea):
 
         settings = []
 
+        # getting all the settings from the settings file that ar for the current simulation line type
+
         with open(SETTINGS_FILE_PATH, "r") as settings_file:
+            row_idx = 0
             for line_number, line in enumerate(settings_file):
-                line = line.split(" ", 2)
-                setting_type = line[0]
+
+                setting_type, setting_name, setting_vals_json_str = line.split(" ", 2)
 
                 # filter out other model settings that are not settings for the current model
                 if setting_type == settings_model.type:
-                    setting_name = line[1]
-                    setting = json.loads(line[2])
+                    setting_vals_dict = json.loads(setting_vals_json_str)
+                    settings.append(GUI_setting(setting_name, setting_type, setting_vals_dict, row_idx, line_number))
+                    row_idx += 1
 
-                    settings.append((setting, setting_name, setting_type, line_number))
+        self.setting_rows = []
 
-        if settings:
-            self.rows = []
-
-            for i, setting in enumerate(settings):
-                setting_data, setting_name, setting_type, line_number = setting
-
-                self.rows.append(
-                    Row(setting_name, i, line_number, self.Load, self.Delete, [i, setting_data, setting_type],
-                        [setting_name, i, line_number]))
-                self.grid.addWidget(self.rows[i], i + 1, 0, Qt.AlignTop)
+        for row_idx, setting in enumerate(settings):
+            self.setting_rows.append(Setting_Button_Row(setting, self.load_setting, self.delete_setting,self.update_setting))
+            self.grid.addWidget(self.setting_rows[row_idx], row_idx + 1, 0, Qt.AlignTop)
 
         self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
         self.grid.addWidget(self.cancel_button, len(settings) + 1 if len(settings) else 2, 0)
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
-
         self.setFixedWidth(600)
         self.setFixedHeight(400)
 
-    def Delete(self, argsArr):
+    # setting or row number
+    def delete_setting(self, row_idx: int):
 
-        name, idx, linenumner = argsArr
-        print(f"Deleting {name} idx in options list", idx, "line number in settings file", linenumner)
+        # update the rest of the setting_rows idx and line numbers that came after idx in setting_rows array
 
-        # update the rest of the rows idx and line numbers that came after idx in rows array
+        row = self.setting_rows[row_idx]
 
-        for i in range(idx, len(self.rows)):
-            self.rows[i].DownShiftIdx()
+        setting = row.setting
 
-        self.rows[idx].deleteLater()
-        del self.rows[idx]
+        print(
+            f"Deleting:{setting.name} row idx:{setting.setting_row_idx} file line:{setting.setting_file_idx}, {setting.setting_vals_dict}")
 
         with open(SETTINGS_FILE_PATH, "r+") as f:
             lines = f.readlines()
+
             f.seek(0)
-            for i, line in enumerate(lines):
-                if i != linenumner:
+            for line_idx, line in enumerate(lines):
+                if line_idx != row.setting.setting_file_idx:
                     f.write(line)
+
             f.truncate()
 
-    def Load(self, argsArr):
+        # shift down the settings in the rows
+        for i in range(row_idx, len(self.setting_rows)):
+            self.setting_rows[i].DownShiftIdx()
 
-        idx, setting, setting_type = argsArr
+        # delete settings roiw from idx
+        self.setting_rows[row_idx].deleteLater()
+        del self.setting_rows[row_idx]
 
-        print(f"Loading type {setting_type} from idx {idx}: {setting}")
+    def load_setting(self, setting: GUI_setting):
 
-        if setting_type != self.settings_model.type:
-            print(f"cant load  {setting_type} when currently on {self.settings_model.type}")
-            self.close()
-            return
-
-        self.settings_model.set_values(setting)
+        print(
+            f"Loading: {setting.name} type: {setting.setting_type} row idx: {setting.setting_row_idx} values: {setting.setting_vals_dict}")
+        self.settings_model.set_setting(setting)
+        self.settings_model.set_values(setting.setting_vals_dict)
         self.close()
+
+    # setting or row number
+    def update_setting(self, row_idx: int):
+
+        # update the rest of the setting_rows idx and line numbers that came after idx in setting_rows array
+
+        row = self.setting_rows[row_idx]
+
+        setting = row.setting
+
+        print(
+            f"updating:{setting.name} row idx:{setting.setting_row_idx} file line:{setting.setting_file_idx}")
+
+        with open(SETTINGS_FILE_PATH, "r+") as f:
+            lines = f.readlines()
+
+            f.seek(0)
+            for line_idx, line in enumerate(lines):
+                if line_idx != row.setting.setting_file_idx:
+                    f.write(line)
+
+                # write new values
+                else:
+                    new_settings = self.settings_model.get_inputs()
+                    f.write(f"{setting.setting_type} {setting.name} " + str(new_settings).replace("'", "\"") + "\n")
+
+            f.truncate()
+
+

@@ -21,7 +21,7 @@ def randomColorBright():
 
 
 # TODO MAKE NOT RELITIVE TO MY COMPUTER
-SETTINGS_FILE_PATH = "/Users/aaron/PycharmProjects/NRAO/python_gui/setting/settings.txt"
+SETTINGS_FILE_PATH = "setting/settings.txt"
 
 MICRO_METER = "μm"
 MILLI_METER = "mm"

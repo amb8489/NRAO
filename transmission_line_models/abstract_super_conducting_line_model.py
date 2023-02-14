@@ -2,26 +2,6 @@ from abc import ABC, abstractmethod
 
 
 class AbstractSCTL(ABC):
-    # Geometrical factors
-    @abstractmethod
-    def G1(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def G2(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def series_impedance_Z(self, *args, **kwargs):
-        pass
-
-    """
-    shunt admittance of alpha_plt TEM transmission_plt line
-    """
-
-    @abstractmethod
-    def shunt_admittance_Y(self, *args, **kwargs):
-        pass
 
     # sc transmissioin line outputs
     @abstractmethod
@@ -33,5 +13,5 @@ class AbstractSCTL(ABC):
         pass
 
     @abstractmethod
-    def get_propagation_constant_characteristic_impedance(self, *args, **kwargs):
+    def get_propagation_constant_characteristic_impedance(self, frequency, surface_impedance):
         pass
