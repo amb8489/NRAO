@@ -60,16 +60,18 @@ def simulate(line_model):
     # Create some mock data
 
     fig1, ax1 = plt.subplots()
-    color = 'tab:blue'
-    ax1.set_ylabel('alpha - alpha0', color=color)
-    ax1.plot(FRange, np.array(alpha_plt) - np.array(cl_alpha), color=color)
-    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.set_ylabel('alpha - alpha0', color='tab:blue')
+
+
+    ax1.plot(FRange, np.array(alpha_plt), color='tab:blue')
+
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
     ax1.set_xlabel('Frequency [GHz]')
     ax2 = ax1.twinx()
-    color = 'tab:orange'
-    ax2.set_ylabel('beta - beta0', color=color)
-    ax2.plot(FRange, np.array(unfold(beta_plt)) - np.array(unfold(cl_beta)), color=color)
-    ax2.tick_params(axis='y', labelcolor=color)
+    ax2.set_ylabel('beta - beta0', color='tab:orange')
+    ax2.plot(FRange, np.array(unfold(beta_plt)) - np.array(unfold(cl_beta)), color='tab:orange')
+
+    ax2.tick_params(axis='y', labelcolor='tab:orange')
     fig1.tight_layout()
 
     # --------------------------------------------------------------------

@@ -1,11 +1,8 @@
 import cmath
 import math
 
-import scipy
-from scipy.constants import epsilon_0
-
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from utills.constants import K0, Z0, PI, MU_0, PI2
+from utills.constants import K0, Z0, PI
 from utills.functions import ellip_k
 
 """
@@ -19,7 +16,7 @@ CPW MODEL FOR TRANSMISSION LINE
 
 class SuperConductingCPWLine(AbstractSCTL):
 
-    def __init__(self, line_width, s_width, thickness, er, tand):
+    def __init__(self, line_width:float, s_width:float, thickness:float, er:float, tand:float):
         self.ncpw = 2
 
         self.eta_free_c = self.eta_free(er, line_width, s_width)
@@ -36,35 +33,6 @@ class SuperConductingCPWLine(AbstractSCTL):
         self.g2_line, self.g2_ground = self.G2(self.g1, line_width, s_width, thickness, thickness)
 
         self.g2_list = [self.g2_ground, self.g2_line]
-
-    # ------ PEC --------------
-    def Cg(self, er, width, s):
-        k = width / (width + 2 * s)
-
-        epsilon_eff = (er + 1) / 2
-
-        kk1m = self.KK1(k)
-        # todo epsilon_0 correct
-        return 4 * epsilon_0 * epsilon_eff * kk1m
-
-    def Lg(self, width, s):
-        k = width / (width + 2 * s)
-
-        kk1m = self.KK1(k)
-
-        return (MU_0 / 4) * (1 / kk1m)
-
-    def nK(self, k):
-        return scipy.special.ellipk(k ** self.ncpw)
-
-    def KK1(self, k):
-        return self.nK(k) / self.nK(math.sqrt(1 - k ** 2))
-
-    def eta_free(self, er, width, s):
-        return math.sqrt(self.Lg(width, s) / self.Cg(er, width, s))
-
-    def beta_free(self, frequency):
-        return PI2 * frequency * self.sqrtlgcg
 
     '''
     Equations from:

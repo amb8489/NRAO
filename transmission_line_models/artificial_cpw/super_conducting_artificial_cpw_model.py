@@ -26,7 +26,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.ground_spacing = ground_spacing
         self.epsilon_r = epsilon_r
 
-        # self.capacitance = self.calc_capacitance(n, self.epsilon_r, sg, s1, gg, gendg, h, l, t, )
+        self.capacitance = self.calc_capacitance(number_of_fingers, self.epsilon_r, sg, s1, gg, gendg, height, finger_length, thickness )
 
     # step 1
     def dimension_to_circuit(self):
