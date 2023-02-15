@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor, QFont, Qt
 from PySide6.QtWidgets import QGridLayout, QLabel, QSizePolicy
 
+from python_gui.utills.setting_gui import GUI_setting
 from python_gui.utills.utills_gui import ground_spacing, central_line_width, D0, unit_cell_length, BASE_COLOR
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
@@ -76,15 +77,13 @@ class CPWInputsWidget(QtWidgets.QWidget):
                 "gain_models": self.WidgetGainInputs.getValues()
                 }
 
-    def set_values(self, input):
-        print("loading values into model")
-
+    def set_values(self, input:dict):
         self.SCW.setValues(input["SC"])
         self.dimensionsInputWidget.setValues(input["Dimensions"])
         self.freqRangeWidget.setValues(input["Frequency Range"])
         self.WidgetGainInputs.setValues(input["gain_models"])
 
-    def set_setting(self, setting):
+    def set_setting(self, setting:GUI_setting):
         self.title.setText(f"Current setting: {setting.name}")
 
     def toggel_materials_table(self):

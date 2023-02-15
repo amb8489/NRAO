@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QPalette, QColor, QFont
 from PySide6.QtWidgets import QGridLayout, QLabel
 
+from python_gui.utills.setting_gui import GUI_setting
 from python_gui.utills.utills_gui import unit_cell_length, central_line_width, D0, BASE_COLOR
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
@@ -81,10 +82,10 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
             self.materials_table.show()
             self.toggel_materials_table_button.setText("Hide Materials Table")
 
-    def set_setting(self, setting):
+    def set_setting(self, setting: GUI_setting):
         self.title.setText(f"Current setting: {setting.name}")
 
-    def set_values(self, input):
+    def set_values(self, input: dict):
         self.SCW.setValues(input["SC"])
         self.dimensionsInputWidget.setValues(input["Dimensions"])
         self.freqRangeWidget.setValues(input["Frequency Range"])
