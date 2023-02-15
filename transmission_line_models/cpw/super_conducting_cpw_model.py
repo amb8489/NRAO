@@ -24,8 +24,8 @@ class SuperConductingCPWLine(AbstractSCTL):
         self.line_width = line_width
         self.er = er
         self.efm = self.epsilon_fm(er, tand)
-        self.g1 = self.G1(line_width, s_width, thickness)
-        self.g2_line, self.g2_ground = self.G2(self.g1, line_width, s_width, thickness, thickness)
+        self.g1 = self.__G1(line_width, s_width, thickness)
+        self.g2_line, self.g2_ground = self.__G2(self.g1, line_width, s_width, thickness, thickness)
         self.g2_list = [self.g2_ground, self.g2_line]
 
     '''
@@ -42,7 +42,7 @@ class SuperConductingCPWLine(AbstractSCTL):
     
     '''
 
-    def G2(self, g1, width, ground_spacing, thickness, thickness_sc):
+    def __G2(self, g1, width, ground_spacing, thickness, thickness_sc):
         a = width / 2
 
         b = (width + 2 * ground_spacing) / 2
@@ -73,7 +73,7 @@ class SuperConductingCPWLine(AbstractSCTL):
 
         return [G2_central_line, G2_ground_surface]
 
-    def G1(self, width, ground_spacing, thickness_sc):
+    def __G1(self, width, ground_spacing, thickness_sc):
         a = width / 2
         b = (width + 2 * ground_spacing) / 2
 

@@ -36,7 +36,7 @@ from utills.functions import sech, coth
 #         # calc dialectic constant
 #         self.epsilon_fm = self.epsilon_effst(self.epsilon_r, self.width, self.height, self.thickness)
 #
-#     # ----------  schneider   t = 0  ----------
+#     # ----------  schneider   thickness = 0  ----------
 #     def Fs(self, w, h):
 #
 #         return cmath.sqrt(1 + (10 * (h / w)))
@@ -56,25 +56,25 @@ from utills.functions import sech, coth
 #
 #     # ----------  schneider   thickness > 0  ----------
 #
-#     def epsilon_effst(self, epsilon_r, w, h, t):
+#     def epsilon_effst(self, epsilon_r, w, h, thickness):
 #
 #         # return ((epsilon_r+1)/2) + ((epsilon_r-1)/2)*(1/(math.sqrt(1+12*(h/w))))
 #
 #         u = w / h
 #         if u <= (1 / PI2):
-#             delta_w = (t / PI) * (1 + math.log((PI4 * w) / t))
+#             delta_w = (thickness / PI) * (1 + math.log((PI4 * w) / thickness))
 #         else:
-#             delta_w = (t / PI) * (1 + math.log((2 * h) / t))
+#             delta_w = (thickness / PI) * (1 + math.log((2 * h) / thickness))
 #
 #         return self.epsilon_effs(epsilon_r, w + delta_w, h)
 #
-#     def zmsst(self, epsilon_r, w, h, t):
+#     def zmsst(self, epsilon_r, w, h, thickness):
 #         u = w / h
 #
 #         if u <= (1 / PI2):
-#             delta_w = (t / PI) * (1 + math.log((PI4 * w) / t))
+#             delta_w = (thickness / PI) * (1 + math.log((PI4 * w) / thickness))
 #         else:
-#             delta_w = (t / PI) * (1 + math.log((2 * h) / t))
+#             delta_w = (thickness / PI) * (1 + math.log((2 * h) / thickness))
 #
 #         return self.zmss(epsilon_r, w + delta_w, h)
 #
@@ -103,30 +103,30 @@ from utills.functions import sech, coth
 #
 #     # ----------  Hammerstad   thickness > 0  ----------
 #
-#     def delta_wr(self, epsilon_r, w, h, t):
-#         return (self.delta_w1(w, h, t) * (1 + sech(math.sqrt(epsilon_r - 1)))) / 2
+#     def delta_wr(self, epsilon_r, w, h, thickness):
+#         return (self.delta_w1(w, h, thickness) * (1 + sech(math.sqrt(epsilon_r - 1)))) / 2
 #
-#     def delta_w1(self, w, h, t):
+#     def delta_w1(self, w, h, thickness):
 #         u = w / h
-#         th = t / h
+#         th = thickness / h
 #
 #         upper = 4 * math.e
 #         lower = th * pow(coth(math.sqrt(6.517 * u)), 2)
 #
-#         return (t / PI) * math.log(1 + (upper / lower))
+#         return (thickness / PI) * math.log(1 + (upper / lower))
 #
-#     def epsilon_effht(self, epsilon_r, w, h, t):
-#         w1 = w + self.delta_w1(w, h, t)
-#         wr = w + self.delta_wr(epsilon_r, w, h, t)
+#     def epsilon_effht(self, epsilon_r, w, h, thickness):
+#         w1 = w + self.delta_w1(w, h, thickness)
+#         wr = w + self.delta_wr(epsilon_r, w, h, thickness)
 #
 #         zl1_up = self.ZL1(w1, h)
 #         zl1_low = self.ZL1(wr, h)
 #         return self.epsilon_effh(epsilon_r, wr, h) * pow(zl1_up / zl1_low, 2)
 #
-#     def Zmsht(self, epsilon_r, w, h, t):
-#         wr = w + self.delta_wr(epsilon_r, w, h, t)
+#     def Zmsht(self, epsilon_r, w, h, thickness):
+#         wr = w + self.delta_wr(epsilon_r, w, h, thickness)
 #         upper = self.ZL1(wr, h)
-#         lower = math.sqrt(self.epsilon_effht(epsilon_r, wr, h, t))
+#         lower = math.sqrt(self.epsilon_effht(epsilon_r, wr, h, thickness))
 #
 #         return upper / lower
 #
@@ -137,11 +137,11 @@ from utills.functions import sech, coth
 #         # AND sigma_N is 1/ Pn
 #         return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma * delta_o))
 #
-#     def z_slow(self, f, yO, t):
+#     def z_slow(self, f, yO, thickness):
 #         return 1j * PI2 * f * MU_0 * yO
 #
-#     def Lambda(self, zs, f, t):
-#         return (zs / (PI2 * f * MU_0)).imag
+#     def Lambda(self, surface_impedance, f, thickness):
+#         return (surface_impedance / (PI2 * f * MU_0)).imag
 #
 #     """
 #
@@ -182,8 +182,8 @@ from utills.functions import sech, coth
 #             1 / sqrtP))
 #
 #     # checked
-#     def b(self, h, t):
-#         return 1 + (t / h)
+#     def b(self, h, thickness):
+#         return 1 + (thickness / h)
 #
 #     # checked
 #     def p(self, b):
@@ -203,13 +203,13 @@ from utills.functions import sech, coth
 #         return max(eta, p)
 #
 #     # checked
-#     def Kl(self, w, h, t):
-#         return self.Chi(w, h, t) / self.Kf(w, h, t)
+#     def Kl(self, w, h, thickness):
+#         return self.Chi(w, h, thickness) / self.Kf(w, h, thickness)
 #
 #     # checkd
-#     def Kf(self, w, h, t):
+#     def Kf(self, w, h, thickness):
 #
-#         bc = self.b(h, t)
+#         bc = self.b(h, thickness)
 #
 #         pc = self.p(bc)
 #
@@ -251,8 +251,8 @@ from utills.functions import sech, coth
 #         return (ra + 1) * (ra + p)
 #
 #     # checked
-#     def Chi(self, w, h, t):
-#         bc = self.b(h, t)
+#     def Chi(self, w, h, thickness):
+#         bc = self.b(h, thickness)
 #         pc = self.p(bc)
 #         rac = self.ra(w, h, pc)
 #         EtaC = self.Eta(w, h, pc)
@@ -275,51 +275,51 @@ from utills.functions import sech, coth
 #     # An important expression for calculating impedance and complex propagation constant
 #     # defined in this way mainly to calculate tan_Delta from Alpha
 #     # checked
-#     def X(self, zs, f, w, h, ts):
+#     def X(self, surface_impedance, f, w, h, ts):
 #
 #         ChiC = self.Chi(w, h, ts)
 #         ko = (PI2 * f) / C
-#         return (2 * ChiC * zs) / (ko * Z0 * h)
+#         return (2 * ChiC * surface_impedance) / (ko * Z0 * h)
 #
 #     # Superconducting impedance of the microstrip
 #     # Note that in this version I have used the suface impedance as parameter
 #     # Surface impedance can be determined with functions Zs and Zslow
 #     # zt is the fucntion to determine the PCE microstip impedance
 #     # checkd
-#     def ZSy(self, zt, zs, f, epsilon_r, w, H, ts):
+#     def ZSy(self, zt, surface_impedance, f, epsilon_r, w, H, ts):
 #         zmst = zt(epsilon_r, w, H, ts)
-#         return zmst * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
+#         return zmst * (cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).real
 #
 #     # Superconducting wavenumber Beta_S / ko
 #     # It requires the model for the PCE stripline
 #     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
 #     # checked
-#     def beta_Soy(self, est, zs, f, epsilon_r, w, H, ts):
+#     def beta_Soy(self, est, surface_impedance, f, epsilon_r, w, H, ts):
 #         epsilon_fm = est(epsilon_r, w, H, ts)
-#         return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
+#         return cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).real
 #
 #     # Superconducting attenuation Alpha_S ko
 #     # It requires the model for the PCE stripline
 #     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
 #     # checked
-#     def aplha_Sy(self, est, zs, f, epsilon_r, w, H, ts):
+#     def aplha_Sy(self, est, surface_impedance, f, epsilon_r, w, H, ts):
 #         epsilon_fm = est(epsilon_r, w, H, ts)
-#         return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
+#         return - cmath.sqrt(epsilon_fm) * (cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).imag
 #
 #     # Fraction of kinetic inductance
 #     # checked
-#     def apha_ky(self, zs, f, w, H, ts):
-#         CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
+#     def apha_ky(self, surface_impedance, f, w, H, ts):
+#         CF = (cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).real
 #         return 1 - (1 / CF ** 2)
 #
-#     def I_star(self, zs, f, w, H, ts):
-#         return self.ic / math.sqrt(self.apha_ky(zs, f, w, H, ts))
+#     def I_star(self, surface_impedance, f, w, H, ts):
+#         return self.ic / math.sqrt(self.apha_ky(surface_impedance, f, w, H, ts))
 #
 #     # Phase velocity respect to vo = C
 #     # checked
-#     def vSy(self, est, zs, f, epsilon_r, w, H, ts):
+#     def vSy(self, est, surface_impedance, f, epsilon_r, w, H, ts):
 #         epsilon_fm = est(epsilon_r, w, H, ts)
-#         CF = (cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
+#         CF = (cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).real
 #         return 1 / (math.sqrt(epsilon_fm) * CF)
 #
 #     # Including losses
@@ -328,33 +328,33 @@ from utills.functions import sech, coth
 #     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
 #     # checked
 #
-#     def Beta_Syloss(self, est, zs, f, epsilon_r, tan_d, w, H, ts):
+#     def Beta_Syloss(self, est, surface_impedance, f, epsilon_r, tan_d, w, H, ts):
 #         epsilon_fm = est(epsilon_r, w, H, ts)
 #
 #         epsilon_t = epsilon_fm - 1j * epsilon_r * tan_d
 #
-#         return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).real
+#         return (cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).real
 #
 #     # Attenuation AlphaS / ko due to superconducting strip (negligible) and dielectric
 #     # It requires the model for the PCE stripline
 #     # Schneider --> Epsilon_effst, Hammerstad --> Epsilon_effht
 #
 #     # checked
-#     def AlphaSyloss(self, est, zs, f, epsilon_r, tan_d, w, H, ts):
+#     def AlphaSyloss(self, est, surface_impedance, f, epsilon_r, tan_d, w, H, ts):
 #         epsilon_fm = est(epsilon_r, w, H, ts)
 #
 #         epsilon_t = epsilon_fm - 1j * epsilon_r * tan_d
 #
-#         return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(zs, f, w, H, ts))).imag
+#         return -(cmath.sqrt(epsilon_t) * cmath.sqrt(1 - 1j * self.X(surface_impedance, f, w, H, ts))).imag
 #
 #     # ------------------  OUTPUTS ------------------
 #
 #     # todo should we swap these to JAVIER paper Geometrical factors
-#     def G1(self, w, h, t):
-#         return h / (w * self.Kf(w, h, t))
+#     def G1(self, w, h, thickness):
+#         return h / (w * self.Kf(w, h, thickness))
 #
-#     def G2(self, w, h, t):
-#         return self.Kl(w, h, t) / w
+#     def G2(self, w, h, thickness):
+#         return self.Kl(w, h, thickness) / w
 #
 #     """
 #     series impedance of alpha_plt TEM transmission_plt line
@@ -407,10 +407,10 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         self.tan_delta = tan_delta
 
         # calc geometric factors
-        self.g1 = self.G1(self.sc_width, self.sc_height, self.sc_thickness)
-        self.g2 = self.G2(self.sc_width, self.sc_height, self.sc_thickness, self.g1)
+        self.g1 = self.__G1(self.sc_width, self.sc_height, self.sc_thickness)
+        self.g2 = self.__G2(self.sc_width, self.sc_height, self.sc_thickness, self.g1)
 
-    def G1(self, sc_width, sc_height, sc_thickness):
+    def __G1(self, sc_width, sc_height, sc_thickness):
         b = 1 + (sc_thickness / sc_height)
         p = 2 * (b ** 2) - 1 + (2 * b) * cmath.sqrt((b ** 2) - 1)
 
@@ -433,7 +433,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         return (PI / 2) * (1 / (cmath.log((2 * rb) / ra)))
 
-    def G2(self, sc_width, sc_height, sc_thickness, g1):
+    def __G2(self, sc_width, sc_height, sc_thickness, g1):
         b = 1 + (sc_thickness / sc_height)
         p = 2 * (b ** 2) - 1 + (2 * b) * cmath.sqrt((b ** 2) - 1)
 

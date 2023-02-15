@@ -6,8 +6,12 @@ from transmission_line_models.cpw.super_conducting_cpw_model import SuperConduct
 from transmission_line_models.micro_strip.super_conducting_micro_strip_model import SuperConductingMicroStripModel
 from utills.constants import MICRO_STRIP_TYPE, CPW_TYPE
 
+"""
+this function makes a line model from the gui and returns a floquet line of the model type
 
-# takes a line model from ...
+"""
+
+
 # todo refactor and document all
 
 def floquet_line_builder(line_model):
@@ -42,7 +46,6 @@ def floquet_line_builder(line_model):
                                                   inputs.crit_current)
         return floquet_line
 
-
     elif model_type == CPW_TYPE:
         inputs = CPWInputs(json_inputs)
 
@@ -61,9 +64,6 @@ def floquet_line_builder(line_model):
                                                   inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
                                                   inputs.crit_current)
         return floquet_line
-
-
-
 
     else:
         raise NotImplementedError(f"\"{line_model.type}\" not implemented")

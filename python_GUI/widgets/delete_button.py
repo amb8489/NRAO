@@ -10,6 +10,8 @@ class DeleteButton(QtWidgets.QWidget):
         self.setLayout(QVBoxLayout())
 
         self.load_button = QPushButton("DELETE", self)
+        # todo make color red
+        # todo add an are you sure popup
 
         self.setting = setting
         self.load_button.clicked.connect(lambda: on_delete_function(setting.setting_row_idx))
@@ -23,4 +25,3 @@ class DeleteButton(QtWidgets.QWidget):
         palette.setColor(QPalette.Window, QColor(hex_color))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
-

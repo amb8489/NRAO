@@ -176,6 +176,6 @@ class SuperConductivity():
     Zs - surface impedance           
     """
 
-    def Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
+    def surface_impedance_Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
         return cmath.sqrt(self.__jPI2MU_0 * frequency / conductivity) * ccoth(
             cmath.sqrt(self.__jPI2MU_0 * frequency * conductivity) * sc_film_thickness)

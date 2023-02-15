@@ -33,7 +33,7 @@ def simulate(line_model):
         # LL.append(L)
         # GG.append(G)
         # CC.append(C)
-        # transmission_plt.append(t)
+        # transmission_plt.append(thickness)
         cl_beta.append(betaCL)
         cl_alpha.append(alphaCl)
         beta_plt.append(beta)
@@ -63,7 +63,7 @@ def simulate(line_model):
     ax1.set_ylabel('alpha - alpha0', color='tab:blue')
 
 
-    ax1.plot(FRange, np.array(alpha_plt), color='tab:blue')
+    ax1.plot(FRange, np.array(alpha_plt) - np.array(cl_alpha) , color='tab:blue')
 
     ax1.tick_params(axis='y', labelcolor='tab:blue')
     ax1.set_xlabel('Frequency [GHz]')

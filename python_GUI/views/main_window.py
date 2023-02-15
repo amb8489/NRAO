@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
 
         self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
 
-        self.button_save_settings = QPushButton(text='SAVE NEW SETTINGS', objectName='SAVE_BUTTON',
+        self.button_save_settings = QPushButton(text='SAVE NEW SETTING', objectName='SAVE_BUTTON',
                                                 clicked=self.showSaveWindow)
         self.ButtonLayout.addWidget(self.button_save_settings, 1, 0)
 
@@ -84,12 +84,11 @@ class MainWindow(QMainWindow):
                                                 clicked=self.showLoadWindow)
         self.ButtonLayout.addWidget(self.button_load_settings, 1, 1)
 
-        self.testButton = QPushButton(text='print inputs', objectName='TEST_BUTTON', clicked=self.print_inputs)
+        self.testButton = QPushButton(text='test', objectName='TEST_BUTTON', clicked=self.print_inputs)
         self.ButtonLayout.addWidget(self.testButton, 1, 2)
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
-        # self.ButtonLayoutWidget.setFixedHeight(100)
-        # self.ButtonLayoutWidget.setFixedWidth(self.widnow_width)
+
 
         palette = self.ButtonLayoutWidget.palette()
         palette.setColor(QPalette.Window, QColor(BASE_COLOR))
