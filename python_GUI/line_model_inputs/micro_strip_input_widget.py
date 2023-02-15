@@ -1,12 +1,11 @@
 from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtGui import QPalette, QColor, QFont, Qt
-from PySide6.QtWidgets import QGridLayout, QLabel, QSizePolicy, QPushButton
+from PySide6.QtGui import QPalette, QColor, QFont
+from PySide6.QtWidgets import QGridLayout, QLabel
 
 from python_gui.utills.utills_gui import unit_cell_length, central_line_width, D0, BASE_COLOR
 from python_gui.widgets.floquet_line_dimensions_input_widget import WidgetFLineDimensionsInputs
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
-from python_gui.widgets.material_selector_widget import WidgetMaterialsSelect
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
 from utills.constants import MICRO_STRIP_TYPE
 
@@ -27,14 +26,8 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         #                                                  clicked=self.toggel_materials_table)
         # self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
 
-        self.title = QLabel("settings: ")
+        self.title = QLabel("")
         self.title.setMaximumHeight(40)
-        palette = self.title.palette()
-        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
-        self.title.setPalette(palette)
-        self.title.setAutoFillBackground(True)
-        self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.title.setAlignment(Qt.AlignCenter)
         self.title.setFont(QFont('Arial', 28))
         self.layout().addWidget(self.title)
 
@@ -89,7 +82,7 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
             self.toggel_materials_table_button.setText("Hide Materials Table")
 
     def set_setting(self, setting):
-        self.title.setText(f"setting: {setting.name}")
+        self.title.setText(f"Current setting: {setting.name}")
 
     def set_values(self, input):
         self.SCW.setValues(input["SC"])

@@ -16,22 +16,16 @@ CPW MODEL FOR TRANSMISSION LINE
 
 class SuperConductingCPWLine(AbstractSCTL):
 
-    def __init__(self, line_width:float, s_width:float, thickness:float, er:float, tand:float):
+    def __init__(self, line_width: float, s_width: float, thickness: float, er: float, tand: float):
         self.ncpw = 2
 
-        self.eta_free_c = self.eta_free(er, line_width, s_width)
         self.s_width = s_width
         self.thickness = thickness
         self.line_width = line_width
         self.er = er
-        self.sqrtlgcg = math.sqrt(self.Lg(line_width, s_width) * self.Cg(er, line_width, s_width))
-
         self.efm = self.epsilon_fm(er, tand)
-
         self.g1 = self.G1(line_width, s_width, thickness)
-
         self.g2_line, self.g2_ground = self.G2(self.g1, line_width, s_width, thickness, thickness)
-
         self.g2_list = [self.g2_ground, self.g2_line]
 
     '''

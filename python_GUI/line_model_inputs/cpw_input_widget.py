@@ -28,14 +28,8 @@ class CPWInputsWidget(QtWidgets.QWidget):
         # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
         # settings title
-        self.title = QLabel("settings: ")
+        self.title = QLabel("")
         self.title.setMaximumHeight(40)
-        palette = self.title.palette()
-        palette.setColor(QPalette.Window, QColor("#FFFFFF"))
-        self.title.setPalette(palette)
-        self.title.setAutoFillBackground(True)
-        self.title.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.title.setAlignment(Qt.AlignCenter)
         self.title.setFont(QFont('Arial', 28))
         self.layout().addWidget(self.title)
 
@@ -91,7 +85,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
         self.WidgetGainInputs.setValues(input["gain_models"])
 
     def set_setting(self, setting):
-        self.title.setText(f"setting: {setting.name}")
+        self.title.setText(f"Current setting: {setting.name}")
 
     def toggel_materials_table(self):
         if self.materials_table.isVisible():
