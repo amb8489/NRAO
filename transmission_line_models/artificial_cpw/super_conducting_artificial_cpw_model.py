@@ -16,30 +16,27 @@ CPW MODEL FOR TRANSMISSION LINE
 
 class SuperConductingArtificialCPWLine(AbstractSCTL):
 
-    def __init__(self, finger_width, finger_length, finger_spacing, central_line_width, number_of_fingers,
-                 ground_spacing, epsilon_r, thickness, height):
-        self.finger_width = finger_width
-        self.finger_length = finger_length
-        self.finger_spacing = finger_spacing
-        self.central_line_width = central_line_width
+    def __init__(self, central_line_width_WH, finger_width_WL, S, LH, number_of_fingers, epsilon_r, thickness, height):
         self.number_of_fingers = number_of_fingers
-        self.ground_spacing = ground_spacing
+        self.finger_width_WL = finger_width_WL
+        self.finger_D_len = ...
+
+        self.S = S
+
+        self.LH = LH
+        self.central_line_width_WH = central_line_width_WH
+
+        self.Lu = ...
+
         self.epsilon_r = epsilon_r
 
-        sg = ...
-        s1 = ...
-        gg = ...
-        gendg = ...
-
-        self.capacitance = self.calc_capacitance(number_of_fingers, self.epsilon_r, sg, s1, gg, gendg, height,
-                                                 finger_length, thickness)
+        self.capacitance = self.calc_capacitance()
 
     def __L_aprox(self, Zo, beta_so, l):
         return (Zo * beta_so * l) / C
 
     def __clac_L1(self, length, wL, wH, sM, s, t):
         # calculation of LL
-
         LL_characteristic_impedance_sc_cpw = zwt(wL, s, t)
         LL_propagation_const_sc_cpw = gamma_wt(wL, s, t)
         LL = self.__L_aprox(LL_characteristic_impedance_sc_cpw, LL_propagation_const_sc_cpw, length)

@@ -73,14 +73,14 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
                 "gain_models": self.WidgetGainInputs.getValues()
                 }
 
-    def toggel_materials_table(self):
-        if self.materials_table.isVisible():
-            self.materials_table.hide()
-            self.toggel_materials_table_button.setText("Show Materials Table")
-
-        else:
-            self.materials_table.show()
-            self.toggel_materials_table_button.setText("Hide Materials Table")
+    # def toggel_materials_table(self):
+    #     if self.materials_table.isVisible():
+    #         self.materials_table.hide()
+    #         self.toggel_materials_table_button.setText("Show Materials Table")
+    #
+    #     else:
+    #         self.materials_table.show()
+    #         self.toggel_materials_table_button.setText("Hide Materials Table")
 
     def set_setting(self, setting: GUI_setting):
         self.title.setText(f"Current setting: {setting.name}")

@@ -5,6 +5,22 @@ from scipy.special import ellipk
 from utills.constants import epsilon_0
 
 
+
+'''
+
+
+this line is basically a floquet line 
+
+and the main floquet line built with this line is just a floquet line made from floquet lines 
+
+
+
+
+
+
+'''
+
+
 def __kp(k):
     return math.sqrt(1 - k ** 2)
 

@@ -94,7 +94,8 @@ class SuperConductingFloquetLine():
         conductivity = self.super_conductivity_model.conductivity(frequency)
 
         # 2) calculate Zs for given frequency, conductivity ,line thickness
-        surface_impedance = self.super_conductivity_model.surface_impedance_Zs(frequency, conductivity, self.unit_cell.thickness)
+        surface_impedance = self.super_conductivity_model.surface_impedance_Zs(frequency, conductivity,
+                                                                               self.unit_cell.thickness)
 
         # 5) get unit cell ABCD -- steps 3 - 4 inside get_unit_cell_ABCD_mat()
         unit_cell_abcd_mat = self.unit_cell.get_unit_cell_ABCD_mat(frequency, surface_impedance)
