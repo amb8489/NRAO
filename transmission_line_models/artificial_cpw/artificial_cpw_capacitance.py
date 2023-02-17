@@ -4,8 +4,6 @@ from scipy.special import ellipk
 
 from utills.constants import epsilon_0
 
-
-
 '''
 
 
@@ -76,13 +74,14 @@ def __CapacitanceModel1(n, ep_r, sg, s1, gg, gendg, h, l, t):
     C2 = 2 * epsilon_0 * Ep_e1 * __KKp(k01) * Lext
 
     # Final result
+    Ctot = ((n - 3) * C1 + n * C2 + C3)
 
-    return ((n - 3) * C1 + n * C2 + C3) / (n - 1)
+    return Ctot / (n - 1)
 
 
-def capacitance_model_selector(model: int, n, epsilon_r, sg, s1, gg, gendg, h, l, thickness=0):
-    match model:
+def capacitance_model_selector(n, er, sg, s1, gg, g_end_g, h, l, t, model_type=1):
+    match model_type:
         case 1:
-            return __CapacitanceModel1(n, epsilon_r, sg, s1, gg, gendg, h, l, thickness)
+            return __CapacitanceModel1(n, er, sg, s1, gg, g_end_g, h, l, t)
         case default:
             raise NotImplementedError(f"capacitance model {default} not implemented")

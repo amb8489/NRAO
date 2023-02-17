@@ -90,6 +90,7 @@ class SuperConductingFloquetLine():
         # frequency cant be too low
         frequency = max(frequency, 1e7)
 
+        # todo move the conductivity model into the line model
         # 1) calculate Zs
         conductivity = self.super_conductivity_model.conductivity(frequency)
 

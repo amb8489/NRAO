@@ -59,7 +59,7 @@ def Zcpwsc(Lkc, Lg, Cg):
     return np.sqrt(Ltot / Cg)
 
 
-def zwt(w, s, tss):
+def charateristic_impedance_wt(w, s, tss):
     Lkc = LkCPW(Lk(lambda0, w, tss), w, s, tss)
     Lg_ = Lg(w, s)
     Cg_ = Cg(epsilon_r, w, s)
