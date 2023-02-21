@@ -9,11 +9,13 @@ from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt, QItemSelection, QItemSelectionModel
 
 
-class TableModel(QtCore.QAbstractTableModel):
+class TableModel1(QtCore.QAbstractTableModel):
 
-    def __init__(self, data, colNames, onChange=None):
-        super(TableModel, self).__init__()
+    def __init__(self, data, colNames, onChange=None, row_name=""):
+        super(TableModel1, self).__init__()
         self._data = data
+
+        self._row_name = row_name
 
         self.colNames = colNames
 
@@ -54,7 +56,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             if orientation == Qt.Vertical:
-                return str(f"Load {section + 1}")
+                return str(f"{self._row_name} {section + 1}")
 
             if orientation == Qt.Horizontal:
                 return self.colNames[section]
@@ -99,7 +101,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 class TableInputWidget(QtWidgets.QWidget):
 
-    def __init__(self, colName, onChange=None):
+    def __init__(self, colName, onChange=None, row_name=""):
         super().__init__()
         self.setLayout(QVBoxLayout())
 
@@ -120,7 +122,7 @@ class TableInputWidget(QtWidgets.QWidget):
         defualt_n_loads = 2
         data = [[10] * len(colName) for i in range(defualt_n_loads)]
 
-        self.model = TableModel(data, colName, self.onChange)
+        self.model = TableModel1(data, colName, self.onChange, row_name)
         self.table.setModel(self.model)
 
         self.layout().addWidget(self.table)

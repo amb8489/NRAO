@@ -27,7 +27,7 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.inputnames = [start_frequency,end_frequency,resolution]
         for j in range(len(self.inputnames)):
             input_widget = WidgetDoubleInput(self.inputnames[j].get_name(),unit_type=self.inputnames[j].get_unit(),color=FREQ_WIDGET_COLOR)
-            self.layout().addWidget(input_widget, 1, j)
+            self.layout().addWidget(input_widget, 1+(j//2), j%2)
             self.inputs.append(input_widget)
 
         # set widget color

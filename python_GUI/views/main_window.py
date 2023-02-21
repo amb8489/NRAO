@@ -1,6 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.line_model_inputs.artificial_cpw_input_widget import ArtificialCPIInputsWidget
 from python_gui.line_model_inputs.cpw_input_widget import CPWInputsWidget
 from python_gui.line_model_inputs.micro_strip_input_widget import MicroStripInputsWidget
 from python_gui.line_model_inputs.s_matrix_input_widget import SMatrixInputsWidget
@@ -27,15 +28,12 @@ from PySide6.QtWidgets import QPushButton, QVBoxLayout, QWidget
 # {} style
 
 
-
 def gen(n):
     for i in range(n):
         yield i
+
+
 n = 10
-
-
-
-
 
 
 class MainWindow(QMainWindow):
@@ -43,11 +41,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-
-
         self.iter = gen(10)
-
-
 
         self.widnow_width = 600
         self.showWidget = False
@@ -71,7 +65,7 @@ class MainWindow(QMainWindow):
         self.ButtonLayout.addWidget(self.button_plot, 0, 1)
 
         self.modelSelector = QComboBox()
-        self.modelSelector.addItems(['Micro Strip', 'Coplanar Waveguide', 'S Matrix File'])
+        self.modelSelector.addItems(['Micro Strip', 'CPW', 'Artificial CPW', 'S Matrix File'])
         self.modelSelector.currentTextChanged.connect(self.model_changed)
 
         self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
@@ -88,7 +82,6 @@ class MainWindow(QMainWindow):
         self.ButtonLayout.addWidget(self.testButton, 1, 2)
 
         self.ButtonLayoutWidget.setLayout(self.ButtonLayout)
-
 
         palette = self.ButtonLayoutWidget.palette()
         palette.setColor(QPalette.Window, QColor(BASE_COLOR))
@@ -114,16 +107,20 @@ class MainWindow(QMainWindow):
         # ---------------------------------- input models
         self.Micro_strip_inputs_widget = MicroStripInputsWidget()
         self.CPW_inputs_widget = CPWInputsWidget()
+        self.Atrifical_CPW_inputs_widget = ArtificialCPIInputsWidget()
         self.S_matrix_inputs_widget = SMatrixInputsWidget()
 
         self.Micro_strip_inputs_widget.setFixedWidth(1250)
         self.Mainlayout.addWidget(self.Micro_strip_inputs_widget)
         self.Mainlayout.addWidget(self.CPW_inputs_widget)
+        self.Mainlayout.addWidget(self.Atrifical_CPW_inputs_widget)
+
         self.Mainlayout.addWidget(self.S_matrix_inputs_widget)
 
         self.line_model = self.Micro_strip_inputs_widget
         self.line_models = {'Micro Strip': self.Micro_strip_inputs_widget,
-                            'Coplanar Waveguide': self.CPW_inputs_widget,
+                            'CPW': self.CPW_inputs_widget,
+                            'Artificial CPW': self.Atrifical_CPW_inputs_widget,
                             'S Matrix File': self.S_matrix_inputs_widget}
         self.init()
 
@@ -152,6 +149,7 @@ class MainWindow(QMainWindow):
     def init(self):
         self.Mainlayout.insertStretch(-1, 1)
 
+        # start off with micro strip model showing
         self.showModel(self.Micro_strip_inputs_widget)
 
         self.setWindowTitle("TKIPA DESIGN TOOL")
@@ -169,11 +167,10 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    def srow(self):
-        print(self.line_model.materials_table.getFirstSelectedRow())
+
 
     def print_inputs(self):
-        print(next(self.iter))
+        print(self.line_model.get_inputs())
 
     def show_plot_window(self):
 

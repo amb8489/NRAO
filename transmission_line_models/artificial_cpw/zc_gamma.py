@@ -1,13 +1,11 @@
 import numpy as np
 import scipy.special as sp
 
-from utills.constants import C
+from utills.constants import C, MU_0, epsilon_0
 
-epsilon_r = ...
-lambda0 = ...
 c = C
-mu_0 = ...
-epsilon_0 = ...
+mu_0 = MU_0
+lambda0 = 1
 
 
 def Cg(epsilon_r, w, s):
@@ -59,14 +57,14 @@ def Zcpwsc(Lkc, Lg, Cg):
     return np.sqrt(Ltot / Cg)
 
 
-def charateristic_impedance_wt(w, s, tss):
+def charateristic_impedance_wt(epsilon_r,w, s, tss):
     Lkc = LkCPW(Lk(lambda0, w, tss), w, s, tss)
     Lg_ = Lg(w, s)
     Cg_ = Cg(epsilon_r, w, s)
     return Zcpwsc(Lkc, Lg_, Cg_)
 
 
-def gamma_wt(w, s, tss):
+def gamma_wt(epsilon_r,w, s, tss):
     Lkc = LkCPW(Lk(lambda0, w, tss), w, s, tss)
     Lg_ = Lg(w, s)
     Cg_ = Cg(epsilon_r, w, s)

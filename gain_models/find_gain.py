@@ -31,8 +31,8 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
 
     # step 3) calc beta_plt for all idler freqencys
     # todo (pump_freq*2) - FreqRange may need to be reversed
-    beta_idler = beta_signal[np.searchsorted(frequencys, np.flip((pump_freq * 2) - frequencys))]
-    # beta_idler = beta_signal[np.searchsorted(frequencys, (pump_freq * 2) - frequencys)]
+    # beta_idler = beta_signal[np.searchsorted(frequencys, np.flip((pump_freq * 2) - frequencys))]
+    beta_idler = beta_signal[np.searchsorted(frequencys, (pump_freq * 2) - frequencys)]
 
 
     # step 4) calc gain for each frequency using betas calced above and other init vars

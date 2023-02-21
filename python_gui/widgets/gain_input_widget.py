@@ -27,7 +27,7 @@ class WidgetGainInputs(QtWidgets.QWidget):
         self.inputs = []
         for j in range(len(self.inputnames)):
             input_widget = WidgetDoubleInput(self.inputnames[j].get_name(), unit_type=self.inputnames[j].get_unit(),color = GAIN_WIDGET_COLOR)
-            self.layout().addWidget(input_widget, 1, j, Qt.AlignTop)
+            self.layout().addWidget(input_widget, 1+(j//2), j%2, Qt.AlignTop)
             self.inputs.append(input_widget)
 
         # set widget color

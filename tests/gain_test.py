@@ -10,7 +10,7 @@ from transmission_line_models.cpw.super_conducting_cpw_model import SuperConduct
 
 if __name__ == "__main__":
 
-    json_inputs = {'gain_models': {'Signal Amplitude': 0.0000001, 'Idler Amplitude': 0.0000001, 'Pump Amplitude': 0.0000001, 'Pump Frequency': 11.61},'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 300.0, 'Super Conductor Operation Temperature': 0.0, 'Super Conductor Critical Temperature': 14.7, 'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0, 'Super Conductor Tangent Delta': 1.48351e-05}, 'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734, 'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0}, 'Frequency Range': {'Start Frequency': 1.0, 'End Frequency': 25.0, 'Resolution': 1000.0}}
+    json_inputs = {'gain_models': {'Signal Amplitude': .300, 'Idler Amplitude': .30, 'Pump Amplitude': 1000000, 'Pump Frequency': 11.61},'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 300.0, 'Super Conductor Operation Temperature': 0.0, 'Super Conductor Critical Temperature': 14.7, 'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0, 'Super Conductor Tangent Delta': 1.48351e-05}, 'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734, 'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0}, 'Frequency Range': {'Start Frequency': 1.0, 'End Frequency': 25.0, 'Resolution': 1000.0}}
     inputs = CPWInputs(json_inputs)
     super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
     Central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     """
 
     start_time = time.time()
-    L = 500  # todo where does L comefrom in mathimatica
+    L = 500
     f_range, gain = Calc_Gain(floquet_line, inputs.resoultion, inputs.pump_freq, inputs.init_amplitudes, L)
     print("time to calc gains:", (time.time() - start_time))
     plt.plot(f_range, gain)

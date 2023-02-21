@@ -3,6 +3,7 @@ import math
 from scipy.special import ellipk
 
 from utills.constants import epsilon_0
+from utills.functions import printDb
 
 '''
 
@@ -32,13 +33,19 @@ def __KpK(k):
 
 
 def __CapacitanceModel1(n, ep_r, sg, s1, gg, gendg, h, l, t):
+
+
+
+    print("__CapacitanceModel1",n, ep_r, sg, s1, gg, gendg, h, l, t )
+
     delta_s = 0 if t == 0 else (t / (2 * math.pi * ep_r)) * (1 + math.log((8 * math.pi * sg) / t))
     s = sg + delta_s
     g = gg - delta_s
     gend = 2 * gendg
 
     # Calculating capacitance
-    k01 = math.sqrt(1 - ((g) / (g + s)) ** 2)
+
+    k01 = math.sqrt(1 - ((g / (g + s)) ** 2))
 
     k11 = math.sqrt(1 - ((math.sinh((math.pi * g) / (2 * h))) ** 2 / (math.sinh((math.pi * (s + g)) / (2 * h))) ** 2))
 
@@ -80,6 +87,7 @@ def __CapacitanceModel1(n, ep_r, sg, s1, gg, gendg, h, l, t):
 
 
 def capacitance_model_selector(n, er, sg, s1, gg, g_end_g, h, l, t, model_type=1):
+    printDb("artificial capacitance model chosen: ", model_type)
     match model_type:
         case 1:
             return __CapacitanceModel1(n, er, sg, s1, gg, g_end_g, h, l, t)

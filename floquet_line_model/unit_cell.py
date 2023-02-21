@@ -5,7 +5,7 @@ class to represent alpha_plt floquet line
 given:
  -D: the len of unit cell
  -D0: spacing between centers of loads
- -number_of_loads : the number of loads in unit cell
+ -number_of_finger_sections : the number of loads in unit cell
  -in_order_loads_widths: the lengths of each load from left to right in Floquet line
     ex: ===|<---D1--->|=====|<---D2--->|=====|<-D3->|===
 

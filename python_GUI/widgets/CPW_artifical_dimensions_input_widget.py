@@ -1,20 +1,18 @@
 import matplotlib
-import numpy as np
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.utills.utills_gui import randomColorBright, GAIN_WIDGET_COLOR, DIMS_WIDGET_COLOR
-from python_gui.widgets.float_input_widget import WidgetDoubleInput
+from python_gui.utills.utills_gui import DIMS_WIDGET_COLOR
 from python_gui.widgets.table_input_widget import TableInputWidget
 
 matplotlib.use('Qt5Agg')
-from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget, QScrollArea
-from PySide6 import QtWidgets, QtCore
+from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout
+from PySide6 import QtWidgets
 
 
-class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
+class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, column_names, input_names,row_name = "Load", *args, **kwargs):
-        super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
+    def __init__(self, column_names, input_names, row_name="Load", *args, **kwargs):
+        super(WidgetCPWARTDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
 
@@ -28,25 +26,27 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         self.layout().addWidget(self.title, 0, 0)
 
         # materials_table for load widths and lengths inputs
-        self.tableInput = TableInputWidget(column_names,row_name=row_name)
+        self.tableInput = TableInputWidget(column_names, onChange=self.update_line_data, row_name=row_name)
 
-
-        self.layout().addWidget(self.tableInput, 0, 0,2,2, Qt.AlignTop)
-
+        self.layout().addWidget(self.tableInput, 0, 0, 3, 2, Qt.AlignTop)
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
         self.inputnames = input_names
         self.inputs = []
 
-        for i in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit(),color=DIMS_WIDGET_COLOR)
+        self.displays = []
+
+        self.tableInput.getData()
+        for i, row in enumerate(self.tableInput.getData()):
+            Lu = row[1] * 2 + row[3] + row[5]
+            line_len = Lu * row[0]
+            display_widget = QLabel(f"Line {i + 1} length: {line_len} -- Lu: {Lu}")
+
             x = i % 2
             y = i // 2
-            self.layout().addWidget(input_widget, 1+y,x)
-            self.inputs.append(input_widget)
-
-
+            self.layout().addWidget(display_widget, y + 2, x)
+            self.displays.append(display_widget)
 
         # set widget color
         self.setBackGroundColor(DIMS_WIDGET_COLOR)
@@ -69,6 +69,22 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
             values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
 
         return values
+
+    def update_line_data(self):
+
+        for display in self.displays:
+            display.deleteLater()
+        self.displays = []
+
+        for i, row in enumerate(self.tableInput.getData()):
+            Lu = float(row[1]) * 2 + float(row[3]) + float(row[5])
+            line_len = Lu * float(row[0])
+            display_widget = QLabel(f"Line {i + 1} length: {line_len} -- Lu: {Lu}")
+
+            x = i % 2
+            y = i // 2
+            self.layout().addWidget(display_widget, 2 + y, x)
+            self.displays.append(display_widget)
 
     def get_central_line_width(self):
         return self.inputs[1].get_value()

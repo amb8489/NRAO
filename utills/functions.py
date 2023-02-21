@@ -118,3 +118,14 @@ def mult_mats(mats):
     for mat in mats[1:]:
         res = mult_2x2_mat(res, mat)
     return res
+
+
+
+DEBUG_FLAG = 1
+def printDb(*args):
+    if DEBUG_FLAG:
+
+        print("DEBUG: ",*args)
+
+
+
