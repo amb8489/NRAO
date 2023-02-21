@@ -54,8 +54,8 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         lg = ((self.load_width_WL - self.central_line_width_WH) / 2) - self.S
 
-
-        nf = 2*self.nfb+1 # this seems incorrect self.nfb if alread 2*num_loads +1 (why do it again ?)
+        print("lg :",lg)
+        nf = 2*self.nfb+1 # this seems incorrect self.nfb if alread 2*num_loads +1 (why do it again ?) or is my inital input wrong
 
         self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg,thickness,
                                                  model_type=1)
@@ -128,13 +128,16 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         print("delta_z:", delta_z)
 
-        sM = ((self.load_width_WL + self.central_line_width_WH) / 2) + self.S
+        sM = ((self.load_width_WL - self.central_line_width_WH) / 2) + self.S
         print("sM:", sM)
 
         frequency_operation = frequency
 
         omega = PI2 * frequency_operation
         print("omega:", omega)
+
+
+        # good to this point including capacitance model 1
 
         L1 = self.__clac_L1(self.load_length_LL, self.load_width_WL, self.central_line_width_WH,
                             sM, self.S, self.thickness)
