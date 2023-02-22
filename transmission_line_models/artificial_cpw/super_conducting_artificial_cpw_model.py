@@ -1,11 +1,12 @@
 import cmath
+import math
 
 import numpy as np
 
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from transmission_line_models.artificial_cpw.artificial_cpw_capacitance import capacitance_model_selector
-from transmission_line_models.artificial_cpw.zc_gamma import charateristic_impedance_wt, gamma_wt
-from utills.constants import C, PI2
+from transmission_line_models.artificial_cpw.zc_gamma import characteristic_impedance_wt, gamma_wt
+from utills.constants import C, PI2, KB, PI, MU_0, PLANCK_CONST_REDUCEDev
 
 """
 
@@ -14,6 +15,14 @@ CPW MODEL FOR TRANSMISSION LINE
 
 
 """
+
+
+def DELTA_O(sc_crit_temp):
+    return 1.764 * KB * sc_crit_temp
+
+
+def lambda_0(sigma_n, delta_o):
+    return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_n * delta_o))
 
 
 class SuperConductingArtificialCPWLine(AbstractSCTL):
@@ -28,6 +37,8 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
                  epsilon_r: float,
                  thickness: float,
                  height: float,
+                 Tc,
+                 normal_conductivity,
                  total_line_length=None):
         self.central_line_length_LH = central_line_length_LH
         self.central_line_width_WH = central_line_width_WH
@@ -38,9 +49,12 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.epsilon_r = epsilon_r
         self.thickness = thickness
         self.height = height
-        self.nfb = 2 * number_of_finger_sections + 1
+        self.nfb = number_of_finger_sections
         self.Lu = self.central_line_length_LH + S + load_length_LL + S
-        self.total_line_length = self.Lu * number_of_finger_sections
+
+        self.total_line_length = self.Lu * number_of_finger_sections#todo is this nf or nfb
+
+        self.lambda_O = lambda_0(normal_conductivity, DELTA_O(Tc))
 
         if total_line_length:
 
@@ -54,50 +68,46 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         lg = ((self.load_width_WL - self.central_line_width_WH) / 2) - self.S
 
-        print("lg :",lg)
-        nf = 2*self.nfb+1 # this seems incorrect self.nfb if alread 2*num_loads +1 (why do it again ?) or is my inital input wrong
+        print("lg :", lg)
+        nf = 2 * self.nfb + 1
 
-        self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg,thickness,
+        self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg, thickness,
                                                  model_type=1)
 
         print("capacitance:", self.capacitance)
 
     def __L_aprox(self, Zo, beta_so, l):
-        return (Zo * beta_so * l) / C
+        return Zo * beta_so * (l / C)
 
-    def __clac_L1(self, lL: float, wL: float, wH: float, sM: float, s: float, t: float):
-        # calculation of LL
-        LL_characteristic_impedance_sc_cpw = charateristic_impedance_wt(self.epsilon_r, wL, s, t)
-        LL_propagation_const_sc_cpw = gamma_wt(self.epsilon_r, wL, s, t)
-        LL = self.__L_aprox(LL_characteristic_impedance_sc_cpw, LL_propagation_const_sc_cpw, lL)
+    def __clac_L1_L2(self, lH, lL: float, wL: float, wH: float, sM: float, s: float, t: float):
 
-        # calculation of LM we can factor this out to its own function
-        LM_characteristic_impedance_sc_cpw = charateristic_impedance_wt(self.epsilon_r, wH, sM, t)
-        LM_propagation_const_sc_cpw = gamma_wt(self.epsilon_r, wH, sM, t)
-        LM = self.__L_aprox(LM_characteristic_impedance_sc_cpw, LM_propagation_const_sc_cpw, s)
+        # looking for errors in these functions
 
-        return LL + LM
+        zH = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wH, s, t)
+        print("ZH", zH)
+        beta_wtH = gamma_wt(self.lambda_O, self.epsilon_r, wH, s, t)
+        LH = self.__L_aprox(zH, beta_wtH, lH)
 
-    def __clac_L2(self, lH, wH, sM, s, t):
-        # calc of LH
-        LH_characteristic_impedance_sc_cpw = charateristic_impedance_wt(self.epsilon_r, wH, s, t)
-        LH_propagation_const_sc_cpw = gamma_wt(self.epsilon_r, wH, s, t)
-        LH = self.__L_aprox(LH_characteristic_impedance_sc_cpw, LH_propagation_const_sc_cpw, lH)
+        zL = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wL, s, t)
+        beta_wtL = gamma_wt(self.lambda_O, self.epsilon_r, wL, s, t)
+        LL = self.__L_aprox(zL, beta_wtL, lL)
 
-        # calculation of LM we can factor this out to its own function
-        LM_characteristic_impedance_sc_cpw = charateristic_impedance_wt(self.epsilon_r, wH, sM, t)
-        LM_propagation_const_sc_cpw = gamma_wt(self.epsilon_r, wH, sM, t)
-        LM = self.__L_aprox(LM_characteristic_impedance_sc_cpw, LM_propagation_const_sc_cpw, s)
+        zM = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wH, sM, t)
+        beta_wtM = gamma_wt(self.lambda_O, self.epsilon_r, wH, sM, t)
+        LM = self.__L_aprox(zM, beta_wtM, s)
 
-        return LH + LM
+        print("LL: ", LL)
+        print("LM: ", LM)
 
-    # todo check
+        return LL + LM, LH + LM
+
+    # good
     def propagation_constant(self, L1: float, L2: float, capacitance: float, omega: float):
         return 2 * np.arcsinh(
             1 / 2 * cmath.sqrt(-capacitance * omega ** 2 * (-3 + capacitance * L1 * omega ** 2) * (
                     -2 * L1 - L2 + capacitance * L1 * L2 * omega ** 2)))
 
-    # todo check
+    # good
     def characteristic_impedance(self, L1: float, L2: float, capacitance: float, omega: float):
         return (2j * omega * (-1 + capacitance * L1 * omega ** 2) * (
                 -L2 + L1 * (-2 + capacitance * L2 * omega ** 2))) / (
@@ -136,20 +146,19 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         omega = PI2 * frequency_operation
         print("omega:", omega)
 
-
         # good to this point including capacitance model 1
 
-        L1 = self.__clac_L1(self.load_length_LL, self.load_width_WL, self.central_line_width_WH,
-                            sM, self.S, self.thickness)
+        # issue is in __clac_L1 and or in __clac_L2
+
+        L1, L2 = self.__clac_L1_L2(self.central_line_length_LH, self.load_length_LL, self.load_width_WL,
+                                   self.central_line_width_WH,
+                                   sM, self.S, self.thickness)
 
         print("L1:", L1)
-
-        L2 = self.__clac_L2(self.central_line_length_LH, self.central_line_width_WH, sM, self.S,
-                            self.thickness)
-
         print("L2:", L2)
 
+        # these are good
         propagation_constant = self.propagation_constant(L1, L2, 2 * self.capacitance, omega)
         characteristic_impedance_Zc = self.characteristic_impedance(L1, L2, 2 * self.capacitance, omega)
 
-        return propagation_constant / delta_z, characteristic_impedance_Zc
+        return (propagation_constant / delta_z).imag, characteristic_impedance_Zc.real

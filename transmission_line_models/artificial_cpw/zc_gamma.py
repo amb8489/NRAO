@@ -1,11 +1,11 @@
+import math
+
 import numpy as np
 import scipy.special as sp
 
-from utills.constants import C, MU_0, epsilon_0
+from utills.constants import C, MU_0, epsilon_0, PI, PLANCK_CONST_REDUCEDev, KB
 
-c = C
-mu_0 = MU_0
-lambda0 = 1
+
 
 
 def Cg(epsilon_r, w, s):
@@ -18,7 +18,7 @@ def Cg(epsilon_r, w, s):
 def Lg(w, s):
     k = w / (w + 2 * s)
     KK1m = KK1(k)
-    return (mu_0 / 4) * (1 / KK1m)
+    return (MU_0 / 4) * (1 / KK1m)
 
 
 def KK1(k):
@@ -44,28 +44,20 @@ def LkCPW(Lk, w, s, t):
 
 
 def Lk(lambda0, w, t):
-    return mu_0 * (lambda0 ** 2) / (t * w)
+    return MU_0 * (lambda0 ** 2) / (t * w)
 
 
-def beta_ocpwsc(Lkc, Lg, Cg):
-    Ltot = Lkc + Lg
-    return c * np.sqrt(Ltot * Cg)
-
-
-def Zcpwsc(Lkc, Lg, Cg):
-    Ltot = Lkc + Lg
-    return np.sqrt(Ltot / Cg)
-
-
-def charateristic_impedance_wt(epsilon_r,w, s, tss):
+def characteristic_impedance_wt(lambda0, epsilon_r, w, s, tss):
     Lkc = LkCPW(Lk(lambda0, w, tss), w, s, tss)
     Lg_ = Lg(w, s)
     Cg_ = Cg(epsilon_r, w, s)
-    return Zcpwsc(Lkc, Lg_, Cg_)
+    Ltot = Lkc + Lg_
+    return np.sqrt(Ltot / Cg_)
 
 
-def gamma_wt(epsilon_r,w, s, tss):
+def gamma_wt(lambda0, epsilon_r, w, s, tss):
     Lkc = LkCPW(Lk(lambda0, w, tss), w, s, tss)
     Lg_ = Lg(w, s)
     Cg_ = Cg(epsilon_r, w, s)
-    return beta_ocpwsc(Lkc, Lg_, Cg_)
+    Ltot = Lkc + Lg_
+    return C * np.sqrt(Ltot * Cg_)

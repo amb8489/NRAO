@@ -13,7 +13,7 @@ wH = 1 / 500000
 
 lH = 1 / 500000
 
-wL = 7 * (10 ** -6)
+wL = 0.0002072
 
 lL = 1 / 500000
 
@@ -28,11 +28,23 @@ t = 3 * (10 ** -8)
 
 
 
+tc = 14.4
+
+sigma = 757576
 
 
 
-line = SuperConductingArtificialCPWLine(lH,wH,lL,wL,s,3,er,t,h)
+line = SuperConductingArtificialCPWLine(lH,wH,lL,wL,s,16,er,t,h,tc,sigma)
 
-frequency = toGHz(5)
+frequency = toGHz(23.7)
+
+
+
+# print("propagation_constant: ",line.propagation_constant(1,2,.1,500000))
+# print("characteristic_impedance: ",line.characteristic_impedance(1,2,.1,500000))
+#
+
 
 print(line.get_propagation_constant_characteristic_impedance(frequency))
+
+
