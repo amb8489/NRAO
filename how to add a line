@@ -1,0 +1,16 @@
+
+
+
+
+
+
+1) make a new directory inside  NRAO/transmission_line_models directory and name it the name of the line
+
+
+2) make a class that inherits from abstract_super_conducting_line_model.py
+
+3) implement the methods from abstract_super_conducting_line_model
+
+4) implement a new model inputs obj in model_inputs
+    -   This will take in a map that will eventually come from the inputs of the GUI
+    -   Example of inputs map and GUI inputs:

@@ -6,14 +6,35 @@ class AbstractSCTL(ABC):
     # sc transmissioin line outputs
     @abstractmethod
     def characteristic_impedance(self, *args, **kwargs):
+        """
+        implementation of the super conducting characteristic_impedance of the line
+        :param frequency:
+        :param surface_impedance:
+        :return:
+        a tuple of the line propagation_constant and characteristic_impedance
+        """
+
         pass
 
     @abstractmethod
     def propagation_constant(self, *args, **kwargs):
+        """
+        implementation of the super conducting propagation_constant of the line
+        :param frequency:
+        :param surface_impedance:
+        :return:
+        a tuple of the line propagation_constant and characteristic_impedance
+        """
         pass
 
-    # todo maybe instead of surface_impedance we pass the conductivity model and store the currrent surface_impedance
-    # in the conductivity model
     @abstractmethod
-    def get_propagation_constant_characteristic_impedance(self, frequency, surface_impedance):
+    def get_propagation_constant_characteristic_impedance(self, frequency: float, surface_impedance: complex) -> (
+            complex, complex):
+        """
+        implementation of the super conducting propagation_constant and characteristic_impedance of the line
+        :param frequency:
+        :param surface_impedance:
+        :return:
+        a tuple of the line propagation_constant and characteristic_impedance
+        """
         pass

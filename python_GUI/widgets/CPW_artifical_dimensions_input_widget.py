@@ -40,8 +40,12 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         self.tableInput.getData()
         for i, row in enumerate(self.tableInput.getData()):
             Lu = row[1] * 2 + row[3] + row[5]
-            line_len = Lu * row[0]
-            display_widget = QLabel(f"Line {i + 1} length: {line_len} -- Lu: {Lu}")
+            line_len =  (row[0]//Lu)*Lu
+
+
+
+
+            display_widget = QLabel(f"Line {i + 1} true length: {line_len} -- n sections: {line_len//Lu} --  lu {Lu}")
 
             x = i % 2
             y = i // 2
@@ -78,8 +82,9 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
         for i, row in enumerate(self.tableInput.getData()):
             Lu = float(row[1]) * 2 + float(row[3]) + float(row[5])
-            line_len = Lu * float(row[0])
-            display_widget = QLabel(f"Line {i + 1} length: {line_len} -- Lu: {Lu}")
+            line_len = (float(row[0]) // Lu) * Lu
+
+            display_widget = QLabel(f"Line {i + 1} true length: {line_len} -- n sections: {line_len // Lu} --  lu {Lu}")
 
             x = i % 2
             y = i // 2

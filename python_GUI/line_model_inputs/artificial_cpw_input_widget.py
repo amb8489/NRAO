@@ -31,7 +31,7 @@ class ArtificialCPIInputsWidget(QtWidgets.QWidget):
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 4)
         self.dimensionsInputWidget = WidgetCPWARTDimensionsInputs(
-            ["N", "S [μm]", "WH [μm]", "LH [μm]", "WL [μm]", "LL [μm]"],
+            ["Length [μm]", "S [μm]", "WH [μm]", "LH [μm]", "WL [μm]", "LL [μm]"],
             [unit_cell_length, central_line_width, D0,
              ground_spacing], row_name="Line")
         self.layout().addWidget(self.dimensionsInputWidget, 3, 0, 3, 3)
