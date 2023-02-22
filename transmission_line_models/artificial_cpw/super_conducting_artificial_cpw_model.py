@@ -1,5 +1,7 @@
 import cmath
 import math
+import time
+from functools import cache
 
 import numpy as np
 import scipy.special as sp
@@ -36,7 +38,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
                  number_of_finger_sections: int,
                  epsilon_r: float,
                  thickness: float,
-                 height: float,super_conductivity_model,
+                 height: float, super_conductivity_model,
                  total_line_length=None):
         self.central_line_length_LH = central_line_length_LH
         self.central_line_width_WH = central_line_width_WH
@@ -71,7 +73,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         sM = ((self.load_width_WL - self.central_line_width_WH) / 2) + self.S
 
-        self.delta_z = 3 * self.S + 2 * self.load_length_LL + self.central_line_length_LH
+        self.delta_z = (3 * self.S) + (2 * self.load_length_LL) + self.central_line_length_LH
 
         self.L1, self.L2 = self.__clac_L1_L2(self.central_line_length_LH, self.load_length_LL, self.load_width_WL,
                                              self.central_line_width_WH,
@@ -84,7 +86,6 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         return Zo * beta_so * (l / C)
 
     def __clac_L1_L2(self, lH, lL: float, wL: float, wH: float, sM: float, s: float, t: float):
-
         # looking for errors in these functions
 
         zH = self.characteristic_impedance_SC_cpw(self.lambda_O, self.epsilon_r, wH, s, t)
@@ -113,7 +114,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         return (MU_0 / 4) * (1 / KK1m)
 
     def KK1(self, k):
-        k1 = np.sqrt(1 - k ** 2)
+        k1 = math.sqrt(1 - k ** 2)
         return self.nK(k) / self.nK(k1)
 
     def nK(self, k):
@@ -123,26 +124,28 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         k = w / (w + 2 * s)
         k12 = 1 - k ** 2
         K2 = self.nK(k) ** 2
-        gc = (1 / (4 * k12 * K2)) * (np.pi + np.log((4 * np.pi * w) / t) - k * np.log((1 + k) / (1 - k)))
+        gc = (1 / (4 * k12 * K2)) * (PI + cmath.log((4 * PI * w) / t) - k * cmath.log((1 + k) / (1 - k)))
         gg = (k / (4 * k12 * K2)) * (
-                np.pi + np.log((4 * np.pi * (w + 2 * s)) / t) - (1 / k) * np.log((1 + k) / (1 - k)))
+                PI + cmath.log((4 * PI * (w + 2 * s)) / t) - (1 / k) * cmath.log((1 + k) / (1 - k)))
         return gc + gg
 
     def LkCPW(self, Lk, w, s, t):
         return Lk * self.gtot(w, s, t)
 
-    def Lk(self, lambda0, w, t):
+    def Lkopr(self, lambda0, w, t):
         return MU_0 * (lambda0 ** 2) / (t * w)
 
     def characteristic_impedance_SC_cpw(self, lambda0, epsilon_r, w, s, tss):
-        Lkc = self.LkCPW(self.Lk(lambda0, w, tss), w, s, tss)
+        lk = self.Lkopr(lambda0, w, tss)
+        Lkc = self.LkCPW(lk, w, s, tss)
         Lg_ = self.Lg(w, s)
         Cg_ = self.Cg(epsilon_r, w, s)
+
         Ltot = Lkc + Lg_
         return np.sqrt(Ltot / Cg_)
 
     def propagation_const_SC_cpw(self, lambda0, epsilon_r, w, s, tss):
-        Lkc = self.LkCPW(self.Lk(lambda0, w, tss), w, s, tss)
+        Lkc = self.LkCPW(self.Lkopr(lambda0, w, tss), w, s, tss)
         Lg_ = self.Lg(w, s)
         Cg_ = self.Cg(epsilon_r, w, s)
         Ltot = Lkc + Lg_
@@ -150,18 +153,22 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
 
     def propagation_constant(self, L1: float, L2: float, capacitance: float, omega: float):
-        return 2 * np.arcsinh(
-            1 / 2 * cmath.sqrt(-capacitance * omega ** 2 * (-3 + capacitance * L1 * omega ** 2) * (
-                    -2 * L1 - L2 + capacitance * L1 * L2 * omega ** 2)))
 
+        omega_omega = omega ** 2
+        return 2 * np.arcsinh(
+            .5 * cmath.sqrt(-capacitance * omega_omega * (-3 + capacitance * L1 * omega_omega) * (
+                    -2 * L1 - L2 + capacitance * L1 * L2 * omega_omega)))
 
     def characteristic_impedance(self, L1: float, L2: float, capacitance: float, omega: float):
-        return (2j * omega * (-1 + capacitance * L1 * omega ** 2) * (
-                -L2 + L1 * (-2 + capacitance * L2 * omega ** 2))) / (
-                       cmath.sqrt(-capacitance * omega ** 2 * (-3 + capacitance * L1 * omega ** 2) * (
-                               -L2 + L1 * (-2 + capacitance * L2 * omega ** 2))) *
-                       cmath.sqrt(-(-1 + capacitance * L1 * omega ** 2) * (
-                               4 + capacitance * omega ** 2 * (-3 * L2 + L1 * (-2 + capacitance * L2 * omega ** 2)))))
+
+        omega_omega = omega ** 2
+
+        return (2j * omega * (-1 + capacitance * L1 * omega_omega) * (
+                -L2 + L1 * (-2 + capacitance * L2 * omega_omega))) / (
+                       cmath.sqrt(-capacitance * omega_omega * (-3 + capacitance * L1 * omega_omega) * (
+                               -L2 + L1 * (-2 + capacitance * L2 * omega_omega))) *
+                       cmath.sqrt(-(-1 + capacitance * L1 * omega_omega) * (
+                               4 + capacitance * omega_omega * (-3 * L2 + L1 * (-2 + capacitance * L2 * omega_omega)))))
 
     def calc_capacitance(self, n, epsilon_r, sg, s1, gg, gendg, h: float, l: float, t: float, model_type: int = 1):
         return capacitance_model_selector(n, epsilon_r, sg, s1, gg, gendg, h, l, t, model_type=model_type)
@@ -169,7 +176,9 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
     def get_propagation_constant_characteristic_impedance(self, frequency: float, zs: complex = None):
 
         propagation_constant = self.propagation_constant(self.L1, self.L2, 2 * self.capacitance, PI2 * frequency)
-        characteristic_impedance_Zc = self.characteristic_impedance(self.L1, self.L2, 2 * self.capacitance,
-                                                                    PI2 * frequency).real
 
-        return (propagation_constant / self.delta_z).imag, characteristic_impedance_Zc
+
+        characteristic_impedance_Zc = self.characteristic_impedance(self.L1, self.L2, 2 * self.capacitance,
+                                                     PI2 * frequency).real
+
+        return (propagation_constant / self.delta_z), characteristic_impedance_Zc

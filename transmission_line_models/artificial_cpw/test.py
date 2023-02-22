@@ -1,68 +1,59 @@
+import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.artificial_cpw.super_conducting_artificial_cpw_model import \
     SuperConductingArtificialCPWLine
-from utills.functions import micro_meters_to_meters, toGHz
+from utills.functions import toGHz
 
-frequency = toGHz(2.5)
+# ------------------------------------
 
-Ncells = 62
 
-# floquet dimensions
+er = 11.44
 
-floquet_central_line_Wu = micro_meters_to_meters(19)
-floquet_load_Wl = micro_meters_to_meters(35)
+s = 1 / 500000
 
-N1 = ...
-N2 = ...
-N3 = ...
-N4 = ...
-N5 = ...
-N6 = ...
-N7 = ...
+wH = 1 / 500000
 
-L1 = ...  # Lu1 * N1
-L2 = ...
-L3 = ...
-L4 = ...
-L5 = ...
-L6 = ...
-L7 = ...
+lH = 1 / 500000
 
-'''
+wL = 1/500000  #<-----
 
-            dimensions for a single line
+lL = 1 / 500000
 
-'''
+h = 1 / 2000
 
-# central line
-central_line_length_LH = micro_meters_to_meters(1)
-central_line_width_WH = micro_meters_to_meters(1)
+t = 3 * (10 ** -8)
 
-# load
-load_length_LL = micro_meters_to_meters(1)
-load_width_WL = micro_meters_to_meters(1)
+# ------------------------------------
 
-# ground spacing
-S = micro_meters_to_meters(1)
+# CHAR IMPEDANCE: 139.711
 
-number_of_fingers = 110
 
-epsilon_r = .0000156
-thickness = micro_meters_to_meters(1)
-height = micro_meters_to_meters(1)
+pn = 1.32*10**-6
+op_temp = 0
+tc = 14.4
 
-super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
+super_conductivity_model = SuperConductivity(op_temp, tc, pn)
+
+line = SuperConductingArtificialCPWLine(lH, wH, lL, wL, s, 20, er, t, h, super_conductivity_model)
+print(line.get_propagation_constant_characteristic_impedance(toGHz(20)))
+
+
+# print("propagation_constant: ", line.propagation_constant(1, 2, .1, 500000))
+# print("characteristic_impedance: ", line.characteristic_impedance(1, 2, .1, 500000))
 
 
 
-line = SuperConductingArtificialCPWLine(central_line_length_LH,
-                                        central_line_width_WH,
-                                        load_length_LL,
-                                        load_width_WL,
-                                        S,
-                                        number_of_fingers,
-                                        epsilon_r,
-                                        thickness,
-                                        height,)
 
-print(line.get_propagation_constant_characteristic_impedance(2.5 * 10 ** 9, 0))
+# frequencys_range = np.linspace(toGHz(1), toGHz(25), 1000)
+# outputs = []
+# s = time.time()
+# for frequency in frequencys_range:
+#     outputs.append(line.get_propagation_constant_characteristic_impedance(frequency))
+# print(time.time() - s)
+#
+# plt.plot(frequencys_range, outputs)
+# plt.show()
