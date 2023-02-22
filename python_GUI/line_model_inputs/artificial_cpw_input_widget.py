@@ -19,14 +19,6 @@ class ArtificialCPIInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        # self.materials_table = WidgetMaterialsSelect()
-        # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
-
-        # self.toggel_materials_table_button = QPushButton(text='Hide materials table',
-        #                                                  objectName='toggel_materials_table_button',
-        #                                                  clicked=self.toggel_materials_table)
-        # self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
-        # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
 
         # settings title
         self.title = QLabel("")
