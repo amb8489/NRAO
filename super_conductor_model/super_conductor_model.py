@@ -5,6 +5,7 @@ BCS theory on conductivity
 """
 import cmath
 import math
+from functools import cache
 
 from scipy.integrate import quad
 
@@ -41,6 +42,10 @@ class SuperConductivity():
         self.__jPI2MU_0 = 1j * PI2 * MU_0
         self.__delta = self.__calc_delta(critical_temp)
         self.__op_temp_times_kb = operation_temperature_k * KB
+
+
+    def get_sigma(self):
+        return self.__sigma
 
     def __fermiDistrib(self, E: float, temp_k: float):
 
@@ -164,6 +169,7 @@ class SuperConductivity():
     conductivity            : is the conductivity at input conditions
     """
 
+    # @cache
     def conductivity(self, frequency: float):
         return self.__sigma * self.__sigma_N(self.__delta, frequency * PLANCK_CONSTev, self.__op_temp_times_kb)
 
@@ -176,6 +182,7 @@ class SuperConductivity():
     Zs - surface impedance           
     """
 
+    # @cache
     def surface_impedance_Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
         return cmath.sqrt(self.__jPI2MU_0 * frequency / conductivity) * ccoth(
             cmath.sqrt(self.__jPI2MU_0 * frequency * conductivity) * sc_film_thickness)

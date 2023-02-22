@@ -17,6 +17,7 @@ this function makes a line model from the gui and returns a floquet line of the 
 def floquet_line_builder(line_model):
     json_inputs = line_model.get_inputs()
 
+
     # make super conductor
 
     model_type = line_model.type

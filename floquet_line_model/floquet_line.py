@@ -1,4 +1,5 @@
 import cmath
+import time
 
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
@@ -89,6 +90,7 @@ class SuperConductingFloquetLine():
     def simulate(self, frequency):
         # frequency cant be too low
         frequency = max(frequency, 1e7)
+
 
         # todo move the conductivity model into the line model
         # 1) calculate Zs

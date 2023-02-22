@@ -120,12 +120,9 @@ def mult_mats(mats):
     return res
 
 
+DEBUG_FLAG = False
 
-DEBUG_FLAG = 1
+
 def printDb(*args):
     if DEBUG_FLAG:
-
-        print("DEBUG: ",*args)
-
-
-
+        print("DEBUG: ", *args)

@@ -1,6 +1,7 @@
 '''
 Testing file for calculating A B R X
 '''
+import time
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -27,6 +28,7 @@ def simulate(line_model):
 
     # todo
     FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
+
     for F in FRange:
         alpha, beta, alphaCl, betaCL, r_, x_ = floquet_line.simulate(F)
         # RR.append(R)

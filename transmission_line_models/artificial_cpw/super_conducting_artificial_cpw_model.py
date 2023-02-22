@@ -2,16 +2,16 @@ import cmath
 import math
 
 import numpy as np
+import scipy.special as sp
 
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from transmission_line_models.artificial_cpw.artificial_cpw_capacitance import capacitance_model_selector
-from transmission_line_models.artificial_cpw.zc_gamma import characteristic_impedance_wt, gamma_wt
-from utills.constants import C, PI2, KB, PI, MU_0, PLANCK_CONST_REDUCEDev
+from transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import capacitance_model_selector
+from utills.constants import PI2, KB, PI, PLANCK_CONST_REDUCEDev, C, MU_0, epsilon_0
 
 """
 
 
-CPW MODEL FOR TRANSMISSION LINE
+Artificial CPW MODEL FOR TRANSMISSION LINE
 
 
 """
@@ -52,7 +52,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.nfb = number_of_finger_sections
         self.Lu = self.central_line_length_LH + S + load_length_LL + S
 
-        self.total_line_length = self.Lu * number_of_finger_sections#todo is this nf or nfb
+        self.total_line_length = self.Lu * number_of_finger_sections  # todo is this nf or nfb
 
         self.lambda_O = lambda_0(normal_conductivity, DELTA_O(Tc))
 
@@ -68,13 +68,18 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         lg = ((self.load_width_WL - self.central_line_width_WH) / 2) - self.S
 
-        print("lg :", lg)
         nf = 2 * self.nfb + 1
+
+        sM = ((self.load_width_WL - self.central_line_width_WH) / 2) + self.S
+
+        self.delta_z = 3 * self.S + 2 * self.load_length_LL + self.central_line_length_LH
+
+        self.L1, self.L2 = self.__clac_L1_L2(self.central_line_length_LH, self.load_length_LL, self.load_width_WL,
+                                             self.central_line_width_WH,
+                                             sM, self.S, self.thickness)
 
         self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg, thickness,
                                                  model_type=1)
-
-        print("capacitance:", self.capacitance)
 
     def __L_aprox(self, Zo, beta_so, l):
         return Zo * beta_so * (l / C)
@@ -83,31 +88,74 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         # looking for errors in these functions
 
-        zH = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wH, s, t)
-        print("ZH", zH)
-        beta_wtH = gamma_wt(self.lambda_O, self.epsilon_r, wH, s, t)
+        zH = self.characteristic_impedance_SC_cpw(self.lambda_O, self.epsilon_r, wH, s, t)
+        beta_wtH = self.propagation_const_SC_cpw(self.lambda_O, self.epsilon_r, wH, s, t)
         LH = self.__L_aprox(zH, beta_wtH, lH)
 
-        zL = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wL, s, t)
-        beta_wtL = gamma_wt(self.lambda_O, self.epsilon_r, wL, s, t)
+        zL = self.characteristic_impedance_SC_cpw(self.lambda_O, self.epsilon_r, wL, s, t)
+        beta_wtL = self.propagation_const_SC_cpw(self.lambda_O, self.epsilon_r, wL, s, t)
         LL = self.__L_aprox(zL, beta_wtL, lL)
 
-        zM = characteristic_impedance_wt(self.lambda_O, self.epsilon_r, wH, sM, t)
-        beta_wtM = gamma_wt(self.lambda_O, self.epsilon_r, wH, sM, t)
+        zM = self.characteristic_impedance_SC_cpw(self.lambda_O, self.epsilon_r, wH, sM, t)
+        beta_wtM = self.propagation_const_SC_cpw(self.lambda_O, self.epsilon_r, wH, sM, t)
         LM = self.__L_aprox(zM, beta_wtM, s)
-
-        print("LL: ", LL)
-        print("LM: ", LM)
 
         return LL + LM, LH + LM
 
-    # good
+    def Cg(self, epsilon_r, w, s):
+        k = w / (w + 2 * s)
+        epsilon_eff = (epsilon_r + 1) / 2
+        KK1m = self.KK1(k)
+        return 4 * epsilon_0 * epsilon_eff * KK1m
+
+    def Lg(self, w, s):
+        k = w / (w + 2 * s)
+        KK1m = self.KK1(k)
+        return (MU_0 / 4) * (1 / KK1m)
+
+    def KK1(self, k):
+        k1 = np.sqrt(1 - k ** 2)
+        return self.nK(k) / self.nK(k1)
+
+    def nK(self, k):
+        return sp.ellipk(k ** 2)
+
+    def gtot(self, w, s, t):
+        k = w / (w + 2 * s)
+        k12 = 1 - k ** 2
+        K2 = self.nK(k) ** 2
+        gc = (1 / (4 * k12 * K2)) * (np.pi + np.log((4 * np.pi * w) / t) - k * np.log((1 + k) / (1 - k)))
+        gg = (k / (4 * k12 * K2)) * (
+                np.pi + np.log((4 * np.pi * (w + 2 * s)) / t) - (1 / k) * np.log((1 + k) / (1 - k)))
+        return gc + gg
+
+    def LkCPW(self, Lk, w, s, t):
+        return Lk * self.gtot(w, s, t)
+
+    def Lk(self, lambda0, w, t):
+        return MU_0 * (lambda0 ** 2) / (t * w)
+
+    def characteristic_impedance_SC_cpw(self, lambda0, epsilon_r, w, s, tss):
+        Lkc = self.LkCPW(self.Lk(lambda0, w, tss), w, s, tss)
+        Lg_ = self.Lg(w, s)
+        Cg_ = self.Cg(epsilon_r, w, s)
+        Ltot = Lkc + Lg_
+        return np.sqrt(Ltot / Cg_)
+
+    def propagation_const_SC_cpw(self, lambda0, epsilon_r, w, s, tss):
+        Lkc = self.LkCPW(self.Lk(lambda0, w, tss), w, s, tss)
+        Lg_ = self.Lg(w, s)
+        Cg_ = self.Cg(epsilon_r, w, s)
+        Ltot = Lkc + Lg_
+        return C * np.sqrt(Ltot * Cg_)
+
+
     def propagation_constant(self, L1: float, L2: float, capacitance: float, omega: float):
         return 2 * np.arcsinh(
             1 / 2 * cmath.sqrt(-capacitance * omega ** 2 * (-3 + capacitance * L1 * omega ** 2) * (
                     -2 * L1 - L2 + capacitance * L1 * L2 * omega ** 2)))
 
-    # good
+
     def characteristic_impedance(self, L1: float, L2: float, capacitance: float, omega: float):
         return (2j * omega * (-1 + capacitance * L1 * omega ** 2) * (
                 -L2 + L1 * (-2 + capacitance * L2 * omega ** 2))) / (
@@ -119,46 +167,10 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
     def calc_capacitance(self, n, epsilon_r, sg, s1, gg, gendg, h: float, l: float, t: float, model_type: int = 1):
         return capacitance_model_selector(n, epsilon_r, sg, s1, gg, gendg, h, l, t, model_type=model_type)
 
-    def get_propagation_constant_characteristic_impedance(self, frequency):
+    def get_propagation_constant_characteristic_impedance(self, frequency: float, zs: complex = None):
 
-        print("------------------------------------")
-        print("nfb:", self.nfb)
-        print("er:", self.epsilon_r)
-        print("s:", self.S)
-        print("wH:", self.central_line_width_WH)
-        print("lH:", self.central_line_length_LH)
-        print("wL:", self.load_width_WL)
-        print("lL:", self.load_length_LL)
-        print("h:", self.height)
-        print("t:", self.thickness)
-        print("fopr:", frequency)
-        print("------------------------------------")
+        propagation_constant = self.propagation_constant(self.L1, self.L2, 2 * self.capacitance, PI2 * frequency)
+        characteristic_impedance_Zc = self.characteristic_impedance(self.L1, self.L2, 2 * self.capacitance,
+                                                                    PI2 * frequency).real
 
-        delta_z = 3 * self.S + 2 * self.load_length_LL + self.central_line_length_LH
-
-        print("delta_z:", delta_z)
-
-        sM = ((self.load_width_WL - self.central_line_width_WH) / 2) + self.S
-        print("sM:", sM)
-
-        frequency_operation = frequency
-
-        omega = PI2 * frequency_operation
-        print("omega:", omega)
-
-        # good to this point including capacitance model 1
-
-        # issue is in __clac_L1 and or in __clac_L2
-
-        L1, L2 = self.__clac_L1_L2(self.central_line_length_LH, self.load_length_LL, self.load_width_WL,
-                                   self.central_line_width_WH,
-                                   sM, self.S, self.thickness)
-
-        print("L1:", L1)
-        print("L2:", L2)
-
-        # these are good
-        propagation_constant = self.propagation_constant(L1, L2, 2 * self.capacitance, omega)
-        characteristic_impedance_Zc = self.characteristic_impedance(L1, L2, 2 * self.capacitance, omega)
-
-        return (propagation_constant / delta_z).imag, characteristic_impedance_Zc.real
+        return (propagation_constant / self.delta_z).imag, characteristic_impedance_Zc
