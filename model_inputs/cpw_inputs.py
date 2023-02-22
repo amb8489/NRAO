@@ -7,7 +7,7 @@ from utills.functions import micro_meters_to_meters, nano_meters_to_meters, toGH
 
 
 class CPWInputs():
-    def __init__(self, inputs):
+    def __init__(self, inputs :dict):
         # ---------------------------- Range and Resolution Inputs
 
         self.resoultion = int(inputs["Frequency Range"][resolution.get_name()])

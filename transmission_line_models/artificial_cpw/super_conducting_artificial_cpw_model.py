@@ -52,15 +52,14 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.nfb = number_of_finger_sections
         self.Lu = self.central_line_length_LH + S + load_length_LL + S
 
-        self.total_line_length = self.Lu * number_of_finger_sections  # todo is this nf or nfb
+        self.total_line_length = self.Lu * number_of_finger_sections
 
-        # todo make sure sigma is right
         self.lambda_O = lambda_0(super_conductivity_model.get_sigma(), DELTA_O(super_conductivity_model.crit_temp))
 
         if total_line_length:
 
             self.number_of_finger_sections = total_line_length // self.Lu
-            self.total_line_length = number_of_finger_sections * self.Lu
+            self.total_line_length = (total_line_length // self.Lu) * self.Lu
 
             print("calculating number_of_finger_sections based om line length and Lu")
 

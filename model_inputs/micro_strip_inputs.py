@@ -1,14 +1,14 @@
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency, unit_cell_length, \
     central_line_width, D0, Er, pump_frequency, pump_amplitude, idler_amplitude, signal_amplitude, SC_tangent_delta, \
     SC_normal_resistivity, SC_critical_current, SC_critical_temperature, SC_operation_temperature, SC_ground_thickness, \
-    SC_thickness, SC_height, ground_spacing
+    SC_thickness, SC_height
 from utills.functions import micro_meters_to_meters, nano_meters_to_meters, toGHz, micro_ohms_cm_to_ohms_m, mm_to_meters
 
 
 # todo also refactor to use .get(key,None) to prevent error on bad key
 
 class MicroStripInputs():
-    def __init__(self, inputs):
+    def __init__(self, inputs: dict):
         # ---------------------------- Range and Resolution Inputs
 
         self.resoultion = int(inputs["Frequency Range"][resolution.get_name()])
@@ -42,9 +42,7 @@ class MicroStripInputs():
 
         # ---------------------------- gain_models inputs
         self.pump_freq = toGHz(float(inputs["gain_models"][pump_frequency.get_name()]))
-
         self.As_init = float(inputs["gain_models"][signal_amplitude.get_name()])  # todo make inputs complex
         self.Ai_init = float(inputs["gain_models"][idler_amplitude.get_name()])  # todo make inputs complex
         self.Ap_init = float(inputs["gain_models"][pump_amplitude.get_name()])  # todo make inputs complex
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)
-

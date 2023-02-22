@@ -14,3 +14,6 @@
 4) implement a new model inputs obj in model_inputs
     -   This will take in a map that will eventually come from the inputs of the GUI
     -   Example of inputs map and GUI inputs:
+
+
+5) next in floquet_line_model/floquet_line_builder.py from the other example lines instantiate the floquet line class
