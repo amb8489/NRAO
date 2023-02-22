@@ -1,3 +1,4 @@
+from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.artificial_cpw.super_conducting_artificial_cpw_model import \
     SuperConductingArtificialCPWLine
 from utills.functions import micro_meters_to_meters, toGHz
@@ -50,6 +51,10 @@ epsilon_r = .0000156
 thickness = micro_meters_to_meters(1)
 height = micro_meters_to_meters(1)
 
+super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
+
+
+
 line = SuperConductingArtificialCPWLine(central_line_length_LH,
                                         central_line_width_WH,
                                         load_length_LL,
@@ -58,6 +63,6 @@ line = SuperConductingArtificialCPWLine(central_line_length_LH,
                                         number_of_fingers,
                                         epsilon_r,
                                         thickness,
-                                        height)
+                                        height,)
 
 print(line.get_propagation_constant_characteristic_impedance(2.5 * 10 ** 9, 0))

@@ -5,7 +5,6 @@ BCS theory on conductivity
 """
 import cmath
 import math
-from functools import cache
 
 from scipy.integrate import quad
 
@@ -33,16 +32,18 @@ class SuperConductivity():
     ------------------------------functions to support conductivity ------------------------------
     '''
 
-    def __init__(self, operation_temperature_k: float, critical_temp: float, Pn: float):
+    def __init__(self, operation_temperature_k: float, critical_temp_k: float, Pn: float):
 
         # calulations that only need to be done once per run
 
-        self.__sigma = 1 / Pn
-        self.__temp_div = operation_temperature_k / critical_temp
-        self.__jPI2MU_0 = 1j * PI2 * MU_0
-        self.__delta = self.__calc_delta(critical_temp)
-        self.__op_temp_times_kb = operation_temperature_k * KB
+        self.crit_temp = critical_temp_k
+        self.operation_temperature_k = operation_temperature_k
 
+        self.__sigma = 1 / Pn
+        self.__temp_div = operation_temperature_k / critical_temp_k
+        self.__jPI2MU_0 = 1j * PI2 * MU_0
+        self.__delta = self.__calc_delta(critical_temp_k)
+        self.__op_temp_times_kb = operation_temperature_k * KB
 
     def get_sigma(self):
         return self.__sigma
@@ -162,7 +163,7 @@ class SuperConductivity():
     -INPUTS-
     frequency                    : frequency of DC i units of GHZ
     operation_temperature_k  : the temperature of operation in Kelvin
-    critical_temp           : the temperature of transition between normal and super conductor in Kelvin
+    critical_temp_k           : the temperature of transition between normal and super conductor in Kelvin
     Pn                      : normal resistivity in micro ohms / cm
     -OUT-
      
