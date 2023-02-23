@@ -47,6 +47,9 @@ class PlotWindow(QScrollArea):
 
         # todo destory all open plots
 
+        for child in self.grid.children():
+            child.deleteLater()
+
         plots = simulate(self.line_model)
 
         # transform 1D matrix to 2d or size ROWS X COLS

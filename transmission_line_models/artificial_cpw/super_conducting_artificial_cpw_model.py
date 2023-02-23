@@ -190,6 +190,6 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         propagation_constant = self.propagation_constant(self.L1, self.L2, 2 * self.capacitance, PI2 * frequency)
 
         characteristic_impedance_Zc = self.characteristic_impedance(self.L1, self.L2, 2 * self.capacitance,
-                                                                    PI2 * frequency).real
+                                                                    PI2 * frequency)
 
         return (propagation_constant / self.delta_z), characteristic_impedance_Zc

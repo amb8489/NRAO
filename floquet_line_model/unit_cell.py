@@ -3,7 +3,7 @@
 class to represent alpha_plt floquet line
 
 given:
- -D: the len of unit cell
+ -unit_cell_length: the len of unit cell
  -D0: spacing between centers of loads
  -number_of_finger_sections : the number of loads in unit cell
  -in_order_loads_widths: the lengths of each load from left to right in Floquet line
@@ -36,12 +36,20 @@ def mk_ABCD_Mat(Z, Gamma, L):
 
 class UnitCell():
     # todo remove thickness
-    def __init__(self, D: float, D0: float, load_D_lengths: [float], central_line_model, floquet_line_thickness,
+    def __init__(self, unit_cell_length: float, D0: float, load_D_lengths: [float], central_line_model,
+                 floquet_line_thickness,
                  load_line_models):
         self.central_line_model = central_line_model
         self.thickness = floquet_line_thickness
         self.load_segment_models = load_line_models
-        self.unit_cell_length = D
+        self.unit_cell_length = unit_cell_length
+
+        self.segment_line_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
+                                    for model in b] + [central_line_model]
+
+        self.segment_lengths = self.calculate_line_segment_lenghts(D0, load_D_lengths, unit_cell_length)
+
+    def calculate_line_segment_lenghts(self, D0, load_D_lengths, unit_cell_length):
 
         central_line_lengths = []
 
@@ -49,7 +57,7 @@ class UnitCell():
         central_line_lengths.append((D0 / 2) - (load_D_lengths[0] / 2))
 
         # normal case calculating central line length between two loads
-        # [<---D-left-load--->] ====central line==== [<---D-right-load--->]
+        # [<---unit_cell_length-left-load--->] ====central line==== [<---unit_cell_length-right-load--->]
         # ---------|---------------------D0--------------------|-----------
 
         for i in range(len(load_D_lengths) - 1):
@@ -61,26 +69,17 @@ class UnitCell():
         central_line_lengths.append((D0 / 2) - (load_D_lengths[-1] / 2))
 
         # weaving the central line and loads lengths together into one list
-        # load D's [D1, D2] , cental line lenghts = [cl1,cl2,cl3]
+        # load unit_cell_length's [D1, D2] , cental line lenghts = [cl1,cl2,cl3]
         # segment_lengths = [cl1,D1,cl2,D2,cl3]
-        self.segment_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
-                                for length in b] + [central_line_lengths[-1]]
+        seg_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
+                       for length in b] + [central_line_lengths[-1]]
 
-        self.segment_line_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
-                                    for model in b] + [central_line_model]
-
-        assert abs(D - sum(
-            self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
+        if abs(unit_cell_length - sum(seg_lengths)) > .0001:
+            raise Exception(f"sum of lengths != unit cell length -- off by: {abs(unit_cell_length - sum(seg_lengths))}")
+        return seg_lengths
 
     def __calc_central_line_length_between_two_loads(self, left_load_D: float, D0: float, right_load_D: float):
         return D0 - (left_load_D / 2) - (right_load_D / 2)
-
-    # returns the length of the wanted segment in floquet line
-    def get_segment_len(self, segment_idx: int):
-        return self.segment_lengths[segment_idx]
-
-    def get_central_line_gamma_Zc(self, frequency: float, surface_impedance: complex):
-        return self.central_line_model.get_propagation_constant_characteristic_impedance(frequency, surface_impedance)
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx: int, frequency: float,
                                                        surface_impedance: complex):
@@ -88,45 +87,14 @@ class UnitCell():
                                                                                                        surface_impedance)
 
     # ABCD matrix of unit sell line segment
-    # Z characteristic impedance; k wavenumber; l length
-
-    def get_segment_ABCD_mat(self, unit_cell_segment_idx: int, frequency: float, surface_impedance: complex):
-        segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(unit_cell_segment_idx,
-                                                                                        frequency, surface_impedance)
-        segment_length = self.get_segment_len(unit_cell_segment_idx)
-        return mk_ABCD_Mat(segment_Zc, segment_gamma, segment_length)
-
     def get_unit_cell_ABCD_mat(self, frequency: float, surface_impedance: complex):
 
         segment_abcd_mats = []
+        # 3) for each  line segment of unit cell make sub ABCD matrix for that line segment
         for segment_idx in range(len(self.segment_lengths)):
-            # 3) for each  line segment of unit cell make sub ABCD matrices
             segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,
                                                                                             surface_impedance)
             segment_abcd_mats.append(mk_ABCD_Mat(segment_Zc, segment_gamma, self.segment_lengths[segment_idx]))
-        # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
+
+        # 4) matrix multiply all the ABCD line segment matrices to get unit cell ABCD
         return mult_mats(segment_abcd_mats)
-
-
-if __name__ == '__main__':
-    D = 6
-    D0 = 2
-    load_D_lengths = [1, 1, .5]
-    central_line_model = []
-    floquet_line_thickness = 0
-    load_line_models = []
-
-    d = UnitCell(D, D0, load_D_lengths, [], 0, [])
-    print(d.segment_lengths)
-
-    for i, v in enumerate(d.segment_lengths):
-        if i == 0:
-            print(f"<-{v}->", end="")
-            continue
-        if i == len(d.segment_lengths) - 1:
-            print(f"<-{v}->", end="")
-            continue
-        if i % 2 == 0:
-            print(f"<---{v}--->", end="")
-        else:
-            print(f"[<---{v}--->]", end="")

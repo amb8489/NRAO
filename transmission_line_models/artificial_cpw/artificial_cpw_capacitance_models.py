@@ -67,7 +67,6 @@ def __CapacitanceModel1(n, ep_r, sg, s1, gg, gendg, h, l, t):
 
     C2 = 2 * epsilon_0 * Ep_e1 * __KKp(k01) * Lext
 
-    # Final result
     Ctot = ((n - 3) * C1 + n * C2 + C3)
 
     return Ctot / (n - 1)

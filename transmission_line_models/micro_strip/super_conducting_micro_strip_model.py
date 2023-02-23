@@ -1,12 +1,10 @@
-
 import cmath
-import math
 
 import numpy as np
 from scipy.constants import c
+
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from utills.constants import K0, Z0, PI, PI2, PI4, PLANCK_CONST_REDUCEDev, MU_0, C
-from utills.functions import sech, coth
+from utills.constants import K0, Z0, PI
 
 """
     MICRO STRIP MODEL FOR TRANSMISSION LINE
@@ -16,6 +14,8 @@ from utills.functions import sech, coth
 
 
 """
+
+
 #
 # class SuperConductingMicroStripModel(AbstractSCTL):
 #
@@ -459,9 +459,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         else:
             K_ms = (2 * sc_height * cmath.log((2 * rb) / ra))
 
-
-
-        I = cmath.log(   ((2 * p) + 2 * cmath.sqrt(p * (1 - ra) * (p - ra)) - (p + 1) * ra)  / (ra * (p - 1)))
+        I = cmath.log(((2 * p) + 2 * cmath.sqrt(p * (1 - ra) * (p - ra)) - (p + 1) * ra) / (ra * (p - 1)))
 
         return g1 * (1 / K_ms) * (I + (PI / 2))
 
@@ -476,13 +474,11 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         return ep_v * (1 - (1j * tand))
 
-
     def series_impedance_Z(self, Zs, g1, g2, f):
         return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
 
     def shunt_admittance_Y(self, g1, f, er, tand, sc_hight, sc_width):
         return 1j * (K0(f) / Z0) * (self.efm(f, er, tand, sc_hight, sc_width) / g1)
-
 
     def characteristic_impedance(self, Z, Y):
         return cmath.sqrt(Z / Y)

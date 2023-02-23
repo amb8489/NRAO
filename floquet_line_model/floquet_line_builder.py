@@ -32,14 +32,14 @@ def floquet_line_builder(line_model):
 
         super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
 
-        # todo is this taking in both width and D??
+        # todo is this taking in both width and unit_cell_length??
         central_line_model = SuperConductingMicroStripModel(inputs.height, inputs.central_line_width,
                                                             inputs.line_thickness, inputs.er, inputs.tangent_delta,
                                                             inputs.crit_current)
 
         load_line_models = [
 
-            # todo is this taking in accont  width and D val not just width??
+            # todo is this taking in accont  width and unit_cell_length val not just width??
             SuperConductingMicroStripModel(inputs.height, width, inputs.line_thickness, inputs.er,
                                            inputs.tangent_delta,
                                            inputs.crit_current) for width in inputs.load_widths]
@@ -55,9 +55,9 @@ def floquet_line_builder(line_model):
 
         super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
 
-        # todo is this taking in both width and D??
+        # todo is this taking in both width and unit_cell_length??
         # todo where is width being used
-
+        # todo combine this into one
         central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
                                                     inputs.line_thickness, inputs.er, inputs.tangent_delta)
         load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,

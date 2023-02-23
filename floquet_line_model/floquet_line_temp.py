@@ -10,6 +10,8 @@ from utills.functions import mult_mats
 
 class SuperConductingFloquetLine_art():
 
+
+    # todo make the other floquet line follow this method od just putting all the line legments into one array
     def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness):
         # ---------------------------- model of the Super conductor
 
@@ -76,8 +78,20 @@ class SuperConductingFloquetLine_art():
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
 
+
+        # calculate central line alpha and beta
+        cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,surface_impedance)
+        cental_line_ABCD = mk_ABCD_Mat(cental_line_Zc, cental_line_gamma, sum([self.line_models[i].total_line_length for i in range(len(self.line_models))]))
+
+        central_line_propagation_const = self.Pd(cental_line_ABCD)
+        central_line_beta = central_line_propagation_const.imag
+        central_line_alpha = central_line_propagation_const.real
+
+
+
+
         # retuning outputs
-        return floquet_alpha, floquet_beta, 0, 0, floquet_r, floquet_x
+        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):
         return self.line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency, zs)
