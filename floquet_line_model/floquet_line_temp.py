@@ -51,19 +51,17 @@ class SuperConductingFloquetLine_art():
         surface_impedance = self.super_conductivity_model.surface_impedance_Zs(frequency, conductivity,
                                                                                self.thickness)
 
-        # get the sub ABCD mats for each line
-
+        # get the sub ABCD mats for each line in the unit cell
         segment_abcd_mats = []
+
         for segment_idx in range(len(self.line_models)):
             # 3) for each  line segment of unit cell make sub ABCD matrices
 
-            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,
-                                                                                            surface_impedance)
+            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,surface_impedance)
+            segment_abcd_mat = mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length)
+            segment_abcd_mats.append(segment_abcd_mat)
 
-            segment_abcd_mats.append(
-                mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length))
-
-        # 4) matrix multiply all the abcd mats to make Unit cell ABCD mat
+        # 4) matrix multiply all the sub abcd mats to make Unit cell ABCD mat
         unit_cell_abcd_mat = mult_mats(segment_abcd_mats)
 
         # 6) calculate all the needed outputs
@@ -77,14 +75,6 @@ class SuperConductingFloquetLine_art():
         floquet_r = floquet_bloch_impedance_pos_dir.real
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
-        # # calculate central line alpha and beta
-        # central_line_gamma, central_line_characteristic_impedance = self.unit_cell.get_segment_gamma_and_characteristic_impedance(
-        #     0, frequency, surface_impedance)
-        # central_line_mat = mk_ABCD_Mat(central_line_characteristic_impedance, central_line_gamma,
-        #                                self.unit_cell.unit_cell_length)
-        # central_line_propagation_const = self.Pd(central_line_mat)
-        # central_line_beta = central_line_propagation_const.imag
-        # central_line_alpha = central_line_propagation_const.real
 
         # retuning outputs
         return floquet_alpha, floquet_beta, 0, 0, floquet_r, floquet_x

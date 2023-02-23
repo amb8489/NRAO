@@ -66,8 +66,8 @@ class UnitCell():
         self.segment_lengths = [length for b in zip(central_line_lengths, load_D_lengths)
                                 for length in b] + [central_line_lengths[-1]]
 
-        self.segment_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
-                               for model in b] + [central_line_model]
+        self.segment_line_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
+                                    for model in b] + [central_line_model]
 
         assert abs(D - sum(
             self.segment_lengths)) <= .0001, f"sum of parts lengths != total line length {abs(D - sum(self.segment_lengths))}"
@@ -84,8 +84,8 @@ class UnitCell():
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx: int, frequency: float,
                                                        surface_impedance: complex):
-        return self.segment_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency,
-                                                                                                  surface_impedance)
+        return self.segment_line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency,
+                                                                                                       surface_impedance)
 
     # ABCD matrix of unit sell line segment
     # Z characteristic impedance; k wavenumber; l length

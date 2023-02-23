@@ -101,7 +101,7 @@ class TableModel1(QtCore.QAbstractTableModel):
 
 class TableInputWidget(QtWidgets.QWidget):
 
-    def __init__(self, colName, onChange=None, row_name=""):
+    def __init__(self, colName, onChange=None, row_name="",height = 100):
         super().__init__()
         self.setLayout(QVBoxLayout())
 
@@ -131,7 +131,7 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.setAlternatingRowColors(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.table.setMaximumHeight(100)
+        self.table.setMaximumHeight(height)
         # set widget color
         self.setBackGroundColor("#FFFFFF")
         # self.setFixedWidth(300)

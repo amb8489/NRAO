@@ -1,7 +1,5 @@
 import cmath
 import math
-import time
-from functools import cache
 
 import numpy as np
 import scipy.special as sp
@@ -9,6 +7,15 @@ import scipy.special as sp
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import capacitance_model_selector
 from utills.constants import PI2, KB, PI, PLANCK_CONST_REDUCEDev, C, MU_0, epsilon_0
+
+
+def idx():
+    i = 1
+
+    while True:
+        yield i
+        i += 1
+
 
 """
 
@@ -27,6 +34,9 @@ def lambda_0(sigma_n, delta_o):
     return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_n * delta_o))
 
 
+gen = idx()
+
+
 class SuperConductingArtificialCPWLine(AbstractSCTL):
 
     def __init__(self,
@@ -39,7 +49,8 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
                  epsilon_r: float,
                  thickness: float,
                  height: float, super_conductivity_model,
-                 total_line_length=None):
+                 total_line_length=None,
+                 ):
         self.central_line_length_LH = central_line_length_LH
         self.central_line_width_WH = central_line_width_WH
         self.load_length_LL = load_length_LL
@@ -61,7 +72,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
             self.number_of_finger_sections = total_line_length // self.Lu
             self.total_line_length = (total_line_length // self.Lu) * self.Lu
 
-            print("calculating number_of_finger_sections based om line length and Lu")
+            # print("calculating number_of_finger_sections based om line length and Lu")
 
             if self.number_of_finger_sections < 1:
                 raise Exception("Lu is greater than total line length")
@@ -80,6 +91,9 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg, thickness,
                                                  model_type=1)
+
+        print(
+            f"line #{next(gen)} Length:{total_line_length}   N:{self.number_of_finger_sections}   Lu:{self.central_line_length_LH + (2 * S) + self.load_length_LL}   S:{S}   WH:{self.central_line_width_WH}   LH:{self.central_line_length_LH}   WL:{self.load_width_WL}   LL:{self.load_length_LL}")
 
     def __L_aprox(self, Zo, beta_so, l):
         return Zo * beta_so * (l / C)
@@ -150,7 +164,6 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         Ltot = Lkc + Lg_
         return C * np.sqrt(Ltot * Cg_)
 
-
     def propagation_constant(self, L1: float, L2: float, capacitance: float, omega: float):
 
         omega_omega = omega ** 2
@@ -176,8 +189,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
 
         propagation_constant = self.propagation_constant(self.L1, self.L2, 2 * self.capacitance, PI2 * frequency)
 
-
         characteristic_impedance_Zc = self.characteristic_impedance(self.L1, self.L2, 2 * self.capacitance,
-                                                     PI2 * frequency).real
+                                                                    PI2 * frequency).real
 
-        return (propagation_constant / self.delta_z).imag, characteristic_impedance_Zc
+        return (propagation_constant / self.delta_z), characteristic_impedance_Zc

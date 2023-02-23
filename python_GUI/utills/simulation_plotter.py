@@ -29,8 +29,8 @@ def simulate(line_model):
     # todo
     FRange = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
 
-    for F in FRange:
-        alpha, beta, alphaCl, betaCL, r_, x_ = floquet_line.simulate(F)
+    for frequency in FRange:
+        alpha, beta, alphaCl, betaCL, r_, x_ = floquet_line.simulate(frequency)
         # RR.append(R)
         # LL.append(L)
         # GG.append(G)
@@ -72,6 +72,7 @@ def simulate(line_model):
     ax2 = ax1.twinx()
     ax2.set_ylabel('beta - beta0', color='tab:orange')
     ax2.plot(FRange, np.array(unfold(beta_plt)) - np.array(unfold(cl_beta)), color='tab:orange')
+
 
     ax2.tick_params(axis='y', labelcolor='tab:orange')
     fig1.tight_layout()

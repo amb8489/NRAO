@@ -80,11 +80,12 @@ def floquet_line_builder(line_model):
         h = inputs.height
 
         line_models = []
+        i = 1
         for line_len, S, WH, LH, WL, LL in inputs.line_dimensions:
-            nfs = line_len // (LH + 2 * S + LL)
+            nfs = line_len // (LH + (2 * S) + LL)
             line_models.append(
                 SuperConductingArtificialCPWLine(LH, WH, LL, WL, S, nfs, er, ts, h, super_conductivity_model, line_len))
-
+            i += 1
         floquet_line = SuperConductingFloquetLine_art(line_models, super_conductivity_model, ts)
         return floquet_line
 
