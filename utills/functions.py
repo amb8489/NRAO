@@ -81,15 +81,46 @@ def ellip_k(n):
     return scipy.special.ellipk(n)
 
 
-def unfold(betas):
-
-    # make signal monotonically increasing
-    lst = np.array(betas)
+def mk_monotinic_inc(lst):
+    # # make signal monotonically increasing
+    lst = np.array(lst)
     for i in range(1, len(lst)):
         if lst[i] < lst[i - 1]:
             lst[i:] += (lst[i - 1] - lst[i])
     return lst
 
+
+def unfold(betas):
+
+    # return mk_monotinic_inc(betas)
+
+    betas = np.abs(betas)
+    prev_beta = 0
+    scale_factor = -PI2
+    should_flip = False
+    res = []
+    for b in betas:
+
+        temp = b
+
+        if b <= prev_beta:
+            # REFLACTION OVER Y = PI
+            b += 2 * (PI - b)
+
+            if should_flip:
+                should_flip = not should_flip
+
+        elif b > prev_beta:
+            if not should_flip:
+                # TRANSLATE UP NO REFLECTION
+                scale_factor += PI2
+                should_flip = not should_flip
+
+        res.append(b + scale_factor)
+
+        prev_beta = temp
+
+    return res
 
 
 def mult_mats(mats):
@@ -123,6 +154,7 @@ def convert_s_matrix_to_ABCD(s_matrix: [[complex]], Z0):
 
 
 DEBUG_FLAG = False
+
 
 def printDb(*args):
     if DEBUG_FLAG:

@@ -5,9 +5,10 @@ from python_gui.line_model_inputs.artificial_cpw_input_widget import ArtificialC
 from python_gui.line_model_inputs.cpw_input_widget import CPWInputsWidget
 from python_gui.line_model_inputs.micro_strip_input_widget import MicroStripInputsWidget
 from python_gui.line_model_inputs.s_matrix_input_widget import SMatrixInputsWidget
+from python_gui.utills.simulation_plotter import simulate
 from python_gui.utills.utills_gui import BASE_COLOR
 from python_gui.views.load_veiw import LoadSettingsWindow
-from python_gui.views.plot_veiw import PlotWindow
+from python_gui.views.plot_window import Plot_Window
 from python_gui.views.save_veiw import SaveWindow
 
 matplotlib.use('Qt5Agg')
@@ -135,11 +136,6 @@ class MainWindow(QMainWindow):
         # resetting the plot window
         self.plotWindow = None
 
-        # todo will error on model with no SCW or materials_table temp fix for testing
-        try:
-            line_model.materials_table.onchange = self.line_model.SCW.setValues
-        except:
-            pass
 
     def model_changed(self, modelName):
 
@@ -167,19 +163,18 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-
-
     def print_inputs(self):
         print(self.line_model.get_inputs())
 
     def show_plot_window(self):
 
+        plots = simulate(self.line_model)
+
         if self.plotWindow:
-            self.plotWindow.clearPlots()
-            self.plotWindow.plot()
+            self.plotWindow.update_plots(plots)
         else:
             # open a new plotting window
-            self.plotWindow = PlotWindow(self.line_model)
+            self.plotWindow = Plot_Window(plots)
 
         self.plotWindow.show()
 
