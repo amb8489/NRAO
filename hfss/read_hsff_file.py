@@ -1,10 +1,9 @@
 import cmath
 
-import matplotlib.pyplot as plt
 import numpy as np
 import skrf as rf
 
-from utills.functions import unfold, mk_monotinic_inc
+from utills.functions import mk_monotinic_inc
 
 
 def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
@@ -85,4 +84,5 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
 
-    return frequency_range, floquet_alphas, [0]*len(floquet_alphas), floquet_betas, [0]*len(floquet_betas), floquet_rs, floquet_xs
+    return frequency_range, floquet_alphas, [0] * len(floquet_alphas), floquet_betas, [0] * len(
+        floquet_betas), floquet_rs, floquet_xs
