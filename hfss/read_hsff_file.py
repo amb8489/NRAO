@@ -19,6 +19,14 @@ def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
     return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
 
+def mk_monotonic(lst):
+    lst = np.array(lst)
+    for i in range(1, len(lst)):
+        if lst[i] < lst[i - 1]:
+            lst[i:] += (lst[i - 1] - lst[i])
+    return lst
+
+
 def Pd(ABCD_mat_2x2: [[complex]]):
     A = ABCD_mat_2x2[0][0]
     D = ABCD_mat_2x2[1][1]
@@ -73,8 +81,9 @@ for unit_cell_abcd_mat in unit_cell_ABCD_mats:
 
 plt.plot(frequency_range, floquet_alphas)
 
-
 floquet_betas = savgol_filter(floquet_betas, 15, 1)
 plt.plot(frequency_range, floquet_betas)
+
 # plt.plot(frequency_range, unfold(floquet_betas))
+plt.plot(frequency_range, mk_monotonic(floquet_betas))
 plt.show()
