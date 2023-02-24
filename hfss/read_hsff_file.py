@@ -73,6 +73,7 @@ for unit_cell_abcd_mat in unit_cell_ABCD_mats:
 
 plt.plot(frequency_range, floquet_alphas)
 
+
 floquet_betas = savgol_filter(floquet_betas, 15, 1)
 plt.plot(frequency_range, floquet_betas)
 # plt.plot(frequency_range, unfold(floquet_betas))
