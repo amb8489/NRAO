@@ -120,7 +120,7 @@ class TableInputWidget(QtWidgets.QWidget):
 
         # defualt materials_table data and materials_table model
         defualt_n_loads = 2
-        data = [[10] * len(colName) for i in range(defualt_n_loads)]
+        data = [[1] * len(colName) for i in range(defualt_n_loads)]
 
         self.model = TableModel1(data, colName, self.onChange, row_name)
         self.table.setModel(self.model)

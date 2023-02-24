@@ -60,6 +60,7 @@ def simulate(line_model):
 
     # ------- test ------
     # Create some mock data
+    plt.close()
 
     fig1, ax1 = plt.subplots()
     ax1.set_ylabel('alpha - alpha0', color='tab:blue')

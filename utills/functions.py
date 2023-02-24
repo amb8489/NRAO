@@ -120,8 +120,28 @@ def mult_mats(mats):
     return res
 
 
-DEBUG_FLAG = False
+def convert_s_matrix_to_ABCD(s_matrix: [[complex]], Z0):
+    s11 = s_matrix[0][0]
 
+    s12 = s_matrix[0][1]
+    s21 = s_matrix[1][0]
+    s22 = s_matrix[1][1]
+
+    denom = (2 * s21)
+    s12s21 = s12 * s21
+
+    A = ((1 + s11) * (1 - s22) + s12s21) / denom
+
+    B = Z0 * ((1 + s11) * (1 + s22) - s12s21) / denom
+
+    C = (1 / Z0) * ((1 - s11) * (1 - s22) - s12s21) / denom
+
+    D = ((1 - s11) * (1 + s22) + s12s21) / denom
+
+    return np.array([[A, B], [C, D]])
+
+
+DEBUG_FLAG = False
 
 def printDb(*args):
     if DEBUG_FLAG:

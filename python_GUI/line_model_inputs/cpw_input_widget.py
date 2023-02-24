@@ -38,7 +38,7 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["D [μm]", "Widths [μm]"],
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["unit_cell_length [μm]", "Widths [μm]"],
                                                                  [unit_cell_length, central_line_width, D0,
                                                                   ground_spacing])
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)

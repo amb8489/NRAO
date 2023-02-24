@@ -1,7 +1,9 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
+from python_gui.utills.unit import nameUnit
 from python_gui.utills.utills_gui import DIMS_WIDGET_COLOR
+from python_gui.widgets.float_input_widget import WidgetDoubleInput
 from python_gui.widgets.table_input_widget import TableInputWidget
 
 matplotlib.use('Qt5Agg')
@@ -32,8 +34,15 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
-        self.inputnames = input_names
+        self.inputnames = [nameUnit("Wu","mico"),nameUnit("Wl","mico")]
         self.inputs = []
+
+        # for i in range(len(self.inputnames)):
+        #     input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit(), color=DIMS_WIDGET_COLOR, onchange=self.calc_LL_WL)
+        #     x = i % 2
+        #     y = i // 2
+        #     self.layout().addWidget(input_widget, 3+y,x)
+        #     self.inputs.append(input_widget)
 
         self.displays = []
 
@@ -73,6 +82,18 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
             values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
 
         return values
+
+
+
+
+
+
+
+
+
+
+
+
 
     def update_line_data(self):
 

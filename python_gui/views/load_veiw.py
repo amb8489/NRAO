@@ -48,7 +48,8 @@ class LoadSettingsWindow(QScrollArea):
         self.setting_rows = []
 
         for row_idx, setting in enumerate(settings):
-            self.setting_rows.append(Setting_Button_Row(setting, self.load_setting, self.delete_setting,self.update_setting))
+            self.setting_rows.append(
+                Setting_Button_Row(setting, self.load_setting, self.delete_setting, self.update_setting))
             self.grid.addWidget(self.setting_rows[row_idx], row_idx + 1, 0, Qt.AlignTop)
 
         self.cancel_button = QPushButton('Cancel', self, clicked=lambda: self.close())
@@ -100,6 +101,8 @@ class LoadSettingsWindow(QScrollArea):
     # setting or row number
     def update_setting(self, row_idx: int):
 
+        # todo are are you sure popup window
+
         # update the rest of the setting_rows idx and line numbers that came after idx in setting_rows array
 
         row = self.setting_rows[row_idx]
@@ -124,4 +127,4 @@ class LoadSettingsWindow(QScrollArea):
 
             f.truncate()
 
-
+        self.close()

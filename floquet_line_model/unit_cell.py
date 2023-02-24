@@ -44,12 +44,13 @@ class UnitCell():
         self.load_segment_models = load_line_models
         self.unit_cell_length = unit_cell_length
 
+        # weiving the unloaded and loaded models together unloaded - loaded - unloaded ...
         self.segment_line_models = [model for b in zip([central_line_model] * len(load_line_models), load_line_models)
                                     for model in b] + [central_line_model]
 
-        self.segment_lengths = self.calculate_line_segment_lenghts(D0, load_D_lengths, unit_cell_length)
+        self.segment_lengths = self.__calculate_line_segment_lenghts(D0, load_D_lengths, unit_cell_length)
 
-    def calculate_line_segment_lenghts(self, D0, load_D_lengths, unit_cell_length):
+    def __calculate_line_segment_lenghts(self, D0, load_D_lengths, unit_cell_length):
 
         central_line_lengths = []
 
