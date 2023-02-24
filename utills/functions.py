@@ -91,35 +91,6 @@ def unfold(betas):
     return lst
 
 
-    #
-    # betas = np.abs(betas)
-    # prev_beta = 0
-    # scale_factor = -PI2
-    # should_flip = False
-    # res = []
-    # for b in betas:
-    #
-    #     temp = b
-    #
-    #     if b <= prev_beta:
-    #         # REFLACTION OVER Y = PI
-    #         b += 2 * (PI - b)
-    #
-    #         if should_flip:
-    #             should_flip = not should_flip
-    #
-    #     elif b > prev_beta:
-    #         if not should_flip:
-    #             # TRANSLATE UP NO REFLECTION
-    #             scale_factor += PI2
-    #             should_flip = not should_flip
-    #
-    #     res.append(b + scale_factor)
-    #
-    #     prev_beta = temp
-    #
-    # return res
-
 
 def mult_mats(mats):
     # input is an array of 2x2 matrices

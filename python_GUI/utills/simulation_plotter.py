@@ -63,19 +63,18 @@ def simulate(line_model):
     plt.close()
 
     fig1, ax1 = plt.subplots()
-    ax1.set_ylabel('alpha - alpha0', color='tab:blue')
+    ax1.set_ylabel('alpha - alpha0', color='tab:red')
 
 
-    ax1.plot(FRange, np.array(alpha_plt) - np.array(cl_alpha) , color='tab:blue')
+    ax1.plot(FRange, np.array(alpha_plt) - np.array(cl_alpha) , color='tab:red')
 
-    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    ax1.tick_params(axis='y', labelcolor='tab:red')
     ax1.set_xlabel('Frequency [GHz]')
     ax2 = ax1.twinx()
-    ax2.set_ylabel('beta - beta0', color='tab:orange')
-    ax2.plot(FRange, np.array(unfold(beta_plt)) - np.array(unfold(cl_beta)), color='tab:orange')
+    ax2.set_ylabel('beta - beta0', color='tab:green')
+    ax2.plot(FRange, np.array(unfold(beta_plt))- np.array(unfold(cl_beta)), color='tab:green')
 
-
-    ax2.tick_params(axis='y', labelcolor='tab:orange')
+    ax2.tick_params(axis='y', labelcolor='tab:green')
     fig1.tight_layout()
 
     # --------------------------------------------------------------------
