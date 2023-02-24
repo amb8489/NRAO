@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # step 3) gain
 
     """
-    The term I∗ is proportional to I∗′/√α∗, where I∗′ is alpha_plt parameter comparable to the critical current ic, and α∗ is 
+    The term I∗ is proportional to I∗′/√α∗, where I∗′ is floquet_alpha parameter comparable to the critical current ic, and α∗ is 
     the ratio of kinetic inductance to total inductance.
     
     """

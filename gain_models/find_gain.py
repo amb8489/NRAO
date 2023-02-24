@@ -38,7 +38,7 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     # step 4) calc gain for each frequency using betas calced above and other init vars
     gain = []
     for i in range(len(frequencys)):
-        # todo generalize amplitude equations into alpha_plt class maybe that holds all amplitude_eqs1_args info and what equations to use?
+        # todo generalize amplitude equations into floquet_alpha class maybe that holds all amplitude_eqs1_args info and what equations to use?
         amplitude_eqs1_args = (beta_signal[i], beta_idler[i], beta_pump)
 
         # opt split up into multiple processes then recombine

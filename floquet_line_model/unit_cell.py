@@ -1,6 +1,6 @@
 '''
 
-class to represent alpha_plt floquet line
+class to represent floquet_alpha floquet line
 
 given:
  -unit_cell_length: the len of unit cell

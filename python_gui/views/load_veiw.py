@@ -10,8 +10,8 @@ from python_gui.widgets.setting_button_row import Setting_Button_Row
 
 class LoadSettingsWindow(QScrollArea):
     """
-    This "window" is alpha_plt QWidget. If it has no parent, it
-    will appear as alpha_plt free-floating window as we want.
+    This "window" is floquet_alpha QWidget. If it has no parent, it
+    will appear as floquet_alpha free-floating window as we want.
     """
 
     def __init__(self, settings_model):

@@ -7,8 +7,8 @@ from python_gui.utills.utills_gui import SETTINGS_FILE_PATH, randomColor
 
 class SaveWindow(QScrollArea):
     """
-    This "window" is alpha_plt QWidget. If it has no parent, it
-    will appear as alpha_plt free-floating window as we want.
+    This "window" is floquet_alpha QWidget. If it has no parent, it
+    will appear as floquet_alpha free-floating window as we want.
     """
 
     # todo make not relitive to my computer

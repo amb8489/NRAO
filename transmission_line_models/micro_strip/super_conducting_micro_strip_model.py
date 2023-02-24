@@ -359,7 +359,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return self.Kl(w, h, thickness) / w
 
     """
-    series impedance of alpha_plt TEM transmission_plt line
+    series impedance of floquet_alpha TEM transmission_plt line
     ko is the free-space wavenumber
     No is the impedance of free space
     Zs, is the surface impedance of the conductors
@@ -370,11 +370,11 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
 
     """
-    shunt admittance of alpha_plt TEM transmission_plt line
+    shunt admittance of floquet_alpha TEM transmission_plt line
     ko is the free-space wavenumber
     No is the impedance of free space
     epsilon_fm the effective dielectric constant -- in the modal sense.
-    g1 is alpha_plt geometrical factor, which characterize the particular transmission_plt line being used.
+    g1 is floquet_alpha geometrical factor, which characterize the particular transmission_plt line being used.
     """
 
     def shunt_admittance_Y(self, epsilon_fm, g1, f):

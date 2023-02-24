@@ -18,12 +18,12 @@ def coth(x):
     return 1 / math.tanh(x)
 
 
-# Computes the hyperbolic secant of 𝑥 if x is alpha_plt complex number
+# Computes the hyperbolic secant of 𝑥 if x is floquet_alpha complex number
 def csech(x):
     return 1 / cmath.cosh(x)
 
 
-# Computes the hyperbolic tangent of 𝑥 if x is alpha_plt complex number
+# Computes the hyperbolic tangent of 𝑥 if x is floquet_alpha complex number
 def ccoth(x):
     return 1 / cmath.tanh(x)
 
@@ -57,7 +57,7 @@ def micro_ohms_cm_to_ohms_m(n):
 
 
 def find_idx_of_closest_value(list, value):
-    """Returns the closest value to value in alpha_plt sorted list.
+    """Returns the closest value to value in floquet_alpha sorted list.
 
     If two numbers are equally close, return the smallest number.
     """
@@ -125,7 +125,7 @@ def unfold(betas):
 
 def mult_mats(mats):
     # input is an array of 2x2 matrices
-    # does alpha_plt matrix multiplication of all 2x2 matrices passed in,in array
+    # does floquet_alpha matrix multiplication of all 2x2 matrices passed in,in array
     res = mats[0]
     for mat in mats[1:]:
         res = mult_2x2_mat(res, mat)

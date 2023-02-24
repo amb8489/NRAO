@@ -85,31 +85,4 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
 
-
-
-    fig1, ax1 = plt.subplots()
-    ax1.set_ylabel('alpha - alpha0', color='tab:red')
-
-    ax1.plot(frequency_range, np.array(floquet_alphas), color='tab:red')
-
-    ax1.tick_params(axis='y', labelcolor='tab:red')
-    ax1.set_xlabel('Frequency [GHz]')
-    ax2 = ax1.twinx()
-    ax2.set_ylabel('beta - beta0', color='tab:green')
-    # floquet_betas = savgol_filter(floquet_betas, 15, 1)
-    ax2.plot(frequency_range, np.array(mk_monotinic_inc(floquet_betas)), color='tab:green')
-
-    ax2.tick_params(axis='y', labelcolor='tab:green')
-    fig1.tight_layout()
-
-    # --------------------------------------------------------------------
-    fig2, ax12 = plt.subplots()
-    color = 'tab:blue'
-    ax12.set_ylabel('r Blue -- x orange', color=color)
-    ax12.plot(frequency_range, floquet_rs, color=color)
-    ax12.tick_params(axis='y', labelcolor=color)
-    ax12.set_xlabel('Frequency [GHz]')
-    ax12.plot(frequency_range, floquet_xs, color='tab:orange')
-    fig2.tight_layout()
-
-    return [fig1, fig2]
+    return frequency_range, floquet_alphas, [0]*len(floquet_alphas), floquet_betas, [0]*len(floquet_betas), floquet_rs, floquet_xs
