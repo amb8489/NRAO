@@ -7,6 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from floquet_line_model.floquet_line_builder import floquet_line_builder
+from hfss.read_hsff_file import hsff_simulate
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
 from utills.functions import toGHz, unfold
 
@@ -15,6 +16,18 @@ from utills.functions import toGHz, unfold
 
 
 def simulate(line_model):
+
+
+
+    if line_model.type == "SMAT":
+
+        return __simulate_hfss(line_model)
+
+
+
+
+
+
     floquet_line = floquet_line_builder(line_model)
     # ---------------------------- calculations -------------------
     alpha_plt, r, x, beta_plt, beta_unfold_plt, RR, LL, GG, CC, gamma, transmission_plt = [], [], [], [], [], [], [], [], [], [], []
@@ -62,6 +75,8 @@ def simulate(line_model):
     # Create some mock data
     plt.close()
 
+    # todo refactor this plotting code to be genral where it just takens in the arrrays as inputs and returns the plots
+
     fig1, ax1 = plt.subplots()
     ax1.set_ylabel('alpha - alpha0', color='tab:red')
 
@@ -88,3 +103,9 @@ def simulate(line_model):
     fig2.tight_layout()
 
     return [fig1, fig2]
+
+
+
+def __simulate_hfss(line_model):
+
+    return hsff_simulate(line_model.file_path, int(line_model.n_interp_points.get_value()))

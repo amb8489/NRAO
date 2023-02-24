@@ -31,6 +31,8 @@ OHMS = "Ω"
 MICRO_OHMS_CM = "μΩ.cm"
 GHZ = "GHz"
 
+
+#todo this all gotta go or change
 Er = nameUnit("Er")
 SC_height = nameUnit("Height", NANO_METER)
 SC_ground_thickness = nameUnit("Ground Thickness", MICRO_METER)
