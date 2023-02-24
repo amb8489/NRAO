@@ -3,6 +3,7 @@ import cmath
 import matplotlib.pyplot as plt
 import numpy as np
 import skrf as rf
+from scipy.signal import savgol_filter
 
 
 def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
@@ -39,7 +40,7 @@ def abcd_N_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path: 
     interp_freq_range = rf.frequency.Frequency(start=network.frequency.start / 1e9, stop=network.frequency.stop / 1e9,
                                                npoints=n_interp_points, unit='ghz')
 
-    network = network.interpolate(interp_freq_range, basis="s")
+    network = network.interpolate(interp_freq_range, basis="a")
 
     unit_cell_ABCD_mats = network.a
     simulated_frequency_range = network.f
@@ -51,8 +52,6 @@ hfss_touchstone_file_path = '/Users/aaron/Desktop/Artificial_03_Artificial_UnitC
 n_interp_points = 1000
 unit_cell_ABCD_mats, frequency_range = abcd_N_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path,
                                                                                         n_interp_points)
-
-
 
 floquet_alphas, floquet_betas, floquet_rs, floquet_xs = [], [], [], []
 for unit_cell_abcd_mat in unit_cell_ABCD_mats:
@@ -73,10 +72,8 @@ for unit_cell_abcd_mat in unit_cell_ABCD_mats:
     floquet_xs.append(floquet_x)
 
 plt.plot(frequency_range, floquet_alphas)
-plt.plot(frequency_range, floquet_betas)
-plt.show()
 
-plt.close()
-plt.plot(frequency_range, floquet_rs)
-plt.plot(frequency_range, floquet_xs)
+floquet_betas = savgol_filter(floquet_betas, 15, 1)
+plt.plot(frequency_range, floquet_betas)
+# plt.plot(frequency_range, unfold(floquet_betas))
 plt.show()
