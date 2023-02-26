@@ -1,6 +1,7 @@
 import bisect
 import cmath
 import math
+import time
 
 import numpy as np
 import scipy
@@ -81,14 +82,21 @@ def ellip_k(n):
     return scipy.special.ellipk(n)
 
 
-def mk_monotinic_inc(lst):
-    # # make signal monotonically increasing
-    lst = np.array(lst)
-    for i in range(1, len(lst)):
-        if lst[i] < lst[i - 1]:
-            lst[i:] += (lst[i - 1] - lst[i])
-    return lst
 
+
+def mk_monotinic_inc(lst :[float]):
+    # make lst monotonically increasing
+    acc = 0
+    for i in range(1, len(lst)):
+        lst[i] += acc
+        if lst[i] < lst[i - 1]:
+            diff = (lst[i - 1] - lst[i])
+            acc += diff
+            lst[i] += diff
+
+
+
+    return lst
 
 def unfold(betas):
 
@@ -159,3 +167,24 @@ DEBUG_FLAG = False
 def printDb(*args):
     if DEBUG_FLAG:
         print("DEBUG: ", *args)
+
+
+
+if __name__ == '__main__':
+    rdarrr = np.random.randint(100, size=10000)
+
+
+
+
+    start = time.time()
+    b = mk_monotinic_inc(rdarrr)
+
+    print(time.time() - start)
+
+
+
+
+
+
+
+
