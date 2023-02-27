@@ -102,20 +102,11 @@ class SuperConductingMicroStripModel(AbstractSCTL):
 
         # From Roberto Sorretino's book (referencing Yamashita [13] at eq. 3.186, page 100 of PDF):
         F_1_nu = (4 * sc_height * frequency / C) * np.sqrt(er - 1) * (
-                    0.5 + (1 + 2 * np.log(1 + sc_width / sc_height)) ** 2)
+                0.5 + (1 + 2 * np.log(1 + sc_width / sc_height)) ** 2)
         eps_fm_nu = ((np.sqrt(er) - np.sqrt(eps_fm_static)) / (1 + 4 * F_1_nu ** (-1.5)) + np.sqrt(
             eps_fm_static)) ** 2
 
         return eps_fm_nu * (1 - 1j * tand)
-
-        # F1Freq = ((4 * sc_height * frequency) / c) * cmath.sqrt(er - 1) * \
-        #          (.5 + (1 + 2 * cmath.log(1 + (sc_width / sc_height))) ** 2)
-        #
-        # ep_s = ((er + 1) / 2) + ((er - 1) / (2 * cmath.sqrt(1 + (12 * (sc_height / sc_width)))))
-        #
-        # ep_v = (((cmath.sqrt(er) - cmath.sqrt(ep_s)) / (1 + 4 * (F1Freq ** -1.5))) + cmath.sqrt(ep_s)) ** 2
-        #
-        # return ep_v * (1 - (1j * tand))
 
     def series_impedance_Z(self, Zs, g1, g2, f):
         return (1j * (K0(f) * Z0) * g1) + (2 * g2 * Zs)
