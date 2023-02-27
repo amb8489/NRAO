@@ -5,11 +5,10 @@ import numpy as np
 from floquet_line_model.unit_cell import mk_ABCD_Mat
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from utills.functions import mult_mats
+from utills.functions import mult_mats, Transmission
 
 
 class SuperConductingFloquetLine_art():
-
 
     # todo make the other floquet line follow this method od just putting all the line legments into one array
     def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness):
@@ -59,7 +58,8 @@ class SuperConductingFloquetLine_art():
         for segment_idx in range(len(self.line_models)):
             # 3) for each  line segment of unit cell make sub ABCD matrices
 
-            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,surface_impedance)
+            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,
+                                                                                            surface_impedance)
             segment_abcd_mat = mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length)
             segment_abcd_mats.append(segment_abcd_mat)
 
@@ -77,21 +77,26 @@ class SuperConductingFloquetLine_art():
         floquet_r = floquet_bloch_impedance_pos_dir.real
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
-
+        N_unit_cells = 100
+        impedance = 50
+        unit_cell_length = sum([self.line_models[i].total_line_length for i in range(len(self.line_models))])
+        floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
+                                            floquet_bloch_impedance_neg_dir,
+                                            unit_cell_length,
+                                            floquet_propagation_const)
 
         # calculate central line alpha and beta
-        cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,surface_impedance)
-        cental_line_ABCD = mk_ABCD_Mat(cental_line_Zc, cental_line_gamma, sum([self.line_models[i].total_line_length for i in range(len(self.line_models))]))
+        cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,
+                                                                                                surface_impedance)
+        cental_line_ABCD = mk_ABCD_Mat(cental_line_Zc, cental_line_gamma, unit_cell_length)
 
         central_line_propagation_const = self.Pd(cental_line_ABCD)
         central_line_beta = central_line_propagation_const.imag
         central_line_alpha = central_line_propagation_const.real
 
-
-
-
         # retuning outputs
-        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x
+        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x,\
+               floquet_transmission
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):
         return self.line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency, zs)

@@ -6,7 +6,7 @@ import time
 import numpy as np
 import scipy
 
-from utills.constants import PI2, PI
+from utills.constants import PI2
 
 
 # Computes the hyperbolic secant of 𝑥
@@ -82,53 +82,19 @@ def ellip_k(n):
     return scipy.special.ellipk(n)
 
 
+#
+def beta_unfold(lst):
+    lst = np.abs(lst)
+    differ = np.diff(lst) < 0
 
-
-def mk_monotinic_inc(lst :[float]):
-    # make lst monotonically increasing
     acc = 0
     for i in range(1, len(lst)):
         lst[i] += acc
-        if lst[i] < lst[i - 1]:
-            diff = (lst[i - 1] - lst[i])
+        if differ[i - 1]:
+            diff = 2 * (lst[i - 1] - lst[i])
             acc += diff
             lst[i] += diff
-
-
-
     return lst
-
-def unfold(betas):
-
-    # return mk_monotinic_inc(betas)
-
-    betas = np.abs(betas)
-    prev_beta = 0
-    scale_factor = -PI2
-    should_flip = False
-    res = []
-    for b in betas:
-
-        temp = b
-
-        if b <= prev_beta:
-            # REFLACTION OVER Y = PI
-            b += 2 * (PI - b)
-
-            if should_flip:
-                should_flip = not should_flip
-
-        elif b > prev_beta:
-            if not should_flip:
-                # TRANSLATE UP NO REFLECTION
-                scale_factor += PI2
-                should_flip = not should_flip
-
-        res.append(b + scale_factor)
-
-        prev_beta = temp
-
-    return res
 
 
 def mult_mats(mats):
@@ -169,22 +135,33 @@ def printDb(*args):
         print("DEBUG: ", *args)
 
 
+def Transmission(Ncells: int, z0: float, bloch_impedance_pos: complex,
+                 bloch_impedance_neg: complex,
+                 unit_cell_len: float, pb: complex):
+    z1_sub_z2 = bloch_impedance_pos - bloch_impedance_neg
+    expo = cmath.exp(2 * unit_cell_len * Ncells * pb)
+
+    return ((2 * cmath.exp(unit_cell_len * Ncells * pb) *
+             (z1_sub_z2) * z0) / ((1 + expo) * (z1_sub_z2) * z0 - (- 1 + expo) * (
+            bloch_impedance_pos * bloch_impedance_neg - (z0 ** 2))))
+
+
+def RLGC_circuit_factors(self, propagationConst: complex, Zb: complex):
+    Z = propagationConst * Zb
+    Y = propagationConst / Zb
+
+    R = Z.real
+    L = Z.imag
+
+    G = Y.real
+    C = Y.imag
+    return R, L, G, C
+
 
 if __name__ == '__main__':
     rdarrr = np.random.randint(100, size=10000)
 
-
-
-
     start = time.time()
-    b = mk_monotinic_inc(rdarrr)
+    b = beta_unfold(rdarrr)
 
     print(time.time() - start)
-
-
-
-
-
-
-
-

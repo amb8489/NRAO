@@ -6,6 +6,7 @@ from scipy.signal import find_peaks, peak_widths
 from floquet_line_model.unit_cell import UnitCell, mk_ABCD_Mat
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
+from utills.functions import Transmission
 
 
 # todo some refactoring and document all
@@ -54,26 +55,8 @@ class SuperConductingFloquetLine():
 
         return np.arccosh(((A + D) / 2))
 
-    def RLGC_circuit_factors(self, propagationConst: complex, Zb: complex):
-        Z = propagationConst * Zb
-        Y = propagationConst / Zb
 
-        R = Z.real
-        L = Z.imag
 
-        G = Y.real
-        C = Y.imag
-        return R, L, G, C
-
-    def Transmission(self, Ncells: int, z0: float, bloch_impedance_positive_direction: complex,
-                     bloch_impedance_negitive_direction: complex,
-                     Unit_Cell_Len: float, pb: complex):
-        return ((2 * cmath.exp(Unit_Cell_Len * Ncells * pb) * (
-                bloch_impedance_positive_direction - bloch_impedance_negitive_direction) * z0) /
-                ((1 + cmath.exp(2 * Unit_Cell_Len * Ncells * pb)) * (
-                        bloch_impedance_positive_direction - bloch_impedance_negitive_direction) * z0 -
-                 (- 1 + cmath.exp(2 * Unit_Cell_Len * Ncells * pb)) * (
-                         bloch_impedance_positive_direction * bloch_impedance_negitive_direction - (z0 ** 2))))
 
     def FindPumpZone(self, peak_number: int, alphas: [float]):
         x = np.array(alphas)
@@ -112,14 +95,12 @@ class SuperConductingFloquetLine():
         floquet_r = floquet_bloch_impedance_pos_dir.real
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
-        # calculate circuit factors
-        circuit_R, circuit_L, circuit_G, circuit_C = self.RLGC_circuit_factors(floquet_propagation_const,
-                                                                               floquet_bloch_impedance_pos_dir)
+
 
         # calc transmission todo add these inputs to UI
         N_unit_cells = 100
         impedance = 50
-        floquet_transmission = self.Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
+        floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
                                                  floquet_bloch_impedance_neg_dir,
                                                  self.unit_cell.unit_cell_length,
                                                  floquet_propagation_const)
@@ -134,4 +115,4 @@ class SuperConductingFloquetLine():
         central_line_alpha = central_line_propagation_const.real
 
         # retuning outputs
-        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x
+        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x,floquet_transmission

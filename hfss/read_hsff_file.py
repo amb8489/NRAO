@@ -3,7 +3,7 @@ import cmath
 import numpy as np
 import skrf as rf
 
-from utills.functions import mk_monotinic_inc
+from utills.functions import beta_unfold, Transmission
 
 
 def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
@@ -66,7 +66,7 @@ def hsff_simulate(file_path, n_interp_points):
     unit_cell_ABCD_mats, frequency_range = abcd_and_frequency_range_from_hfss_touchstone_file(file_path,
                                                                                               n_interp_points)
 
-    floquet_alphas, floquet_betas, floquet_rs, floquet_xs = [], [], [], []
+    floquet_alphas, floquet_betas, floquet_rs, floquet_xs,floquet_transmission = [], [], [], [],[]
     for unit_cell_abcd_mat in unit_cell_ABCD_mats:
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
@@ -84,5 +84,15 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
 
+        # calc transmission todo add these inputs to UI
+        N_unit_cells = 100
+        impedance = 50
+        unit_cell_length_todo = .0001
+        floquet_transmission_ = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
+                                                 floquet_bloch_impedance_neg_dir,
+                                                 unit_cell_length_todo,
+                                                 floquet_propagation_const)
+        floquet_transmission.append(floquet_transmission_)
+
     return frequency_range, floquet_alphas, [0] * len(floquet_alphas), floquet_betas, [0] * len(
-        floquet_betas), floquet_rs, floquet_xs
+        floquet_betas), floquet_rs, floquet_xs,floquet_transmission
