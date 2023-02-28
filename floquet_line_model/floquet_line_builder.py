@@ -1,5 +1,5 @@
 from floquet_line_model.floquet_line import SuperConductingFloquetLine
-from floquet_line_model.floquet_line_temp import SuperConductingFloquetLine_art
+from floquet_line_model.floquet_line_art_line import SuperConductingFloquetLine_art
 from model_inputs.artificial_cpw_inputs import ArtificialCPWInputs
 from model_inputs.cpw_inputs import CPWInputs
 from model_inputs.micro_strip_inputs import MicroStripInputs

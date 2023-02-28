@@ -20,15 +20,15 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     # -------------------ALPHA , BETA PLOTS---------------------------------
 
     fig1, ax1 = plt.subplots()
-    fig1.suptitle('ALPHA BETAS')
+    fig1.suptitle('Delta Alpha d and beta d')
 
-    ax1.set_ylabel('alpha - alpha0', color='tab:red')
+    ax1.set_ylabel('δ αd', color='tab:red')
     ax1.plot(frequency_range, np.array(floquet_alpha) - np.array(central_line_alpha), color='tab:red')
     ax1.tick_params(axis='y', labelcolor='tab:red')
     ax1.set_xlabel('Frequency [GHz]')
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('beta - beta0', color='tab:green')
+    ax2.set_ylabel('δ βd', color='tab:green')
     ax2.plot(frequency_range, np.array(beta_unfold(floquet_beta)) - np.array(beta_unfold(central_line_beta)),
              color='tab:green')
     ax2.tick_params(axis='y', labelcolor='tab:green')
@@ -38,10 +38,12 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     fig2, ax22 = plt.subplots()
     color = 'tab:blue'
     fig2.suptitle('Floquet R and X')
-    ax22.set_ylabel('r Blue -- x orange', color=color)
+    ax22.set_ylabel('η [Ω]', color=color)
     ax22.plot(frequency_range, floquet_r, color=color)
     ax22.tick_params(axis='y', labelcolor=color)
     ax22.set_xlabel('Frequency [GHz]')
+    ax22.set_ylim([-60, 300])
+
     ax22.plot(frequency_range, floquet_x, color='tab:orange')
     fig2.tight_layout()
 
