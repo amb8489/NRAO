@@ -63,7 +63,7 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
 def simulate(line_model):
     if line_model.type == "SMAT":
 
-        frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission = __simulate_hfss(
+        frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission = __simulate_hfss_file(
             line_model)
     else:
         frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission = __siulate_transmission_line(
@@ -73,12 +73,12 @@ def simulate(line_model):
                     floquet_x, floquet_transmission)
 
 
-def __simulate_hfss(line_model):
+def __simulate_hfss_file(line_model):
     return hsff_simulate(line_model.file_path, int(line_model.n_interp_points.get_value()))
 
 
 def __siulate_transmission_line(line_model):
-    # ----------------------- mking  floquet_line -----------------
+    # ----------------------- making  floquet_line -----------------
 
     floquet_line = floquet_line_builder(line_model)
     inputs = line_model.get_inputs()

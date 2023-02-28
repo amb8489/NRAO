@@ -1,6 +1,9 @@
+import math
+
 import numpy as np
 from scipy.integrate import solve_ivp
 
+import utills.functions
 from floquet_line_model.floquet_line import SuperConductingFloquetLine
 from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
@@ -42,16 +45,66 @@ floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, in
                                           inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
                                           inputs.crit_current)
 
+
+def __CalculateBetas(floquet_line, freq_range):
+    return [floquet_line.simulate(f)[1] for f in freq_range]
+
+
+def __get_closest_betas_at_given_freq(master, targets, betas):
+    # because frequency_range - PUMP_FREQUENCY could result in needing beta values at frequencies that were not
+    # simulated we find the closes frequency that was simulated to the one that was not and use that beta
+
+    sorted_keys = np.argsort(master)
+    return betas[sorted_keys[np.searchsorted(master, targets, sorter=sorted_keys)]]
+
+
 ########################################################################################
 t_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length, inputs.resoultion)
 z_span = (t_eval[0], t_eval[-1])
-PUMP_FREQUENCY = 11.63
+PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 ########################################################################################
 
+# range of frequency's to simulate over
+frequency_range = np.linspace(inputs.start_freq_GHz, max(inputs.end_freq_GHz, 2 * PUMP_FREQUENCY), inputs.resoultion)
 
-frequency_range = np.linespace(inputs.start_freq_GHz, inputs.end_freq_GHz, inputs.resoultion)
-for frequency in frequency_range:
-    as0, ai0, ap0 = [..., ..., ...]
+# get and unfold betas
+betas = utills.functions.beta_unfold(__CalculateBetas(floquet_line, frequency_range))
+
+# betas for signal idler Pump at each frequency
+betas_signal = betas
+betas_pump = __get_closest_betas_at_given_freq(frequency_range, np.full(inputs.resoultion, PUMP_FREQUENCY), betas)
+betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas)
+
+# delta beta
+delta_betas = betas_signal + betas_idler - 2 * betas_pump
+
+as0, ai0, ap0 = [..., ..., ...]
+
+for f_idx,frequency in enumerate(frequency_range):
     inital_amplitudes = [as0, ai0, ap0]
-    args = (..., ..., ...)
+
+    args = (..., ..., ...,...)
     sol = solve(z_span, inital_amplitudes, args, t_eval)
+
+
+def AmplitudeEqs1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta):
+
+    #todo make sure beta_s, beta_i, beta_p, delta_beta are commng in okay
+
+    # signal-idler-pump equations for N = 3
+    amp_S, amp_I, amp_P = init_amplitudes
+
+    conj_amp_S = amp_S.conjugate()
+    conj_amp_I = amp_I.conjugate()
+    conj_amp_P = amp_P.conjugate()
+
+    As_div_istar = -1j * (beta_s / 8) * (amp_S * (abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
+                                         + conj_amp_I * amp_P ** 2 * math.exp(1j * delta_beta * z))
+
+    Ai_div_istar = -1j * (beta_i / 8) * (amp_I * (2 * abs(amp_S) ** 2 + abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
+                                         + conj_amp_S * amp_P ** 2 * math.exp(1j * delta_beta * z))
+
+    Ap_div_istar = -1j * (beta_p / 8) * (amp_P * (2 * abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + abs(amp_P) ** 2)
+                                         + 2 * conj_amp_P * amp_S * amp_I * math.exp(1j * delta_beta * z))
+
+    return [As_div_istar, Ai_div_istar, Ap_div_istar]

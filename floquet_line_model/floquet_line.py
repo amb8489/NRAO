@@ -55,9 +55,6 @@ class SuperConductingFloquetLine():
 
         return np.arccosh(((A + D) / 2))
 
-
-
-
     def FindPumpZone(self, peak_number: int, alphas: [float]):
         x = np.array(alphas)
         peaks, _ = find_peaks(x, prominence=.005)
@@ -95,15 +92,13 @@ class SuperConductingFloquetLine():
         floquet_r = floquet_bloch_impedance_pos_dir.real
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
-
-
         # calc transmission todo add these inputs to UI
         N_unit_cells = 100
         impedance = 50
         floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
-                                                 floquet_bloch_impedance_neg_dir,
-                                                 self.unit_cell.unit_cell_length,
-                                                 floquet_propagation_const)
+                                            floquet_bloch_impedance_neg_dir,
+                                            self.unit_cell.unit_cell_length,
+                                            floquet_propagation_const)
 
         # calculate central line alpha and beta
         central_line_gamma, central_line_characteristic_impedance = self.unit_cell.get_segment_gamma_and_characteristic_impedance(
@@ -115,4 +110,5 @@ class SuperConductingFloquetLine():
         central_line_alpha = central_line_propagation_const.real
 
         # retuning outputs
-        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x,floquet_transmission
+        return [floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x,
+                floquet_transmission]

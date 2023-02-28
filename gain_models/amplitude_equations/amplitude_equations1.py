@@ -10,12 +10,15 @@ def AmplitudeEqs1(amplitudes, z, beta_signals, beta_idler, beta_pump):
     A_idler = amplitudes[1]
     A_pump = amplitudes[2]
 
+
+    deltaB = (beta_signals + beta_idler) - (2 * beta_pump)
+
+
     # conj amplitudes
     A_star_s = amplitudes[0].conjugate()
     A_star_i = amplitudes[1].conjugate()
     A_star_p = amplitudes[2].conjugate()
 
-    deltaB = (beta_signals + beta_idler) - (2 * beta_pump)
 
     # Optical coupled equations
 
