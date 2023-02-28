@@ -10,15 +10,28 @@ from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 
 
-def ODE_model_1(z, inital_amplitudes, arg1, arg2, arg3):
-    as0, ai0, ap0 = inital_amplitudes
-    return []
+def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta):
+    # todo make sure beta_s, beta_i, beta_p, delta_beta are commng in okay
+
+    # signal-idler-pump equations for N = 3
+    amp_S, amp_I, amp_P = init_amplitudes
+
+    As_div_istar = -1j * (beta_s / 8) * (amp_S * (abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
+                                         + amp_I.conjugate() * amp_P ** 2 * math.exp(1j * delta_beta * z))
+
+    Ai_div_istar = -1j * (beta_i / 8) * (amp_I * (2 * abs(amp_S) ** 2 + abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
+                                         + amp_S.conjugate() * amp_P ** 2 * math.exp(1j * delta_beta * z))
+
+    Ap_div_istar = -1j * (beta_p / 8) * (amp_P * (2 * abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + abs(amp_P) ** 2)
+                                         + 2 * amp_P.conjugate() * amp_S * amp_I * math.exp(1j * delta_beta * z))
+
+    return [As_div_istar, Ai_div_istar, Ap_div_istar]
 
 
 def solve(z_span, inital_amplitudes, args, t_eval):
     # todo dont know about t_eval to e z or frequency
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=t_eval)
-    return sol
+    return solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=t_eval)
+
 
 
 json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 0.0,
@@ -80,31 +93,16 @@ delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
 as0, ai0, ap0 = [..., ..., ...]
 
-for f_idx,frequency in enumerate(frequency_range):
+gain = []
+for f_idx, frequency in enumerate(frequency_range):
     inital_amplitudes = [as0, ai0, ap0]
 
-    args = (..., ..., ...,...)
+    args = (betas_signal[f_idx], betas_pump[f_idx], betas_idler[f_idx], delta_betas[f_idx])
     sol = solve(z_span, inital_amplitudes, args, t_eval)
 
+    #todo do somtibg to the gain like change back to i*
+    gain.append(...)
 
-def AmplitudeEqs1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta):
 
-    #todo make sure beta_s, beta_i, beta_p, delta_beta are commng in okay
 
-    # signal-idler-pump equations for N = 3
-    amp_S, amp_I, amp_P = init_amplitudes
 
-    conj_amp_S = amp_S.conjugate()
-    conj_amp_I = amp_I.conjugate()
-    conj_amp_P = amp_P.conjugate()
-
-    As_div_istar = -1j * (beta_s / 8) * (amp_S * (abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
-                                         + conj_amp_I * amp_P ** 2 * math.exp(1j * delta_beta * z))
-
-    Ai_div_istar = -1j * (beta_i / 8) * (amp_I * (2 * abs(amp_S) ** 2 + abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
-                                         + conj_amp_S * amp_P ** 2 * math.exp(1j * delta_beta * z))
-
-    Ap_div_istar = -1j * (beta_p / 8) * (amp_P * (2 * abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + abs(amp_P) ** 2)
-                                         + 2 * conj_amp_P * amp_S * amp_I * math.exp(1j * delta_beta * z))
-
-    return [As_div_istar, Ai_div_istar, Ap_div_istar]
