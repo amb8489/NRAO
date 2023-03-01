@@ -17,7 +17,7 @@ from utills.functions import toGHz, beta_unfold
 def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x,
              floquet_transmission):
     plt.close()
-    # -------------------ALPHA , BETA PLOTS---------------------------------
+    # -------------------delta ALPHA , delta BETA PLOTS---------------------------------
 
     fig1, ax1 = plt.subplots()
     fig1.suptitle('Delta Alpha d and beta d')
@@ -57,7 +57,22 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax33.set_xlabel('Frequency [GHz]')
     fig3.tight_layout()
 
-    return [fig1, fig2, fig3]
+
+    # ------------------- BETA vs BETA UNFOLDED---------------------------------
+
+    fig4, ax44 = plt.subplots()
+    color = 'tab:red'
+    fig4.suptitle('Floquet Beta vs Floquet Beta Unfolded')
+    ax44.plot(frequency_range, floquet_beta, color=color)
+    ax44.plot(frequency_range, beta_unfold(floquet_beta))
+    ax44.plot(frequency_range,np.array(floquet_alpha)*(max(beta_unfold(floquet_beta))/max(floquet_alpha)))
+
+    ax44.tick_params(axis='y', labelcolor=color)
+    ax44.set_xlabel('Frequency [GHz]')
+    fig4.tight_layout()
+
+
+    return [fig1, fig2, fig3,fig4]
 
 
 def simulate(line_model):

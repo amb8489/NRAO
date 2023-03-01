@@ -43,12 +43,12 @@ def abcd_and_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path
 
     # zero points means don't do any interpolation
     if n_interp_points > 0:
-        if n_interp_points < network.frequency.npoints:
+        if n_interp_points < network.sim_frequency.npoints:
             raise Exception(
-                f"n_interp_points must be > number of already simulated frequency points: {n_interp_points} < {network.frequency.npoints}")
+                f"n_interp_points must be > number of already simulated frequency points: {n_interp_points} < {network.sim_frequency.npoints}")
 
-        interp_freq_range = rf.frequency.Frequency(start=network.frequency.start / 1e9,
-                                                   stop=network.frequency.stop / 1e9,
+        interp_freq_range = rf.frequency.Frequency(start=network.sim_frequency.start / 1e9,
+                                                   stop=network.sim_frequency.stop / 1e9,
                                                    npoints=n_interp_points, unit='ghz')
 
         network = network.interpolate(interp_freq_range, basis="a")

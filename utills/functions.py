@@ -146,7 +146,7 @@ def Transmission(Ncells: int, z0: float, bloch_impedance_pos: complex,
             bloch_impedance_pos * bloch_impedance_neg - (z0 ** 2))))
 
 
-def RLGC_circuit_factors(self, propagationConst: complex, Zb: complex):
+def RLGC_circuit_factors( propagationConst: complex, Zb: complex):
     Z = propagationConst * Zb
     Y = propagationConst / Zb
 

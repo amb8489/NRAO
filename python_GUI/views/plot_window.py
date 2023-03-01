@@ -43,8 +43,6 @@ class Plot_Window(QScrollArea):
         for child in self.grid.children():
             child.deleteLater()
 
-        print(self.plots)
-
         for r, row in enumerate(self.plots):
             for c, plot in enumerate(row):
                 self.grid.addWidget(WidgetGraph_fig(plot), r + 1, c, Qt.AlignTop)

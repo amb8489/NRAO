@@ -34,8 +34,7 @@ class SuperConductingFloquetLine():
         self.target_pump_zone_start = 0
         self.target_pump_zone_end = 0
 
-        # debug info
-        self.tot = 0
+        print(self.unit_cell.segment_lengths)
 
     def Bloch_impedance_Zb(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
@@ -68,7 +67,7 @@ class SuperConductingFloquetLine():
 
     def simulate(self, frequency):
         # frequency cant be too low
-        frequency = max(frequency, 1e7)
+        frequency = max(frequency, 1e6)
 
         # todo move the conductivity model into the line model
         # 1) calculate Zs

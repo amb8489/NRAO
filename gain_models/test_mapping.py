@@ -26,11 +26,21 @@ def __get_closest_betas_at_given_freq(master, targets, betas):
 def __get_closest_betas_at_given_freq_slow(master, targets, betas):
     # because frequency_range - PUMP_FREQUENCY could result in needing beta values at frequencies that were not
     # simulated we find the closes frequency that was simulated to the one that was not and use that beta
+
     res = {}
     for f in targets:
-        idx = np.abs(master - f).argmin()
-        res[f] = betas[idx]
-    return np.array(res)
+        # the idx of the cloest frequency in master to f
+        idx_of_closest_freq_t_f_in_master = np.abs(master - f).argmin()
+
+        # the closest freq in master to f
+        closest_freq_t_f_in_master = master[idx_of_closest_freq_t_f_in_master]
+
+        # the beta to that frequency
+        res[closest_freq_t_f_in_master] = betas[idx_of_closest_freq_t_f_in_master]
+
+        print(closest_freq_t_f_in_master)
+
+    return res
 
 
 def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
@@ -97,10 +107,6 @@ betas = utills.functions.beta_unfold(__CalculateBetas(floquet_line, frequency_ra
 
 # betas for signal idler Pump at each frequency
 betas_signal = betas
-betas_pump = __get_closest_betas_at_given_freq(frequency_range, np.full(inputs.resoultion, PUMP_FREQUENCY), betas)
-betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas)
-
-delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
 inital_amplitudes = [as0, ai0, ap0]
 gain_sig = []
@@ -109,8 +115,24 @@ gain_pump = []
 z_span = (t_eval[0], t_eval[-1])
 
 # for each frequency find the gain
-for f_idx, frequency in enumerate(frequency_range):
-    args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_Star)
+def get_closest_beta_for_idler_freq(freq):
+    return betas[np.abs(frequency_range - freq).argmin()]
+
+
+def get_closest_beta_for_pump_freq(freq):
+
+    return betas[np.abs(frequency_range - freq).argmin()]
+
+for f_idx, sim_frequency in enumerate(frequency_range):
+    beta_signal = betas_signal[f_idx]
+
+    beta_idler = get_closest_beta_for_idler_freq(2 * PUMP_FREQUENCY - sim_frequency)
+
+    beta_pump = get_closest_beta_for_pump_freq(PUMP_FREQUENCY)
+
+    delta_beta = beta_signal + beta_idler - 2 * beta_pump
+
+    args = (beta_signal, beta_idler, beta_pump, delta_beta, I_Star)
     sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=t_eval)
 
     amp_signal, amp_idler, amp_pump = sol.y
