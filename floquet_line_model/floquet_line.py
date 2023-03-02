@@ -43,16 +43,15 @@ class SuperConductingFloquetLine():
         D = ABCD_mat_2x2[1][1]
 
         ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
-        B2 = 2 * B
         ADm = A - D
 
+        B2 = 2 * B
         # positive dir             # neg dir
         return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
     def Pd(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
         D = ABCD_mat_2x2[1][1]
-
         return np.arccosh(((A + D) / 2))
 
     def FindPumpZone(self, peak_number: int, alphas: [float]):

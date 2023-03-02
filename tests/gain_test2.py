@@ -11,7 +11,7 @@ from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 
 
-def __CalculateBetas(floquet_line, freq_range):
+def calculate_betas_over_range(floquet_line, freq_range):
     return [floquet_line.simulate(f)[1] for f in freq_range]
 
 
@@ -74,57 +74,95 @@ floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, in
                                           central_line_model, super_conductivity_model, inputs.central_line_width,
                                           inputs.load_widths, inputs.line_thickness)
 
-########################################################################################
-resoultion = 1000
-nCells = 1
+################################## GAIN PARAMS #######################################
+resolution = 500
 
-z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * nCells, resoultion)
+nCells = 150
+z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * nCells, resolution)
 PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 
-I_star = 1 + 0j
-as0 = 1e-6 + 0j
-ai0 = 1e-9 + 0j
-ap0 = 0.2 * I_star + 0j
-L = 500
+I_star = 1+0j   # todo i star val ??
+
+as0 = .001 + 0j
+ai0 = 0 + 0j
+ap0 = 2 * I_star + 0j   # todo ap0 * istar val ??
+
+
+#todo beta are in beta * D or d? and if  so do we need the z in the apm equations ?
 
 ########################################################################################
 
-inital_amplitudes = [as0, ai0, ap0]
 
-z_span = (z_eval[0], z_eval[-1])
-gain_sig, gain_idler, gain_pump = [], [], []
+# 1) get frequencys to simulate over
+frequency_range = np.linspace(0, 2 * PUMP_FREQUENCY, resolution)
 
-# get and unfold betas and get betas for pump and ideler
-frequency_range = np.linspace(0, 2 * PUMP_FREQUENCY, resoultion)
+# 2) simulate batas and unfold betas
+betas = utills.functions.beta_unfold(calculate_betas_over_range(floquet_line, frequency_range))
 
-betas = utills.functions.beta_unfold(__CalculateBetas(floquet_line, frequency_range))
+#
+#
+#
+# get betas for pump, idler, delta, and  betas
 betas_signal = betas
-betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resoultion, betas)
+betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas)
 betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas)
 delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
-# for each frequency find the gain
+#
+#
+#
+inital_amplitudes = [as0, ai0, ap0]
+z_span = (z_eval[0], z_eval[-1])
+gain_sig, gain_idler, gain_pump = [], [], []
+#
+#
+#
+
 for f_idx in range(len(frequency_range)):
     args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval)
-    amp_signal, amp_idler, amp_pump = sol.y
-    gain_sig.append(amp_signal[L])
-    gain_idler.append(amp_idler[L])
-    gain_pump.append(amp_pump[L])
+    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval,method="BDF")
+    amplitude_signal, amplitude_idler, amplitude_pump = sol.y
 
-fig, ax = plt.subplots(3)
+
+    GAIN = 10*np.log10(amplitude_signal[-1] / amplitude_signal[0])
+    gain_sig.append(GAIN)
+
+
+    if f_idx % 100 == 0:
+        plt.plot(z_eval, amplitude_signal)
+
+
+plt.show()
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# plot gain signal
+
+fig, ax = plt.subplots(1)
 plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz")
-ax[0].plot(frequency_range, 10 * np.log10(gain_sig))
-ax[0].set_title(f"SIGNAL")
-ax[1].plot(frequency_range, 10 * np.log10(gain_idler))
-ax[1].set_title("IDLER")
-ax[2].plot(frequency_range, 10 * np.log10(gain_pump))
-ax[2].set_title("PUMP")
+
+ax.plot(z_eval, gain_sig)
+ax.set_title(f"SIGNAL GAIN [Db]")
 plt.subplots_adjust(left=0.1,
                     bottom=0.1,
                     right=0.9,
                     top=0.9,
                     wspace=0.4,
                     hspace=0.44)
-fig.set_size_inches(7, 8)
+fig.set_size_inches(7, 7)
 plt.show()
