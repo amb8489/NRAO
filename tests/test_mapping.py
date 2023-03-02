@@ -47,19 +47,19 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
     # signal-idler-pump equations for N = 3
     amp_S, amp_I, amp_P = init_amplitudes
 
-    As_div_istar = 1j * (-beta_s / (8 * I_Star ** 2)) * (
+    As = 1j * (-beta_s / (8 * I_Star ** 2)) * (
             amp_S * (abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
             + amp_I.conjugate() * amp_P ** 2 * cmath.exp(1j * delta_beta * z))
 
-    Ai_div_istar = 1j * (-beta_i / (8 * I_Star ** 2)) * (
+    Ai = 1j * (-beta_i / (8 * I_Star ** 2)) * (
             amp_I * (2 * abs(amp_S) ** 2 + abs(amp_I) ** 2 + 2 * abs(amp_P) ** 2)
             + amp_S.conjugate() * amp_P ** 2 * cmath.exp(1j * delta_beta * z))
 
-    Ap_div_istar = 1j * (-beta_p / (8 * I_Star ** 2)) * (
+    Ap = 1j * (-beta_p / (8 * I_Star ** 2)) * (
             amp_P * (2 * abs(amp_S) ** 2 + 2 * abs(amp_I) ** 2 + abs(amp_P) ** 2)
             + 2 * amp_P.conjugate() * amp_S * amp_I * cmath.exp(-1j * delta_beta * z))
 
-    return [As_div_istar, Ai_div_istar, Ap_div_istar]
+    return [As, Ai, Ap]
 
 
 json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 0.0,
@@ -77,27 +77,32 @@ inputs = CPWInputs(json_inputs)
 super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
 
 central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
-                                            inputs.line_thickness, inputs.er, inputs.tangent_delta)
+                                            inputs.line_thickness, inputs.er, inputs.tangent_delta, inputs.crit_current)
 load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,
-                                           inputs.tangent_delta) for load_width in inputs.load_widths]
+                                           inputs.tangent_delta, inputs.crit_current) for load_width in
+                    inputs.load_widths]
 
-floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
-                                          load_line_models, central_line_model, super_conductivity_model,
-                                          inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
-                                          inputs.crit_current)
+floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals, load_line_models,
+                                          central_line_model, super_conductivity_model, inputs.central_line_width,
+                                          inputs.load_widths, inputs.line_thickness)
 
 ########################################################################################
 
 nCells = 150
-t_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * nCells, inputs.resoultion)
+z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * nCells, inputs.resoultion)
 PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 
-as0 = 1e-7 + 0j
-ai0 = 0.1 + 0j
-ap0 = 0.0 + 0j
+I_star = 1
+
+as0 = 1e-7 * I_star + 0j
+ai0 = 0 + 0j
+ap0 = 2 * 0.1 * I_star + 0j
 
 L = 500
-I_Star = 1
+
+
+zstep = (z_eval[-1] - z_eval[0]) / (len(z_eval) - 1)
+
 ########################################################################################
 
 # get and unfold betas
@@ -112,16 +117,18 @@ inital_amplitudes = [as0, ai0, ap0]
 gain_sig = []
 gain_idler = []
 gain_pump = []
-z_span = (t_eval[0], t_eval[-1])
+z_span = (z_eval[0], z_eval[-1])
+
 
 # for each frequency find the gain
 def get_closest_beta_for_idler_freq(freq):
+    # whats the index of the closest frequency in frequency_range to freq
     return betas[np.abs(frequency_range - freq).argmin()]
 
 
 def get_closest_beta_for_pump_freq(freq):
-
     return betas[np.abs(frequency_range - freq).argmin()]
+
 
 for f_idx, sim_frequency in enumerate(frequency_range):
     beta_signal = betas_signal[f_idx]
@@ -132,23 +139,31 @@ for f_idx, sim_frequency in enumerate(frequency_range):
 
     delta_beta = beta_signal + beta_idler - 2 * beta_pump
 
-    args = (beta_signal, beta_idler, beta_pump, delta_beta, I_Star)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=t_eval)
+    args = (beta_signal, beta_idler, beta_pump, delta_beta, I_star)
+    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval)
 
     amp_signal, amp_idler, amp_pump = sol.y
-    gain_sig.append(amp_signal[L])
-    gain_idler.append(amp_idler[L])
-    gain_pump.append(amp_pump[L])
+    gain_sig.append(10 * np.log10(amp_signal[L]))
+    gain_idler.append(10 * np.log10(amp_idler[L]))
+    gain_pump.append(10 * np.log10(amp_pump[L]))
+
+    if f_idx %100 == 0:
+        print(f"{((f_idx)/len(frequency_range))*100}% complete")
+
+
+
+
+
 
 fig, ax = plt.subplots(3)
 
 # set data with subplots and plot
 ax[0].plot(frequency_range, gain_sig)
-ax[0].set_title("SIGNAL")
+ax[0].set_title("SIGNAL DB")
 ax[1].plot(frequency_range, gain_idler)
-ax[1].set_title("IDLER")
+ax[1].set_title("IDLER DB")
 ax[2].plot(frequency_range, gain_pump)
-ax[2].set_title("PUMP")
+ax[2].set_title("PUMP DB")
 
 plt.subplots_adjust(left=0.1,
                     bottom=0.1,

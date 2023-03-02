@@ -14,9 +14,11 @@ from utills.functions import Transmission
 class SuperConductingFloquetLine():
 
     def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], load_line_models: [AbstractSCTL],
-                 central_line_model: AbstractSCTL,
-                 super_conductivity_model: SuperConductivity, central_line_width: float, load_widths: [float],
-                 line_thickness: float, crit_current: float):
+                 central_line_model: AbstractSCTL, super_conductivity_model: SuperConductivity,
+                 central_line_width: float, load_widths: [float], line_thickness: float):
+        # ---------------------------------------------------------
+
+        self.IC = central_line_model.IC
         # ---------------------------- model of the Super conductor
 
         self.super_conductivity_model = super_conductivity_model
@@ -34,7 +36,6 @@ class SuperConductingFloquetLine():
         self.target_pump_zone_start = 0
         self.target_pump_zone_end = 0
 
-        print(self.unit_cell.segment_lengths)
 
     def Bloch_impedance_Zb(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]

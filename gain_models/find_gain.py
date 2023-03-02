@@ -14,7 +14,7 @@ from gain_models.solve_ode import Solve_ode
 def CalculateBetas(FloquetLine, FreqRange):
     Betas = []
     for frequency in FreqRange:
-        alpha, beta, alpha_cl, beta_cl, r, x = FloquetLine.simulate(frequency)
+        alpha, beta, alpha_cl, beta_cl, r, x,t = FloquetLine.simulate(frequency)
         Betas.append(beta)
     return Betas
 
@@ -25,7 +25,7 @@ def IC(critical_current,area):
 def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     frequencys = np.linspace(1, pump_freq * 2, resolution)
 
-    z = np.linspace(0, floquet_line.unit_cell.unit_cell_length, resolution)
+    z = np.linspace(0, floquet_line.unit_cell.unit_cell_length*1, resolution)
 
     # step 1) calc unfolded beta_plt for given range and resolution (lst for signal frequency)
     beta_signal = np.array(utills.functions.beta_unfold(CalculateBetas(floquet_line, frequencys)))
@@ -34,8 +34,6 @@ def Calc_Gain(floquet_line, resolution, pump_freq, init_amplitudes, L):
     beta_pump = beta_signal[np.searchsorted(frequencys, pump_freq)]
 
     # step 3) calc beta_plt for all idler freqencys
-    # todo (pump_freq*2) - FreqRange may need to be reversed
-    # beta_idler = beta_signal[np.searchsorted(frequencys, np.flip((pump_freq * 2) - frequencys))]
     beta_idler = beta_signal[np.searchsorted(frequencys, (pump_freq * 2) - frequencys)]
 
     # step 4) calc gain for each frequency using lst calced above and other init vars

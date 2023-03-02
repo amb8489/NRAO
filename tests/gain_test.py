@@ -10,17 +10,25 @@ from transmission_line_models.cpw.super_conducting_cpw_model import SuperConduct
 
 if __name__ == "__main__":
 
-    json_inputs = {'gain_models': {'Signal Amplitude': .300, 'Idler Amplitude': .30, 'Pump Amplitude': 1000000, 'Pump Frequency': 11.61},'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 300.0, 'Super Conductor Operation Temperature': 0.0, 'Super Conductor Critical Temperature': 14.7, 'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0, 'Super Conductor Tangent Delta': 1.48351e-05}, 'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734, 'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0}, 'Frequency Range': {'Start Frequency': 1.0, 'End Frequency': 25.0, 'Resolution': 1000.0}}
+    json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 0.0,
+                      'Super Conductor Operation Temperature': 4.0, 'Super Conductor Critical Temperature': 14.7,
+                      'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0,
+                      'Super Conductor Tangent Delta': 0.0},
+               'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734,
+                              'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0},
+               'Frequency Range': {'Start Frequency': 0.0, 'End Frequency': 40.0, 'Resolution': 1000.0},
+               'gain_models': {'Signal Amplitude': .000000001, 'Idler Amplitude': .000001, 'Pump Amplitude': .2,
+                               'Pump Frequency': 11.63}}
+
     inputs = CPWInputs(json_inputs)
     super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
     Central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
-                                                inputs.line_thickness, inputs.er, inputs.tangent_delta)
+                                                inputs.line_thickness, inputs.er, inputs.tangent_delta,200)
     Load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,
-                                               inputs.tangent_delta) for load_width in inputs.load_widths]
-    floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
-                                              Load_line_models, Central_line_model, super_conductivity_model,
-                                              inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
-                                              inputs.crit_current)
+                                               inputs.tangent_delta,200) for load_width in inputs.load_widths]
+    floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals, Load_line_models,
+                                              Central_line_model, super_conductivity_model, inputs.central_line_width,
+                                              inputs.load_widths, inputs.line_thickness)
 
     # step 3) gain
 

@@ -65,8 +65,6 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     fig4.suptitle('Floquet Beta vs Floquet Beta Unfolded')
     ax44.plot(frequency_range, floquet_beta, color=color)
     ax44.plot(frequency_range, beta_unfold(floquet_beta))
-    ax44.plot(frequency_range,np.array(floquet_alpha)*(max(beta_unfold(floquet_beta))/max(floquet_alpha)))
-
     ax44.tick_params(axis='y', labelcolor=color)
     ax44.set_xlabel('Frequency [GHz]')
     fig4.tight_layout()

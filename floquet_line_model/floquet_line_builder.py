@@ -48,8 +48,7 @@ def floquet_line_builder(line_model):
 
         floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
                                                   load_line_models, central_line_model, super_conductivity_model,
-                                                  inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
-                                                  inputs.crit_current)
+                                                  inputs.central_line_width, inputs.load_widths, inputs.line_thickness)
         return floquet_line
 
     elif model_type == CPW_TYPE:
@@ -61,14 +60,13 @@ def floquet_line_builder(line_model):
         # todo where is width being used
         # todo combine this into one
         central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
-                                                    inputs.line_thickness, inputs.er, inputs.tangent_delta)
+                                                    inputs.line_thickness, inputs.er, inputs.tangent_delta,inputs.crit_current)
         load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,
-                                                   inputs.tangent_delta) for load_width in inputs.load_widths]
+                                                   inputs.tangent_delta,inputs.crit_current) for load_width in inputs.load_widths]
 
         floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
                                                   load_line_models, central_line_model, super_conductivity_model,
-                                                  inputs.central_line_width, inputs.load_widths, inputs.line_thickness,
-                                                  inputs.crit_current)
+                                                  inputs.central_line_width, inputs.load_widths, inputs.line_thickness)
         return floquet_line
     elif model_type == ARTIFICIAL_CPW:
 

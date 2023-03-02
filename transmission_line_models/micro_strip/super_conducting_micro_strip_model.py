@@ -23,6 +23,8 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         self.epsilon_r = epsilon_r
         self.tan_delta = tan_delta
 
+        self.IC = crit_current * width*thickness
+
         # calc geometric factors
         self.g1 = self.__G1(self.sc_width, self.sc_height, self.sc_thickness)
         self.g2 = self.__G2(self.sc_width, self.sc_height, self.sc_thickness, self.g1)
