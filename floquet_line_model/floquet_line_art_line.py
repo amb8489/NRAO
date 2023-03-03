@@ -29,13 +29,18 @@ class SuperConductingFloquetLine_art():
         D = ABCD_mat_2x2[1][1]
 
         ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
-        B2 = 2 * B
         ADm = A - D
 
-        # positive dir             # neg dir
-        return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+        B2 = 2 * B
 
-    def Pd(self, ABCD_mat_2x2: [[float]]):
+        ZB = - (B2 / (ADm + ADs2))
+        ZB2 = - (B2 / (ADm - ADs2))
+        if ZB.real < 0:
+            ZB = ZB2
+
+        return ZB
+
+    def gamma_d(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
         D = ABCD_mat_2x2[1][1]
 
@@ -54,7 +59,7 @@ class SuperConductingFloquetLine_art():
 
         # get the sub ABCD mats for each line in the unit cell
         segment_abcd_mats = []
-
+        unit_cell_length = 0
         for segment_idx in range(len(self.line_models)):
             # 3) for each  line segment of unit cell make sub ABCD matrices
 
@@ -62,34 +67,35 @@ class SuperConductingFloquetLine_art():
                                                                                             surface_impedance)
             segment_abcd_mat = mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length)
             segment_abcd_mats.append(segment_abcd_mat)
+            unit_cell_length+=self.line_models[segment_idx].total_line_length
 
         # 4) matrix multiply all the sub abcd mats to make Unit cell ABCD mat
         unit_cell_abcd_mat = mult_mats(segment_abcd_mats)
 
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
-        floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
-        floquet_propagation_const = self.Pd(unit_cell_abcd_mat)
+        ZB = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
+        floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
 
-        # get alpha beta r x
-        floquet_beta = floquet_propagation_const.imag
-        floquet_alpha = floquet_propagation_const.real
-        floquet_r = floquet_bloch_impedance_pos_dir.real
-        floquet_x = floquet_bloch_impedance_pos_dir.imag
+        # get alpha beta r
 
-        N_unit_cells = 100
-        impedance = 50
-        unit_cell_length = sum([self.line_models[i].total_line_length for i in range(len(self.line_models))])
-        floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
-                                            floquet_bloch_impedance_neg_dir,
-                                            floquet_propagation_const)
+        floquet_beta = floquet_gamma_d.imag
+        floquet_alpha = floquet_gamma_d.real
+        floquet_r = ZB.real
+        floquet_x = ZB.imag
+
+
+        floquet_transmission = Transmission(100,
+                                            50,
+                                            ZB,
+                                            floquet_gamma_d)
 
         # calculate central line alpha and beta
         cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,
                                                                                                 surface_impedance)
         cental_line_ABCD = mk_ABCD_Mat(cental_line_Zc, cental_line_gamma, unit_cell_length)
 
-        central_line_propagation_const = self.Pd(cental_line_ABCD)
+        central_line_propagation_const = self.gamma_d(cental_line_ABCD)
         central_line_beta = central_line_propagation_const.imag
         central_line_alpha = central_line_propagation_const.real
 
