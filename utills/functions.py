@@ -147,10 +147,10 @@ def Transmission(N, z0, ZB, floquet_gamma_d):
     C = sinh_N_gammma_d /ZB
     D = cosh_N_gamma_d
 
-    # calculate s12
+    # calculate s21
     s21 = (2) / (A + (B / z0) + (C * z0) + D)
 
-    return 20 * np.log10(abs(s21))
+    return 10 * np.log10(abs(s21))
 
 
 def RLGC_circuit_factors(propagationConst: complex, Zb: complex):
