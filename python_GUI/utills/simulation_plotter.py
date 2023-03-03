@@ -37,6 +37,7 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     fig1.tight_layout()
     ax1.legend(['αd - α0d '])
     ax2.legend([ 'βd - β0d'],loc = 'upper left')
+
     # ---------------------R , X PLOTS ----------------------------
     fig2, ax22 = plt.subplots()
     color = 'tab:blue'
@@ -47,20 +48,9 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax22.set_xlabel('Frequency [GHz]')
     ax22.set_ylim([-60, 300])
 
-    ax22.plot(frequency_range, floquet_x, color='tab:orange')
+    ax22.plot(frequency_range, floquet_x, '--',color='tab:orange')
     fig2.tight_layout()
     ax22.legend(['r', 'x'])
-
-
-    # ---------------------Transmission PLOT ----------------------------
-    fig3, ax33 = plt.subplots()
-    color = 'tab:red'
-    fig3.suptitle('Transmission')
-    ax33.set_ylabel('Transmission', color=color)
-    ax33.plot(frequency_range, floquet_transmission, color=color)
-    ax33.tick_params(axis='y', labelcolor=color)
-    ax33.set_xlabel('Frequency [GHz]')
-    fig3.tight_layout()
 
     # ------------------- BETA vs BETA UNFOLDED---------------------------------
 
@@ -72,24 +62,34 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax44.tick_params(axis='y', labelcolor=color)
     ax44.set_xlabel('Frequency [GHz]')
     fig4.tight_layout()
+    # ---------------------Alpha vs Transmission  PLOT ----------------------------
 
-    # ------------------- central line ---------------------------------
+    fig5, ax55 = plt.subplots(2)
+    fig5.suptitle('Alpha and Transmission')
 
-    fig5, ax55 = plt.subplots()
-    fig5.suptitle('Central line Alpha d and beta d')
+    ax55[0].set_ylabel('α0d', color='tab:red')
+    ax55[0].plot(frequency_range,np.array(floquet_alpha) - np.array(central_line_alpha), color='tab:red')
 
-    ax55.set_ylabel('α0d', color='tab:red')
-    ax55.plot(frequency_range, np.array(central_line_alpha), color='tab:red')
-    ax55.tick_params(axis='y', labelcolor='tab:red')
-    ax55.set_xlabel('Frequency [GHz]')
+    ax55[0].tick_params(axis='y', labelcolor='tab:red')
+    ax55[1].set_ylabel('Transmission', color='tab:blue')
+    ax55[1].plot(frequency_range, floquet_transmission, color='tab:blue')
+    ax55[1].tick_params(axis='y', labelcolor='tab:blue')
+    ax55[1].set_xlabel('Frequency [GHz]')
 
-    ax2 = ax55.twinx()
-    ax2.set_ylabel('β0d', color='tab:green')
-    ax2.plot(frequency_range, beta_unfold(central_line_beta), color='tab:green')
-    ax2.tick_params(axis='y', labelcolor='tab:green')
-    fig5.tight_layout()
 
-    return [fig1, fig2, fig3, fig4, fig5]
+    fig3, ax33 = plt.subplots()
+    fig3.suptitle('Transmission')
+    ax33.set_ylabel('α0d', color='tab:red')
+    ax33.plot(frequency_range, floquet_transmission, color='tab:blue')
+    ax33.tick_params(axis='y', labelcolor='tab:red')
+
+
+
+
+
+
+
+    return [fig1, fig2,fig5,fig4]
 
 
 def simulate(line_model):
