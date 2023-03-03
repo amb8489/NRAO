@@ -1,4 +1,5 @@
 import matplotlib
+import numpy as np
 from PySide6.QtGui import QPalette, QColor
 
 from python_gui.utills.utills_gui import randomColorBright
@@ -35,6 +36,8 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         super(WidgetGraph_fig, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
 
+
+
         # matpltlib plot
         self.plt = MplCanvas_fig(fig)
 
@@ -43,11 +46,11 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         self.layout().addWidget(self.plt)
 
         # size policy
-        self.setMinimumWidth(550)
-        self.setMinimumHeight(550)
+        self.setMinimumWidth(580)
+        self.setMinimumHeight(570)
 
-        self.setMaximumHeight(550)
-        self.setMaximumWidth(550)
+        self.setMaximumHeight(580)
+        self.setMaximumWidth(580)
         # set widget color
         self.setBackGroundColor(randomColorBright())
 

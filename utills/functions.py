@@ -86,7 +86,6 @@ def ellip_k(n):
 def beta_unfold(lst):
     lst = np.abs(lst)
     differ = np.diff(lst) < 0
-
     acc = 0
     for i in range(1, len(lst)):
         lst[i] += acc

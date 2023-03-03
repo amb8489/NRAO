@@ -46,6 +46,9 @@ class SuperConductingFloquetLine():
         ADm = A - D
 
         B2 = 2 * B
+
+
+
         # positive dir             # neg dir
         return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
 
@@ -83,16 +86,25 @@ class SuperConductingFloquetLine():
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
         floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
+        # todo in transmission should the swapped vales be used or orgiginals
+        if floquet_bloch_impedance_pos_dir.real < 0:
+            floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir =  floquet_bloch_impedance_neg_dir,floquet_bloch_impedance_pos_dir
+
+
+
         floquet_propagation_const = self.Pd(unit_cell_abcd_mat)
+
 
         # get alpha beta r x
         floquet_beta = floquet_propagation_const.imag
         floquet_alpha = floquet_propagation_const.real
+
+
         floquet_r = floquet_bloch_impedance_pos_dir.real
         floquet_x = floquet_bloch_impedance_pos_dir.imag
 
         # calc transmission todo add these inputs to UI
-        N_unit_cells = 100
+        N_unit_cells = 62
         impedance = 50
         floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
                                             floquet_bloch_impedance_neg_dir,
@@ -102,6 +114,7 @@ class SuperConductingFloquetLine():
         # calculate central line alpha and beta
         central_line_gamma, central_line_characteristic_impedance = self.unit_cell.get_segment_gamma_and_characteristic_impedance(
             0, frequency, surface_impedance)
+
         central_line_mat = mk_ABCD_Mat(central_line_characteristic_impedance, central_line_gamma,
                                        self.unit_cell.unit_cell_length)
         central_line_propagation_const = self.Pd(central_line_mat)

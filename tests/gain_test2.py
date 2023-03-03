@@ -3,6 +3,7 @@ from cmath import exp
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
+from scipy.interpolate import interpolate
 
 import utills.functions
 from floquet_line_model.floquet_line import SuperConductingFloquetLine
@@ -18,6 +19,10 @@ def calculate_betas_over_range(floquet_line, freq_range):
 def __get_closest_betas_at_given_freq(master, targets, betas):
     # because frequency_range - PUMP_FREQUENCY could result in needing beta values at frequencies that were not
     # simulated we find the closes frequency that was simulated to the one that was not and use that beta
+
+
+    # could interpalate more values
+
 
     sorted_keys = np.argsort(master)
     return betas[sorted_keys[np.searchsorted(master, targets, sorter=sorted_keys)]]
@@ -35,17 +40,19 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
 
     j_db1_z = 1j * delta_beta * z
 
-    As = 1j * (-beta_s / (8 * I_Star_sqrd)) * (
-            amp_S * (abs_ampS_sqrd + 2 * abs_ampI_sqrd + 2 * abs_ampP_sqrd)
-            + amp_I.conjugate() * amp_P ** 2 * exp(j_db1_z))
+    eight_is_sqred = (8 * I_Star_sqrd)
 
-    Ai = 1j * (-beta_i / (8 * I_Star_sqrd)) * (
-            amp_I * (2 * abs_ampS_sqrd + abs_ampI_sqrd + 2 * abs_ampP_sqrd)
-            + amp_S.conjugate() * amp_P ** 2 * exp(j_db1_z))
+    As = ((1j * -beta_s / eight_is_sqred)
+          * (amp_S * (abs_ampS_sqrd + 2 * abs_ampI_sqrd + 2 * abs_ampP_sqrd)
+             + amp_I.conjugate() * amp_P ** 2 * exp(j_db1_z)))
 
-    Ap = 1j * (-beta_p / (8 * I_Star_sqrd)) * (
-            amp_P * (2 * abs_ampS_sqrd + 2 * abs_ampI_sqrd + abs_ampP_sqrd)
-            + 2 * amp_P.conjugate() * amp_S * amp_I * exp(-j_db1_z))
+    Ai = ((1j * -beta_i / eight_is_sqred)
+          * (amp_I * (2 * abs_ampS_sqrd + abs_ampI_sqrd + 2 * abs_ampP_sqrd)
+             + amp_S.conjugate() * amp_P ** 2 * exp(j_db1_z)))
+
+    Ap = ((1j * -beta_p / eight_is_sqred)
+          * (amp_P * (2 * abs_ampS_sqrd + 2 * abs_ampI_sqrd + abs_ampP_sqrd)
+             + 2 * amp_P.conjugate() * amp_S * amp_I * exp(-j_db1_z)))
 
     return [As, Ai, Ap]
 
@@ -75,21 +82,22 @@ floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, in
                                           inputs.load_widths, inputs.line_thickness)
 
 ################################## GAIN PARAMS #######################################
-resolution = 500
+resolution = 1000
 
-nCells = 150
-z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * nCells, resolution)
+n_unitcells = 150
+z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * n_unitcells, resolution)
 PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 
-I_star = 1+0j   # todo i star val ??
+I_star = 10  # todo i star val ??
 
-as0 = .001 + 0j
+as0 = .01 + 0j
 ai0 = 0 + 0j
-ap0 = 2 * I_star + 0j   # todo ap0 * istar val ??
+ap0 = 2 * I_star + 0j  # todo ap0 * istar val ??
+
+# todo beta are in beta * D or d? and if  so do we need the z in the apm equations ?
 
 
-#todo beta are in beta * D or d? and if  so do we need the z in the apm equations ?
-
+print("z/d = ", z_eval[-1] / floquet_line.unit_cell.unit_cell_length)
 ########################################################################################
 
 
@@ -113,24 +121,32 @@ delta_betas = betas_signal + betas_idler - 2 * betas_pump
 #
 inital_amplitudes = [as0, ai0, ap0]
 z_span = (z_eval[0], z_eval[-1])
-gain_sig, gain_idler, gain_pump = [], [], []
+power_gain, gain_idler, gain_pump = [], [], []
 #
 #
 #
+fix1, ax1 = plt.subplots(3)
+fix1.set_size_inches(8, 8)
+ax1[0].set_title("signal")
+ax1[1].set_title("idler")
+ax1[2].set_title("pump")
 
 for f_idx in range(len(frequency_range)):
     args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval,method="BDF")
+    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval)
     amplitude_signal, amplitude_idler, amplitude_pump = sol.y
 
 
-    GAIN = 10*np.log10(amplitude_signal[-1] / amplitude_signal[0])
-    gain_sig.append(GAIN)
+
+    signal_amplitude_before = amplitude_signal[0]
+    signal_amplitude_after = amplitude_signal[-1]
+    power_gain.append(20 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
 
 
     if f_idx % 100 == 0:
-        plt.plot(z_eval, amplitude_signal)
-
+        ax1[0].plot(z_eval, np.abs(amplitude_signal) ** 2)
+        ax1[1].plot(z_eval, np.abs(amplitude_idler) ** 2)
+        ax1[2].plot(z_eval, np.abs(amplitude_pump) ** 2)
 
 plt.show()
 
@@ -156,7 +172,7 @@ plt.show()
 fig, ax = plt.subplots(1)
 plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz")
 
-ax.plot(z_eval, gain_sig)
+ax.plot(z_eval, power_gain)
 ax.set_title(f"SIGNAL GAIN [Db]")
 plt.subplots_adjust(left=0.1,
                     bottom=0.1,

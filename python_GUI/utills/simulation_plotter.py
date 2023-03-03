@@ -17,11 +17,13 @@ from utills.functions import toGHz, beta_unfold
 def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x,
              floquet_transmission):
     plt.close()
+
+    # scaling down so plots look nice on x axis (this does not afect any calculation , purly for looks)
+    frequency_range /= 10e8
     # -------------------delta ALPHA , delta BETA PLOTS---------------------------------
 
     fig1, ax1 = plt.subplots()
-    fig1.suptitle('Delta Alpha d and beta d')
-
+    fig1.suptitle('αd - α0d  |  βd - β0d')
     ax1.set_ylabel('δ αd', color='tab:red')
     ax1.plot(frequency_range, np.array(floquet_alpha) - np.array(central_line_alpha), color='tab:red')
     ax1.tick_params(axis='y', labelcolor='tab:red')
@@ -29,11 +31,12 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
 
     ax2 = ax1.twinx()
     ax2.set_ylabel('δ βd', color='tab:green')
-    ax2.plot(frequency_range, np.array(beta_unfold(floquet_beta)) - np.array(beta_unfold(central_line_beta)),
+    ax2.plot(frequency_range, beta_unfold(floquet_beta) - beta_unfold(central_line_beta),
              color='tab:green')
     ax2.tick_params(axis='y', labelcolor='tab:green')
     fig1.tight_layout()
-
+    ax1.legend(['αd - α0d '])
+    ax2.legend([ 'βd - β0d'],loc = 'upper left')
     # ---------------------R , X PLOTS ----------------------------
     fig2, ax22 = plt.subplots()
     color = 'tab:blue'
@@ -46,6 +49,8 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
 
     ax22.plot(frequency_range, floquet_x, color='tab:orange')
     fig2.tight_layout()
+    ax22.legend(['r', 'x'])
+
 
     # ---------------------Transmission PLOT ----------------------------
     fig3, ax33 = plt.subplots()
@@ -56,7 +61,6 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax33.tick_params(axis='y', labelcolor=color)
     ax33.set_xlabel('Frequency [GHz]')
     fig3.tight_layout()
-
 
     # ------------------- BETA vs BETA UNFOLDED---------------------------------
 
@@ -69,8 +73,23 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax44.set_xlabel('Frequency [GHz]')
     fig4.tight_layout()
 
+    # ------------------- central line ---------------------------------
 
-    return [fig1, fig2, fig3,fig4]
+    fig5, ax55 = plt.subplots()
+    fig5.suptitle('Central line Alpha d and beta d')
+
+    ax55.set_ylabel('α0d', color='tab:red')
+    ax55.plot(frequency_range, np.array(central_line_alpha), color='tab:red')
+    ax55.tick_params(axis='y', labelcolor='tab:red')
+    ax55.set_xlabel('Frequency [GHz]')
+
+    ax2 = ax55.twinx()
+    ax2.set_ylabel('β0d', color='tab:green')
+    ax2.plot(frequency_range, beta_unfold(central_line_beta), color='tab:green')
+    ax2.tick_params(axis='y', labelcolor='tab:green')
+    fig5.tight_layout()
+
+    return [fig1, fig2, fig3, fig4, fig5]
 
 
 def simulate(line_model):

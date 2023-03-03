@@ -73,6 +73,14 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir = Bloch_impedance_Zb(unit_cell_abcd_mat)
         floquet_propagation_const = Pd(unit_cell_abcd_mat)
 
+
+        #FIXME?
+        if floquet_bloch_impedance_pos_dir.real < 0:
+            floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir =  floquet_bloch_impedance_neg_dir,floquet_bloch_impedance_pos_dir
+
+
+        # floquet_bloch_impedance_pos_dir = abs(floquet_bloch_impedance_pos_dir.real)+ 1j*floquet_bloch_impedance_pos_dir.imag
+
         # get alpha beta r x
         floquet_beta = floquet_propagation_const.imag
         floquet_alpha = floquet_propagation_const.real
