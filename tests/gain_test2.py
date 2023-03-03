@@ -88,7 +88,7 @@ n_unitcells = 150
 z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * n_unitcells, resolution)
 PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 
-I_star = 10  # todo i star val ??
+I_star = .60  # todo i star val ??
 
 as0 = .01 + 0j
 ai0 = 0 + 0j
@@ -105,15 +105,15 @@ print("z/d = ", z_eval[-1] / floquet_line.unit_cell.unit_cell_length)
 frequency_range = np.linspace(0, 2 * PUMP_FREQUENCY, resolution)
 
 # 2) simulate batas and unfold betas
-betas = utills.functions.beta_unfold(calculate_betas_over_range(floquet_line, frequency_range))
+betas_unfolded = utills.functions.beta_unfold(calculate_betas_over_range(floquet_line, frequency_range))
 
 #
 #
 #
 # get betas for pump, idler, delta, and  betas
-betas_signal = betas
-betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas)
-betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas)
+betas_signal = betas_unfolded
+betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
+betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas_unfolded)
 delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
 #

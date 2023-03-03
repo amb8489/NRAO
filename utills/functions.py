@@ -134,18 +134,26 @@ def printDb(*args):
         print("DEBUG: ", *args)
 
 
-def Transmission(Ncells: int, z0: float, bloch_impedance_pos: complex,
-                 bloch_impedance_neg: complex,
-                 unit_cell_len: float, pb: complex):
-    z1_sub_z2 = bloch_impedance_pos - bloch_impedance_neg
-    expo = cmath.exp(2 * unit_cell_len * Ncells * pb)
-
-    return ((2 * cmath.exp(unit_cell_len * Ncells * pb) *
-             (z1_sub_z2) * z0) / ((1 + expo) * (z1_sub_z2) * z0 - (- 1 + expo) * (
-            bloch_impedance_pos * bloch_impedance_neg - (z0 ** 2))))
+def Transmission(N, z0, ZB, floquet_gamma_d):
 
 
-def RLGC_circuit_factors( propagationConst: complex, Zb: complex):
+
+    # convert to ABCD N-cell matrix
+    cosh_N_gamma_d = cmath.cosh(N * floquet_gamma_d)
+    sinh_N_gammma_d = cmath.sinh(N * floquet_gamma_d)
+
+    A = cosh_N_gamma_d
+    B = ZB * sinh_N_gammma_d
+    C = sinh_N_gammma_d /ZB
+    D = cosh_N_gamma_d
+
+    # calculate s12
+    s21 = (2) / (A + (B / z0) + (C * z0) + D)
+
+    return 20 * np.log10(abs(s21))
+
+
+def RLGC_circuit_factors(propagationConst: complex, Zb: complex):
     Z = propagationConst * Zb
     Y = propagationConst / Zb
 

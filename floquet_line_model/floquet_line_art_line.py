@@ -82,7 +82,6 @@ class SuperConductingFloquetLine_art():
         unit_cell_length = sum([self.line_models[i].total_line_length for i in range(len(self.line_models))])
         floquet_transmission = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
                                             floquet_bloch_impedance_neg_dir,
-                                            unit_cell_length,
                                             floquet_propagation_const)
 
         # calculate central line alpha and beta

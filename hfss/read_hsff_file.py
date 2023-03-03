@@ -12,22 +12,22 @@ def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
     D = ABCD_mat_2x2[1][1]
 
     ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
-    B2 = 2 * B
     ADm = A - D
 
-    # positive dir             # neg dir
-    return [- (B2 / (ADm + ADs2)), - (B2 / (ADm - ADs2))]
+    B2 = 2 * B
+
+    ZB = - (B2 / (ADm + ADs2))
+    ZB2 = - (B2 / (ADm - ADs2))
+    if ZB.real < 0:
+        ZB = ZB2
+
+    return ZB
 
 
-def mk_monotonic(lst):
-    lst = np.array(lst)
-    for i in range(1, len(lst)):
-        if lst[i] < lst[i - 1]:
-            lst[i:] += (lst[i - 1] - lst[i])
-    return lst
 
 
-def Pd(ABCD_mat_2x2: [[complex]]):
+
+def gamma_d(ABCD_mat_2x2: [[complex]]):
     A = ABCD_mat_2x2[0][0]
     D = ABCD_mat_2x2[1][1]
 
@@ -62,6 +62,11 @@ def abcd_and_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path
     return unit_cell_ABCD_mats, simulated_frequency_range
 
 
+#  todo add these inputs to UI for transmission
+N_unit_cells = 62
+impedance = 50
+unit_cell_length_todo = 0.003140
+
 def hsff_simulate(file_path, n_interp_points):
     unit_cell_ABCD_mats, frequency_range = abcd_and_frequency_range_from_hfss_touchstone_file(file_path,
                                                                                               n_interp_points)
@@ -70,37 +75,44 @@ def hsff_simulate(file_path, n_interp_points):
     for unit_cell_abcd_mat in unit_cell_ABCD_mats:
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
-        floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir = Bloch_impedance_Zb(unit_cell_abcd_mat)
-        floquet_propagation_const = Pd(unit_cell_abcd_mat)
+
+        floquet_propagation_const_gamma = gamma_d(unit_cell_abcd_mat)
+        ZB_pos, ZB_neg = Bloch_impedance_Zb(unit_cell_abcd_mat)
+
+        floquet_transmission_ = Transmission(N_unit_cells,
+                                             impedance,
+                                             ZB_neg,
+                                             floquet_propagation_const_gamma)
+        floquet_transmission.append(floquet_transmission_)
 
 
-        #FIXME?
-        if floquet_bloch_impedance_pos_dir.real < 0:
-            floquet_bloch_impedance_pos_dir, floquet_bloch_impedance_neg_dir =  floquet_bloch_impedance_neg_dir,floquet_bloch_impedance_pos_dir
+
+
+
+
+
+
+
+
+
+
+
 
 
         # floquet_bloch_impedance_pos_dir = abs(floquet_bloch_impedance_pos_dir.real)+ 1j*floquet_bloch_impedance_pos_dir.imag
 
         # get alpha beta r x
-        floquet_beta = floquet_propagation_const.imag
-        floquet_alpha = floquet_propagation_const.real
-        floquet_r = floquet_bloch_impedance_pos_dir.real
-        floquet_x = floquet_bloch_impedance_pos_dir.imag
+        floquet_alpha = floquet_propagation_const_gamma.real
+        floquet_beta = floquet_propagation_const_gamma.imag
+        floquet_r = ZB_pos.real
+        floquet_x = ZB_pos.imag
 
         floquet_alphas.append(floquet_alpha)
         floquet_betas.append(floquet_beta)
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
 
-        # calc transmission todo add these inputs to UI
-        N_unit_cells = 100
-        impedance = 50
-        unit_cell_length_todo = .0001
-        floquet_transmission_ = Transmission(N_unit_cells, impedance, floquet_bloch_impedance_pos_dir,
-                                                 floquet_bloch_impedance_neg_dir,
-                                                 unit_cell_length_todo,
-                                                 floquet_propagation_const)
-        floquet_transmission.append(floquet_transmission_)
+
 
     return frequency_range, floquet_alphas, [0] * len(floquet_alphas), floquet_betas, [0] * len(
         floquet_betas), floquet_rs, floquet_xs,floquet_transmission
