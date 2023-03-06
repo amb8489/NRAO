@@ -12,7 +12,7 @@ from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 
 
-def calculate_betasD_over_range(floquet_line, freq_range):
+def get_betas_d(floquet_line, freq_range):
     return [floquet_line.simulate(f)[1] for f in freq_range]
 
 
@@ -21,10 +21,10 @@ def __get_closest_betas_at_given_freq(master, targets, betas):
     # simulated we find the closes frequency that was simulated to the one that was not and use that beta
 
     # # # todo could interpolate more values
-    # x_org =  np.linspace(0, resolution, resolution)
-    # x_interp = np.linspace(0, resolution, resolution*2)
-    # master = np.interp(x_interp, x_org, master)
-    # betas = np.interp(x_interp, x_org, betas)
+    x_org =  np.linspace(0, resolution, resolution)
+    x_interp = np.linspace(0, resolution, resolution*2)
+    master = np.interp(x_interp, x_org, master)
+    betas = np.interp(x_interp, x_org, betas)
 
 
 
@@ -42,7 +42,6 @@ def __get_closest_betas_at_given_freq(master, targets, betas):
 def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_betaD, I_Star):
     # signal-idler-pump equations for N = 3
     amp_S, amp_I, amp_P = init_amplitudes
-
     abs_ampS_sqrd = abs(amp_S) ** 2
     abs_ampI_sqrd = abs(amp_I) ** 2
     abs_ampP_sqrd = abs(amp_P) ** 2
@@ -98,66 +97,62 @@ resolution = 5000
 
 n_unitcells = 150
 z_eval = np.linspace(0, unit_cell_length * n_unitcells, resolution)
-PUMP_FREQUENCY = utills.functions.toGHz(11.63)
+PUMP_FREQUENCY = utills.functions.toGHz(11.33)
 
 I_star = 1  # todo i star val ??
 
-as0 = 0.0000001 + 0j
+as0 = 1e-6+ 0j
 ai0 = 0 + 0j
-ap0 = .2 * I_star + 0j
+ap0 =  0.2 * I_star + 0j
 
 
 inital_amplitudes = [as0, ai0, ap0]
 z_span = (z_eval[0], z_eval[-1])
-
-print("z/d = ", z_eval[-1] / floquet_line.unit_cell.unit_cell_length,f"init amplitudes s i p : {inital_amplitudes}")
+print("z/d = ", z_eval[-1] / unit_cell_length)
 
 ########################################################################################
 
 
 # 1) get frequencys to simulate over
-frequency_range = np.linspace(0, 2 * PUMP_FREQUENCY, resolution)
+frequency_range = np.linspace(0, 2* PUMP_FREQUENCY, resolution)
 
-# 2) simulate batas and unfold betas  #todo / by unit cll len to make betaD to beta
-print(f"calculating {resolution} betas...")
-s = time.time()
-betas_unfolded = utills.functions.beta_unfold(
-    calculate_betasD_over_range(floquet_line, frequency_range)) / unit_cell_length
-print(f"{resolution} betas complete in {time.time() - s} seconds")
 
-#
+
+
+# 2) simulate batas and unfold betas
+# todo / betaD by unit cell len to make betaD ---> beta
+
+betas_unfolded = \
+    utills.functions.beta_unfold(get_betas_d(floquet_line, frequency_range)) / unit_cell_length
+
+
+
 # get betas for pump, idler, delta, and  betas
 betas_signal = betas_unfolded
 betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
-betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range),
-                                                betas_unfolded)
+betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range),betas_unfolded)
 delta_betas = betas_signal + betas_idler - 2 * betas_pump
+plt.plot(frequency_range,betas_signal)
+plt.show()
 
 
 
 
 power_gain, gain_idler, gain_pump = [], [], []
-fix1, ax1 = plt.subplots(3)
-fix1.set_size_inches(8, 8)
-ax1[0].set_title("signal")
-ax1[1].set_title("idler")
-ax1[2].set_title("pump")
 
 for f_idx in range(len(frequency_range)):
+
     args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval)
-    amplitude_signal, amplitude_idler, amplitude_pump = sol.y
+    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval,method='RK45') #BDF
+    amplitude_signal_over_z_range, amplitude_idler_over_z_range, amplitude_pump_over_z_range = sol.y
 
-    signal_amplitude_before = amplitude_signal[0]
-    signal_amplitude_after = amplitude_signal[-1]
+    signal_amplitude_before = amplitude_signal_over_z_range[0]
+    signal_amplitude_after = amplitude_signal_over_z_range[-1]
 
-    power_gain.append(20 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
+    power_gain.append(20 * np.log10( abs(signal_amplitude_after) / abs(signal_amplitude_before)))
 
-    if f_idx % (len(frequency_range) // 10) == 0:
-        ax1[0].plot(np.abs(amplitude_signal) ** 2)
-        ax1[1].plot(np.abs(amplitude_idler) ** 2)
-        ax1[2].plot(np.abs(amplitude_pump) ** 2)
-        print(f"{f_idx / len(frequency_range) * 100}% complete")
+    if f_idx % (len(frequency_range)//10) == 0:
+        print(f"{int(f_idx / len(frequency_range) * 100)}% complete")
 
 plt.show()
 
@@ -174,10 +169,11 @@ plt.show()
 fig, ax = plt.subplots()
 plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz")
 
-ax.plot(frequency_range / 10e9, power_gain)
-ax.set_ylim([0, None])
+ax.plot(frequency_range / 10e9, power_gain,'-',color='tab:orange')
 
-ax.set_title(f"SIGNAL GAIN [Db]")
+ax.set_ylim([None, None])
+
+ax.set_title(f"SIGNAL GAIN [20*log10]")
 fig.set_size_inches(7, 7)
 ax.set_xlabel('Frequency [GHz]')
 plt.show()
