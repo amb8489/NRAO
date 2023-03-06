@@ -1,9 +1,9 @@
+import time
 from cmath import exp
 
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
-from scipy.interpolate import interpolate
 
 import utills.functions
 from floquet_line_model.floquet_line import SuperConductingFloquetLine
@@ -12,7 +12,7 @@ from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 
 
-def calculate_betas_over_range(floquet_line, freq_range):
+def calculate_betasD_over_range(floquet_line, freq_range):
     return [floquet_line.simulate(f)[1] for f in freq_range]
 
 
@@ -20,15 +20,26 @@ def __get_closest_betas_at_given_freq(master, targets, betas):
     # because frequency_range - PUMP_FREQUENCY could result in needing beta values at frequencies that were not
     # simulated we find the closes frequency that was simulated to the one that was not and use that beta
 
+    # # # todo could interpolate more values
+    # x_org =  np.linspace(0, resolution, resolution)
+    # x_interp = np.linspace(0, resolution, resolution*2)
+    # master = np.interp(x_interp, x_org, master)
+    # betas = np.interp(x_interp, x_org, betas)
 
-    # could interpalate more values
+
+
+
+
+
+
+
 
 
     sorted_keys = np.argsort(master)
     return betas[sorted_keys[np.searchsorted(master, targets, sorter=sorted_keys)]]
 
 
-def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
+def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_betaD, I_Star):
     # signal-idler-pump equations for N = 3
     amp_S, amp_I, amp_P = init_amplitudes
 
@@ -36,9 +47,10 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
     abs_ampI_sqrd = abs(amp_I) ** 2
     abs_ampP_sqrd = abs(amp_P) ** 2
 
+
     I_Star_sqrd = I_Star ** 2
 
-    j_db1_z = 1j * delta_beta * z
+    j_db1_z = 1j * delta_betaD * z
 
     eight_is_sqred = (8 * I_Star_sqrd)
 
@@ -80,51 +92,51 @@ load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, in
 floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals, load_line_models,
                                           central_line_model, super_conductivity_model, inputs.central_line_width,
                                           inputs.load_widths, inputs.line_thickness)
-
+unit_cell_length = floquet_line.unit_cell.unit_cell_length
 ################################## GAIN PARAMS #######################################
-resolution = 1000
+resolution = 5000
 
 n_unitcells = 150
-z_eval = np.linspace(0, floquet_line.unit_cell.unit_cell_length * n_unitcells, resolution)
+z_eval = np.linspace(0, unit_cell_length * n_unitcells, resolution)
 PUMP_FREQUENCY = utills.functions.toGHz(11.63)
 
-I_star = .60  # todo i star val ??
+I_star = 1  # todo i star val ??
 
-as0 = .01 + 0j
+as0 = 0.0000001 + 0j
 ai0 = 0 + 0j
-ap0 = 2 * I_star + 0j  # todo ap0 * istar val ??
-
-# todo beta are in beta * D or d? and if  so do we need the z in the apm equations ?
+ap0 = .2 * I_star + 0j
 
 
-print("z/d = ", z_eval[-1] / floquet_line.unit_cell.unit_cell_length)
+inital_amplitudes = [as0, ai0, ap0]
+z_span = (z_eval[0], z_eval[-1])
+
+print("z/d = ", z_eval[-1] / floquet_line.unit_cell.unit_cell_length,f"init amplitudes s i p : {inital_amplitudes}")
+
 ########################################################################################
 
 
 # 1) get frequencys to simulate over
 frequency_range = np.linspace(0, 2 * PUMP_FREQUENCY, resolution)
 
-# 2) simulate batas and unfold betas
-betas_unfolded = utills.functions.beta_unfold(calculate_betas_over_range(floquet_line, frequency_range))
+# 2) simulate batas and unfold betas  #todo / by unit cll len to make betaD to beta
+print(f"calculating {resolution} betas...")
+s = time.time()
+betas_unfolded = utills.functions.beta_unfold(
+    calculate_betasD_over_range(floquet_line, frequency_range)) / unit_cell_length
+print(f"{resolution} betas complete in {time.time() - s} seconds")
 
-#
-#
 #
 # get betas for pump, idler, delta, and  betas
 betas_signal = betas_unfolded
 betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
-betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas_unfolded)
+betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range),
+                                                betas_unfolded)
 delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
-#
-#
-#
-inital_amplitudes = [as0, ai0, ap0]
-z_span = (z_eval[0], z_eval[-1])
+
+
+
 power_gain, gain_idler, gain_pump = [], [], []
-#
-#
-#
 fix1, ax1 = plt.subplots(3)
 fix1.set_size_inches(8, 8)
 ax1[0].set_title("signal")
@@ -136,17 +148,16 @@ for f_idx in range(len(frequency_range)):
     sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval)
     amplitude_signal, amplitude_idler, amplitude_pump = sol.y
 
-
-
     signal_amplitude_before = amplitude_signal[0]
     signal_amplitude_after = amplitude_signal[-1]
+
     power_gain.append(20 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
 
-
-    if f_idx % 100 == 0:
-        ax1[0].plot(z_eval, np.abs(amplitude_signal) ** 2)
-        ax1[1].plot(z_eval, np.abs(amplitude_idler) ** 2)
-        ax1[2].plot(z_eval, np.abs(amplitude_pump) ** 2)
+    if f_idx % (len(frequency_range) // 10) == 0:
+        ax1[0].plot(np.abs(amplitude_signal) ** 2)
+        ax1[1].plot(np.abs(amplitude_idler) ** 2)
+        ax1[2].plot(np.abs(amplitude_pump) ** 2)
+        print(f"{f_idx / len(frequency_range) * 100}% complete")
 
 plt.show()
 
@@ -158,27 +169,15 @@ plt.show()
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
 # plot gain signal
 
-fig, ax = plt.subplots(1)
+fig, ax = plt.subplots()
 plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz")
 
-ax.plot(z_eval, power_gain)
+ax.plot(frequency_range / 10e9, power_gain)
+ax.set_ylim([0, None])
+
 ax.set_title(f"SIGNAL GAIN [Db]")
-plt.subplots_adjust(left=0.1,
-                    bottom=0.1,
-                    right=0.9,
-                    top=0.9,
-                    wspace=0.4,
-                    hspace=0.44)
 fig.set_size_inches(7, 7)
+ax.set_xlabel('Frequency [GHz]')
 plt.show()

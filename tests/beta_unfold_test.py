@@ -49,7 +49,7 @@ end_freq_GHz = toGHz(40)
 frequency_range = np.linspace(start_freq_GHz, end_freq_GHz, 5000)
 
 for frequency in frequency_range:
-    alpha, beta, alphaCl, betaCL, r_, x_ = floquet_line.simulate(frequency)
+    alpha, beta, alphaCl, betaCL, r_, x_,_ = floquet_line.simulate(frequency)
     floquet_beta.append(beta)
     central_line_beta.append(betaCL)
 

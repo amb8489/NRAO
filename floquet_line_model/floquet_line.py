@@ -54,7 +54,6 @@ class SuperConductingFloquetLine():
         ZB2 = - (B2 / (ADm - ADs2))
         if ZB.real < 0:
             ZB = ZB2
-
         return ZB
 
     def gamma_d(self, ABCD_mat_2x2: [[float]]):
