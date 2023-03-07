@@ -22,6 +22,10 @@ json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness'
                'gain_models': {'Signal Amplitude': 0.0, 'Idler Amplitude': 0.0, 'Pump Amplitude': 0.0,
                                'Pump Frequency': 0.0}}
 
+
+
+# json_inputs = {"SC": {"Er": 11.44, "Height": 0.0, "Ts": 20.0, "Ground Thickness": 0.0, "Super Conductor Operation Temperature": 0.0, "Super Conductor Critical Temperature": 15.83, "Super Conductor Critical Current": 0.0, "Super Conductor Normal Resistivity": 95.0, "Super Conductor Tangent Delta": 1e-10}, "Dimensions": {"loads": [["60", "14"], ["60", "14"], ["50", "14"]], "Unit Cell Length": 5.386, "Central Line Width": 2.0, "D0": 1.795, "S": 2.0}, "Frequency Range": {"Start Frequency": 1.0, "End Frequency": 40.0, "Resolution": 1000.0}, "gain_models": {"Signal Amplitude": 0.0, "Idler Amplitude": 0.0, "Pump Amplitude": 0.0, "Pump Frequency": 0.0}}
+
 inputs = CPWInputs(json_inputs)
 
 super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
@@ -57,59 +61,32 @@ def __get_closest_betas_at_given_freq(master, targets, betas_unfolded):
     return betas_unfolded[sorted_keys[np.searchsorted(master, targets, sorter=sorted_keys)]]
 
 
-def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_betaD, I_Star):
+def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
     # signal-idler-pump equations for N = 3
-    #
-    # A1, A2, A3 = init_amplitudes
-    #
-    # f01, f02, f03 = [3, 3, 3]
-    # f11, f12, f13 = [1, 2, 2]
-    # f21, f22, f23 = [2, 1, 2]
-    # f31, f32, f33 = [2, 2, 1]
-    # f51, f52, f53 = [1, 1, 2]
-    #
-    # Dbeta = beta_s + beta_i - 2 * beta_p
-    #
-    # fun1 = -1j * beta_s / (3 * 8 * I_star ** 2) \
-    #        * (f01 * (A1 * (f11 * np.abs(A1) ** 2
-    #                        + f21 * np.abs(A2) ** 2
-    #                        + f31 * np.abs(A3) ** 2)
-    #                  + f51 * np.exp(1j * Dbeta * z) * np.conj(A2) * A3 ** 2))
-    #
-    # fun2 = -1j * beta_i / (3 * 8 * I_star ** 2) \
-    #        * (f02 * (A2 * (f12 * np.abs(A1) ** 2
-    #                        + f22 * np.abs(A2) ** 2
-    #                        + f32 * np.abs(A3) ** 2)
-    #                  + f52 * np.exp(1j * Dbeta * z) * np.conj(A1) * A3 ** 2))
-    #
-    # fun3 = -1j * beta_p / (3 * 8 * I_star ** 2) \
-    #        * (f03 * (A3 * (f13 * np.abs(A1) ** 2
-    #                        + f23 * np.abs(A2) ** 2
-    #                        + f33 * np.abs(A3) ** 2)
-    #                  + f53 * np.exp(-1j * Dbeta * z) * np.conj(A3) * A1 * A2))
-    #
-    # return [fun1, fun2, fun3]
+
 
     amp_S, amp_I, amp_P = init_amplitudes
     abs_ampS_sqrd = abs(amp_S) ** 2
     abs_ampI_sqrd = abs(amp_I) ** 2
     abs_ampP_sqrd = abs(amp_P) ** 2
 
+
+
     I_Star_sqrd = I_Star ** 2
 
-    j_db1_z = 1j * delta_betaD * z
+    j_db1_z = (1j * delta_beta*z)
 
     eight_is_sqred = (8 * I_Star_sqrd)
 
-    As = ((-1j * beta_s / eight_is_sqred)
+    As = (((-1j * beta_s) / eight_is_sqred)
           * (amp_S * (abs_ampS_sqrd + 2 * abs_ampI_sqrd + 2 * abs_ampP_sqrd)
              + amp_I.conjugate() * amp_P ** 2 * exp(j_db1_z)))
 
-    Ai = ((-1j * beta_i / eight_is_sqred)
+    Ai = (((-1j * beta_i) / eight_is_sqred)
           * (amp_I * (2 * abs_ampS_sqrd + abs_ampI_sqrd + 2 * abs_ampP_sqrd)
              + amp_S.conjugate() * amp_P ** 2 * exp(j_db1_z)))
 
-    Ap = ((-1j * beta_p / eight_is_sqred)
+    Ap = (((-1j * beta_p) / eight_is_sqred)
           * (amp_P * (2 * abs_ampS_sqrd + 2 * abs_ampI_sqrd + abs_ampP_sqrd)
              + 2 * amp_P.conjugate() * amp_S * amp_I * exp(-j_db1_z)))
 
@@ -124,7 +101,7 @@ PUMP_FREQUENCY = utills.functions.toGHz(11.33)
 
 I_star = 1  # todo i star val ??
 
-as0 = 1e-9 + 0j
+as0 = 1e-9+ 0j
 ai0 = 0 + 0j
 ap0 = 2*.1 * I_star + 0j
 
@@ -136,11 +113,10 @@ print("z/d = ", z_eval[-1] / unit_cell_length)
 
 
 # 1) get frequencys to simulate over
-frequency_range = np.linspace(0, 2* PUMP_FREQUENCY, resolution)
+frequency_range = np.linspace(0, 2*PUMP_FREQUENCY, resolution)
 
 # 2) simulate batas and unfold betas*D, then divid by unitcell len to get beta
-
-betas_unfolded = utills.functions.beta_unfold(get_betas_d(floquet_line, frequency_range)) / unit_cell_length
+betas_unfolded = utills.functions.beta_unfold(get_betas_d(floquet_line, frequency_range))/unit_cell_length
 
 
 # get betas for pump, idler, delta, and  betas
@@ -149,13 +125,16 @@ betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY]
 betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas_unfolded)
 delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
+
+
 power_gain, gain_idler, gain_pump = [], [], []
 
 fig5, ax55 = plt.subplots(3)
 ax55[0].set_title("signal")
 ax55[1].set_title("idler")
 
-probs = [150,300,450,600,750,900]
+
+probs = [int(resolution*(i/6) ) for i in range(1,6)]
 colors = ["b","g","r","c","m","k"]
 coloridx = 0
 
@@ -172,9 +151,6 @@ for f_idx,freq in enumerate(frequency_range):
     power_gain.append(20 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
 
 
-    # ds = np.sqrt(np.real(amplitude_signal_over_z_range)**2 + np.imag(amplitude_signal_over_z_range)**2)
-    # di = np.sqrt(np.real(amplitude_idler_over_z_range)**2 + np.imag(amplitude_idler_over_z_range)**2)
-    # dp = np.sqrt(np.real(amplitude_pump_over_z_range)**2 + np.imag(amplitude_pump_over_z_range)**2)
 
 
     ds = np.abs(amplitude_signal_over_z_range)

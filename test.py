@@ -306,6 +306,12 @@ javeir_betas = np.array(
 javeir_betas = javeir_betas[:len(jav_fr)]
 javeir_betas /= unit_cell_length
 
+
+
+
+
+plt.plot(javeir_betas)
+plt.plot(utills.functions.beta_unfold(get_betas_d(floquet_line, jav_fr)) / unit_cell_length)
 plt.show()
 
 
