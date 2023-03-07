@@ -77,11 +77,11 @@ def hsff_simulate(file_path, n_interp_points):
         # calc bloch impedance and propagation const for unit cell
 
         floquet_propagation_const_gamma = gamma_d(unit_cell_abcd_mat)
-        ZB_pos, ZB_neg = Bloch_impedance_Zb(unit_cell_abcd_mat)
+        ZB = Bloch_impedance_Zb(unit_cell_abcd_mat)
 
         floquet_transmission_ = Transmission(N_unit_cells,
                                              impedance,
-                                             ZB_neg,
+                                             ZB,
                                              floquet_propagation_const_gamma)
         floquet_transmission.append(floquet_transmission_)
 
@@ -104,13 +104,25 @@ def hsff_simulate(file_path, n_interp_points):
         # get alpha beta r x
         floquet_alpha = floquet_propagation_const_gamma.real
         floquet_beta = floquet_propagation_const_gamma.imag
-        floquet_r = ZB_pos.real
-        floquet_x = ZB_pos.imag
+        floquet_r = ZB.real
+        floquet_x = ZB.imag
 
         floquet_alphas.append(floquet_alpha)
         floquet_betas.append(floquet_beta)
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
+
+    # import csv
+    #
+    # fields = ['Frequency', 'floquet_transmission', 'floquet_rs', 'floquet_xs']
+    #
+    # rows = list(zip(frequency_range,floquet_transmission,floquet_rs,floquet_xs))
+    #
+    # with open('data', 'w') as f:
+    #     # using csv.writer method from CSV package
+    #     write = csv.writer(f)
+    #     write.writerow(fields)
+    #     write.writerows(rows)
 
 
 
