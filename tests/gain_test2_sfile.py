@@ -12,7 +12,7 @@ from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 from utills.constants import PI
-
+import csv
 
 
 ################################################################################################################################################
@@ -69,88 +69,96 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
     return [As, Ai, Ap]
 
 
-################################## GAIN PARAMS #######################################
+
 unit_cell_length = 0.003140
 resolution = 1000
 n_unitcells = 62
 z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
-PUMP_FREQUENCY = utills.functions.toGHz(3.284)
-
-I_star = 1  # todo i star val ??
-
-as0 = 1e-9+ 0j
-ai0 = 0 + 0j
-ap0 = .12 * I_star + 0j
-
-inital_amplitudes = [as0, ai0, ap0]
 z_span = (z_eval[0], z_eval[-1])
-print("z/d = ", z_eval[-1] / unit_cell_length)
+frequency_range, betas_d = get_betas_d(
+    "/Users/aaron/PycharmProjects/NRAO/python_gui/Artificial_03_Artificial_UnitCell_Df=0.1GHz.s2p", resolution)
+betas_unfolded = utills.functions.beta_unfold(betas_d) / unit_cell_length
 
-########################################################################################
+i = 0
+# pf,ap0 = 3.284 , .12
+for ap0 in np.arange(.1,.3,.01):
+    for pf in [3.284]:
 
-frequency_range,betas_d = get_betas_d("/Users/aaron/PycharmProjects/NRAO/python_gui/Artificial_03_Artificial_UnitCell_Df=0.1GHz.s2p",resolution)
-print(len(frequency_range))
+        ################################## GAIN PARAMS #######################################
 
-betas_unfolded = utills.functions.beta_unfold(betas_d)/unit_cell_length
+        PUMP_FREQUENCY = utills.functions.toGHz(pf)
 
-# plt.plot(betas_unfolded)
-# plt.show()
-# get betas for pump, idler, delta, and  betas
-betas_signal = betas_unfolded
-betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
-betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas_unfolded)
-delta_betas = betas_signal + betas_idler - 2 * betas_pump
+        I_star = 1
+        as0 = 1e-9+ 0j
+        ai0 = 0 + 0j
+        inital_amplitudes = [as0, ai0, ap0]
+        # print("z/d = ", z_eval[-1] / unit_cell_length)
 
-
-
-
-
-power_gain, gain_idler, gain_pump = [], [], []
-
-frequency_range = frequency_range[np.where(frequency_range <= 2*PUMP_FREQUENCY)]
-for f_idx,freq in enumerate(frequency_range):
-
-    args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
-
-    zstep = (z_eval[-1] - 0) / (len(z_eval) - 1)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval ,max_step=zstep)
-    amplitude_signal_over_z_range, amplitude_idler_over_z_range, amplitude_pump_over_z_range = sol.y
-    signal_amplitude_before = amplitude_signal_over_z_range[0]
-    signal_amplitude_after = amplitude_signal_over_z_range[-1]
-
-    power_gain.append(10 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
+        ########################################################################################
 
 
-
-
-    ds = np.abs(amplitude_signal_over_z_range)
-    di = np.abs(amplitude_idler_over_z_range)
-    dp = np.abs(amplitude_pump_over_z_range)
-
-    if f_idx %10 == 0:
-        print(f"{int(f_idx / len(frequency_range) * 100)}% complete")
+        # plt.plot(betas_unfolded)
+        # plt.show()
+        # get betas for pump, idler, delta, and  betas
+        betas_signal = betas_unfolded
+        betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
+        betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range), betas_unfolded)
+        delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
 
 
 
 
-fig, ax = plt.subplots()
-plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz")
-# ax.plot(frequency_range / 1e9, power_gain,'-',color='tab:orange')
-ax.plot(frequency_range/ 1e9, power_gain, '-', color='tab:orange')
-ax.set_ylim([None, None])
-ax.set_title(f"SIGNAL GAIN [10*log10]")
-fig.set_size_inches(7, 7)
-ax.set_xlabel('Frequency [GHz]')
-plt.show()
+        power_gain, gain_idler, gain_pump = [], [], []
 
-import csv
+        frequency_range2 = frequency_range[np.where(frequency_range <= 2*PUMP_FREQUENCY)]
+        for f_idx,freq in enumerate(frequency_range2):
 
-fields = ['Frequency', 'Gain-DB']
-rows = list(zip(frequency_range,power_gain))
+            args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
 
-with open(f'../../../Desktop/gain__ap0:{ap0}___Pumpf:{PUMP_FREQUENCY/1e9}', 'w') as f:
-    # using csv.writer method from CSV package
-    write = csv.writer(f)
-    write.writerow(fields)
-    write.writerows(rows)
+            zstep = (z_eval[-1] - 0) / (len(z_eval) - 1)
+            sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval ,max_step=zstep)
+            amplitude_signal_over_z_range, amplitude_idler_over_z_range, amplitude_pump_over_z_range = sol.y
+            signal_amplitude_before = amplitude_signal_over_z_range[0]
+            signal_amplitude_after = amplitude_signal_over_z_range[-1]
+
+            power_gain.append(10 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
+
+
+
+
+            ds = np.abs(amplitude_signal_over_z_range)
+            di = np.abs(amplitude_idler_over_z_range)
+            dp = np.abs(amplitude_pump_over_z_range)
+
+            if f_idx %10 == 0:
+                print(f"{int(f_idx / len(frequency_range2) * 100)}% complete")
+
+
+
+
+
+        fig, ax = plt.subplots()
+        plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz -- ap0: {ap0.real} -- id:{i}")
+        # ax.plot(frequency_range / 1e9, power_gain,'-',color='tab:orange')
+        ax.plot(frequency_range2/ 1e9, power_gain, '-', color='tab:orange')
+        ax.set_ylim([None, None])
+        ax.set_title(f"SIGNAL GAIN [10*log10]")
+        fig.set_size_inches(7, 7)
+        ax.set_xlabel('Frequency [GHz]')
+        # plt.show()
+
+        fig.savefig(f'../../../Desktop/results/id{i}plot_gain__ap0:{ap0.real}___Pumpf:{PUMP_FREQUENCY/1e9}.pdf', bbox_inches='tight')
+
+
+
+        fields = ['Frequency', 'Gain-DB']
+        rows = list(zip(frequency_range2,power_gain))
+
+        with open(f'../../../Desktop/results/id{i}gain__ap0:{ap0.real}___Pumpf:{PUMP_FREQUENCY/1e9}', 'w') as f:
+            # using csv.writer method from CSV package
+            write = csv.writer(f)
+            write.writerow(fields)
+            write.writerows(rows)
+        i+=1
+        plt.close()
