@@ -1,4 +1,5 @@
 import math
+import time
 from cmath import exp
 
 import numpy as np
@@ -12,19 +13,19 @@ from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
 from utills.constants import PI
 
-# json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 0.0,
-#                       'Super Conductor Operation Temperature': 4.0, 'Super Conductor Critical Temperature': 14.7,
-#                       'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0,
-#                       'Super Conductor Tangent Delta': 0.0},
-#                'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734,
-#                               'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0},
-#                'Frequency Range': {'Start Frequency': 0.0, 'End Frequency': 40.0, 'Resolution': 1000.0},
-#                'gain_models': {'Signal Amplitude': 0.0, 'Idler Amplitude': 0.0, 'Pump Amplitude': 0.0,
-#                                'Pump Frequency': 0.0}}
-#
-#
+json_inputs = {'SC': {'Er': 11.44, 'Height': 0.0, 'Ts': 35.0, 'Ground Thickness': 0.0,
+                      'Super Conductor Operation Temperature': 4.0, 'Super Conductor Critical Temperature': 14.7,
+                      'Super Conductor Critical Current': 0.0, 'Super Conductor Normal Resistivity': 100.0,
+                      'Super Conductor Tangent Delta': 0.0},
+               'Dimensions': {'loads': [['60', '3.4'], ['60', '3.4'], ['50', '3.4']], 'Unit Cell Length': 4.734,
+                              'Central Line Width': 1.0, 'D0': 1.578, 'S': 1.0},
+               'Frequency Range': {'Start Frequency': 0.0, 'End Frequency': 40.0, 'Resolution': 1000.0},
+               'gain_models': {'Signal Amplitude': 0.0, 'Idler Amplitude': 0.0, 'Pump Amplitude': 0.0,
+                               'Pump Frequency': 0.0}}
 
-json_inputs = {"SC": {"Er": 11.44, "Height": 0.0, "Ts": 20.0, "Ground Thickness": 0.0, "Super Conductor Operation Temperature": 0.0, "Super Conductor Critical Temperature": 15.83, "Super Conductor Critical Current": 0.0, "Super Conductor Normal Resistivity": 95.0, "Super Conductor Tangent Delta": 1e-10}, "Dimensions": {"loads": [["60", "14"], ["60", "14"], ["50", "14"]], "Unit Cell Length": 5.386, "Central Line Width": 2.0, "D0": 1.795, "S": 2.0}, "Frequency Range": {"Start Frequency": 1.0, "End Frequency": 40.0, "Resolution": 1000.0}, "gain_models": {"Signal Amplitude": 0.0, "Idler Amplitude": 0.0, "Pump Amplitude": 0.0, "Pump Frequency": 0.0}}
+
+
+# json_inputs = {"SC": {"Er": 11.44, "Height": 0.0, "Ts": 20.0, "Ground Thickness": 0.0, "Super Conductor Operation Temperature": 0.0, "Super Conductor Critical Temperature": 15.83, "Super Conductor Critical Current": 0.0, "Super Conductor Normal Resistivity": 95.0, "Super Conductor Tangent Delta": 1e-10}, "Dimensions": {"loads": [["60", "14"], ["60", "14"], ["50", "14"]], "Unit Cell Length": 5.386, "Central Line Width": 2.0, "D0": 1.795, "S": 2.0}, "Frequency Range": {"Start Frequency": 1.0, "End Frequency": 40.0, "Resolution": 1000.0}, "gain_models": {"Signal Amplitude": 0.0, "Idler Amplitude": 0.0, "Pump Amplitude": 0.0, "Pump Frequency": 0.0}}
 
 inputs = CPWInputs(json_inputs)
 
@@ -98,7 +99,7 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
 resolution = 1000
 n_unitcells = 150
 z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
-PUMP_FREQUENCY = utills.functions.toGHz(11.73)
+PUMP_FREQUENCY = utills.functions.toGHz(11.33)
 
 I_star = 1  # todo i star val ??
 
@@ -109,7 +110,7 @@ ap0 = .2 * I_star + 0j
 inital_amplitudes = [as0, ai0, ap0]
 z_span = (z_eval[0], z_eval[-1])
 print("z/d = ", z_eval[-1] / unit_cell_length)
-zstep = (z_eval[-1] - 0) / (len(z_eval) - 1)
+zstep = ((z_eval[-1] - 0) / (len(z_eval) - 1))*8
 
 ########################################################################################
 
@@ -141,6 +142,7 @@ ax55[2].set_title("PUMP")
 probs = [int(resolution/10),int(resolution*(2/10)),int(resolution*(4/10)),int(resolution*(5/10)),int(resolution*(6/10)),int(resolution*(9/10))]
 colors = ["b","g","r","c","m","k"]
 coloridx = 0
+s = time.time()
 
 for f_idx,freq in enumerate(frequency_range):
 
@@ -157,16 +159,18 @@ for f_idx,freq in enumerate(frequency_range):
 
 
 
-    ds = np.abs(amplitude_signal_over_z_range)
-    di = np.abs(amplitude_idler_over_z_range)
-    dp = np.abs(amplitude_pump_over_z_range)
+    # ds = np.abs(amplitude_signal_over_z_range)
+    # di = np.abs(amplitude_idler_over_z_range)
+    # dp = np.abs(amplitude_pump_over_z_range)
+    #
+    # if f_idx in probs:
+    #     print(f"{int(f_idx / len(frequency_range) * 100)}% complete")
+    #     ax55[0].plot(z_eval, ds, '-', color=colors[coloridx],)
+    #     ax55[1].plot(z_eval, di, '-', color=colors[coloridx])
+    #     ax55[2].plot(z_eval, dp, '-', color=colors[coloridx])
+    #     coloridx+=1
+print("time taken :",time.time()-s)
 
-    if f_idx in probs:
-        print(f"{int(f_idx / len(frequency_range) * 100)}% complete")
-        ax55[0].plot(z_eval, ds, '-', color=colors[coloridx],)
-        ax55[1].plot(z_eval, di, '-', color=colors[coloridx])
-        ax55[2].plot(z_eval, dp, '-', color=colors[coloridx])
-        coloridx+=1
 
 
 fig5.legend(np.round(frequency_range[probs]/1e9,2))
