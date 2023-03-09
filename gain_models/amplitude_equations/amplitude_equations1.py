@@ -1,38 +1,34 @@
 import cmath
 
 
-# todo make standanrd format (amplitudes, z ,args)
-
-def AmplitudeEqs1(amplitudes, z, beta_signals, beta_idler, beta_pump):
+# standanrd format is (z, init_amplitudes,args)
+def SIP_MODEL_1(z, init_amplitudes,   beta_s, beta_i, beta_p, delta_beta, I_Star):
     # signal-idler-pump equations for N = 3
 
-    A_sig = amplitudes[0]
-    A_idler = amplitudes[1]
-    A_pump = amplitudes[2]
+    amp_S, amp_I, amp_P = init_amplitudes
 
+    abs_ampS_sqrd = abs(amp_S) ** 2
+    abs_ampI_sqrd = abs(amp_I) ** 2
+    abs_ampP_sqrd = abs(amp_P) ** 2
 
-    deltaB = (beta_signals + beta_idler) - (2 * beta_pump)
+    I_Star_sqrd = I_Star ** 2
 
+    j_db1_z = (1j * delta_beta * z)
 
-    # conj amplitudes
-    A_star_s = amplitudes[0].conjugate()
-    A_star_i = amplitudes[1].conjugate()
-    A_star_p = amplitudes[2].conjugate()
+    eight_is_sqred = (8 * I_Star_sqrd)
 
+    expj_db1_z = cmath.exp(j_db1_z)
 
-    # Optical coupled equations
+    As = (((-1j * beta_s) / eight_is_sqred)
+          * (amp_S * (abs_ampS_sqrd + 2 * abs_ampI_sqrd + 2 * abs_ampP_sqrd)
+             + amp_I.conjugate() * amp_P ** 2 * expj_db1_z))
 
-    AmplitudeSignal = ((-1j * (beta_signals / 8)) * (A_sig * ((abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) +
-                                                              (2 * (abs(A_pump) ** 2))) + A_star_i * (
-                                                             A_pump ** 2) * cmath.exp(1j * deltaB * z)))
+    Ai = (((-1j * beta_i) / eight_is_sqred)
+          * (amp_I * (2 * abs_ampS_sqrd + abs_ampI_sqrd + 2 * abs_ampP_sqrd)
+             + amp_S.conjugate() * amp_P ** 2 * expj_db1_z))
 
-    AmplitudeIdler = ((-1j * (beta_idler / 8)) * (A_idler * ((2 * (abs(A_sig) ** 2)) + (abs(A_idler) ** 2) +
-                                                             (2 * (abs(A_pump) ** 2))) + A_star_s * (
-                                                          A_pump ** 2) * cmath.exp(1j * deltaB * z)))
+    Ap = (((-1j * beta_p) / eight_is_sqred)
+          * (amp_P * (2 * abs_ampS_sqrd + 2 * abs_ampI_sqrd + abs_ampP_sqrd)
+             + 2 * amp_P.conjugate() * amp_S * amp_I * cmath.exp(-j_db1_z)))
 
-    AmplitudePump = ((-1j * (beta_pump / 8)) * (A_pump * (2 * (abs(A_sig) ** 2) + (2 * (abs(A_idler) ** 2)) +
-                                                          (
-                                                                  abs(A_pump) ** 2)) + 2 * A_star_p * A_sig * A_idler * cmath.exp(
-        -1j * deltaB * z)))
-
-    return [AmplitudeSignal, AmplitudeIdler, AmplitudePump]
+    return [As, Ai, Ap]

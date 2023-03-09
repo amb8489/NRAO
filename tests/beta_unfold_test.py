@@ -3,7 +3,7 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-from floquet_line_model.floquet_line_art_line import SuperConductingFloquetLine_art
+from floquet_line_model.floquet_line_ARTIFICAL import SuperConductingFloquetLine_art
 from model_inputs.artificial_cpw_inputs import ArtificialCPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.artificial_cpw.super_conducting_artificial_cpw_model import \

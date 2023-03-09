@@ -23,6 +23,9 @@ class SuperConductingFloquetLine_art():
 
         self.line_models = line_models
 
+    def get_unit_cell_length(self):
+        return sum(line.total_line_length for line in self.line_models)
+
     def Bloch_impedance_Zb(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
         B = ABCD_mat_2x2[0][1]
@@ -67,7 +70,7 @@ class SuperConductingFloquetLine_art():
                                                                                             surface_impedance)
             segment_abcd_mat = mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length)
             segment_abcd_mats.append(segment_abcd_mat)
-            unit_cell_length+=self.line_models[segment_idx].total_line_length
+            unit_cell_length += self.line_models[segment_idx].total_line_length
 
         # 4) matrix multiply all the sub abcd mats to make Unit cell ABCD mat
         unit_cell_abcd_mat = mult_mats(segment_abcd_mats)
@@ -84,7 +87,6 @@ class SuperConductingFloquetLine_art():
         floquet_r = ZB.real
         floquet_x = ZB.imag
 
-
         floquet_transmission = Transmission(100,
                                             50,
                                             ZB,
@@ -100,7 +102,7 @@ class SuperConductingFloquetLine_art():
         central_line_alpha = central_line_propagation_const.real
 
         # retuning outputs
-        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x,\
+        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x, \
                floquet_transmission
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):

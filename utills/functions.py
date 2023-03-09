@@ -165,6 +165,10 @@ def RLGC_circuit_factors(propagationConst: complex, Zb: complex):
     return R, L, G, C
 
 
+def toDb(number):
+    return 10 * math.log10(number)
+
+
 if __name__ == '__main__':
     rdarrr = np.random.randint(100, size=10000)
 

@@ -38,7 +38,7 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
     def selectFile(self):
         dialog = QFileDialog()
         dialog.setFileMode(QFileDialog.ExistingFile)
-        self.file_path = dialog.getOpenFileName(self, 'Select a file')[0]
+        self.file_path = dialog.getOpenFileName(self, 'Find file')[0]
 
         self.file_name_display.setText(f"File selected: {self.file_path}")
 

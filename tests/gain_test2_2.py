@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
 import utills.functions
-from floquet_line_model.floquet_line import SuperConductingFloquetLine
+from floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
 from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
@@ -147,7 +147,7 @@ s = time.time()
 for f_idx,freq in enumerate(frequency_range):
 
     args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
-    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval ,max_step=zstep,method = "BDF")
+    sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval,max_step=zstep)
     amplitude_signal_over_z_range, amplitude_idler_over_z_range, amplitude_pump_over_z_range = sol.y
 
     # todo could be somthing weird or the sol.y

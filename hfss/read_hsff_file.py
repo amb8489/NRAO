@@ -3,6 +3,7 @@ import cmath
 import numpy as np
 import skrf as rf
 
+from gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocesses
 from utills.functions import beta_unfold, Transmission
 
 
@@ -71,7 +72,7 @@ def hsff_simulate(file_path, n_interp_points):
     unit_cell_ABCD_mats, frequency_range = abcd_and_frequency_range_from_hfss_touchstone_file(file_path,
                                                                                               n_interp_points)
 
-    floquet_alphas, floquet_betas, floquet_rs, floquet_xs,floquet_transmission = [], [], [], [],[]
+    floquet_alphas_d, floquet_betas_d, floquet_rs, floquet_xs,floquet_transmission = [], [], [], [],[]
     for unit_cell_abcd_mat in unit_cell_ABCD_mats:
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
@@ -86,19 +87,6 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_transmission.append(floquet_transmission_)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         # floquet_bloch_impedance_pos_dir = abs(floquet_bloch_impedance_pos_dir.real)+ 1j*floquet_bloch_impedance_pos_dir.imag
 
         # get alpha beta r x
@@ -107,10 +95,29 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_r = ZB.real
         floquet_x = ZB.imag
 
-        floquet_alphas.append(floquet_alpha)
-        floquet_betas.append(floquet_beta)
+        floquet_alphas_d.append(floquet_alpha)
+        floquet_betas_d.append(floquet_beta)
         floquet_rs.append(floquet_r)
         floquet_xs.append(floquet_x)
+
+
+
+    # #todo make these inputs in UI
+    unit_cell_length = 0.003140
+    n_unitcells = 62
+    PUMP_FREQUENCY = 3.284
+    I_star = 1
+
+    init_amplitudes = [complex(1e-9, 0), complex(0, 0), complex(.12 * I_star, 0)]
+    resoultion= len(frequency_range)
+    gain, gain_freq_range = simulate_gain_multiprocesses(resoultion, unit_cell_length, n_unitcells, frequency_range, PUMP_FREQUENCY,
+                                                         init_amplitudes, I_star,
+                                                         floquet_betas_d, floquet_alphas_d, floquet_rs, floquet_xs)
+    gain_data = (gain, (gain_freq_range, PUMP_FREQUENCY, n_unitcells, init_amplitudes[2]))
+
+    return frequency_range, floquet_alphas_d, [0] * len(floquet_alphas_d), floquet_betas_d, [0] * len(
+        floquet_betas_d), floquet_rs, floquet_xs,floquet_transmission,gain_data
+
 
     # import csv
     #
@@ -123,8 +130,3 @@ def hsff_simulate(file_path, n_interp_points):
     #     write = csv.writer(f)
     #     write.writerow(fields)
     #     write.writerows(rows)
-
-
-
-    return frequency_range, floquet_alphas, [0] * len(floquet_alphas), floquet_betas, [0] * len(
-        floquet_betas), floquet_rs, floquet_xs,floquet_transmission

@@ -40,6 +40,12 @@ class SuperConductingFloquetLine():
         self.target_pump_zone_start = 0
         self.target_pump_zone_end = 0
 
+
+
+    def get_unit_cell_length(self):
+        return self.unit_cell.unit_cell_length
+
+
     def Bloch_impedance_Zb(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
         B = ABCD_mat_2x2[0][1]

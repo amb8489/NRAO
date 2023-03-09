@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
 import utills.functions
-from floquet_line_model.floquet_line import SuperConductingFloquetLine
+from floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
 from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
 from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine

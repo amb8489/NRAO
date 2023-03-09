@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
 import utills.functions
-from floquet_line_model.floquet_line import SuperConductingFloquetLine
+from floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
 from hfss.read_hsff_file import hsff_simulate
 from model_inputs.cpw_inputs import CPWInputs
 from super_conductor_model.super_conductor_model import SuperConductivity
@@ -70,9 +70,9 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
 
 
 
-unit_cell_length = 0.003140
+unit_cell_length = 0.003140 #todo add to input
 resolution = 1000
-n_unitcells = 62
+n_unitcells = 62            # todo add to input
 z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
 z_span = (z_eval[0], z_eval[-1])
 frequency_range, betas_d = get_betas_d(
@@ -81,7 +81,7 @@ betas_unfolded = utills.functions.beta_unfold(betas_d) / unit_cell_length
 
 i = 0
 # pf,ap0 = 3.284 , .12
-for ap0 in np.arange(.1,.3,.01):
+for ap0 in [.12]:
     for pf in [3.284]:
 
         ################################## GAIN PARAMS #######################################
@@ -122,10 +122,7 @@ for ap0 in np.arange(.1,.3,.01):
             signal_amplitude_before = amplitude_signal_over_z_range[0]
             signal_amplitude_after = amplitude_signal_over_z_range[-1]
 
-            power_gain.append(10 * np.log10(abs(signal_amplitude_after) / abs(signal_amplitude_before)))
-
-
-
+            power_gain.append(utills.functions.toDb((abs(sol.y[0][-1]) ** 2) / (abs(sol.y[0][0]) ** 2)))
 
             ds = np.abs(amplitude_signal_over_z_range)
             di = np.abs(amplitude_idler_over_z_range)
@@ -146,7 +143,8 @@ for ap0 in np.arange(.1,.3,.01):
         ax.set_title(f"SIGNAL GAIN [10*log10]")
         fig.set_size_inches(7, 7)
         ax.set_xlabel('Frequency [GHz]')
-        # plt.show()
+        plt.show()
+        exit(1)
 
         fig.savefig(f'../../../Desktop/results/id{i}plot_gain__ap0:{ap0.real}___Pumpf:{PUMP_FREQUENCY/1e9}.pdf', bbox_inches='tight')
 

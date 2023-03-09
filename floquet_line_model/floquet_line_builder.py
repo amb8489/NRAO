@@ -1,5 +1,5 @@
-from floquet_line_model.floquet_line import SuperConductingFloquetLine
-from floquet_line_model.floquet_line_art_line import SuperConductingFloquetLine_art
+from floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
+from floquet_line_model.floquet_line_ARTIFICAL import SuperConductingFloquetLine_art
 from model_inputs.artificial_cpw_inputs import ArtificialCPWInputs
 from model_inputs.cpw_inputs import CPWInputs
 from model_inputs.micro_strip_inputs import MicroStripInputs
@@ -60,9 +60,11 @@ def floquet_line_builder(line_model):
         # todo where is width being used
         # todo combine this into one
         central_line_model = SuperConductingCPWLine(inputs.central_line_width, inputs.ground_spacing,
-                                                    inputs.line_thickness, inputs.er, inputs.tangent_delta,inputs.crit_current)
+                                                    inputs.line_thickness, inputs.er, inputs.tangent_delta,
+                                                    inputs.crit_current)
         load_line_models = [SuperConductingCPWLine(load_width, inputs.ground_spacing, inputs.line_thickness, inputs.er,
-                                                   inputs.tangent_delta,inputs.crit_current) for load_width in inputs.load_widths]
+                                                   inputs.tangent_delta, inputs.crit_current) for load_width in
+                            inputs.load_widths]
 
         floquet_line = SuperConductingFloquetLine(inputs.unit_cell_length, inputs.D0, inputs.load_D_vals,
                                                   load_line_models, central_line_model, super_conductivity_model,
@@ -70,26 +72,21 @@ def floquet_line_builder(line_model):
         return floquet_line
     elif model_type == ARTIFICIAL_CPW:
 
-        print("ARTIFICIAL_CPW")
-
         inputs = ArtificialCPWInputs(json_inputs)
 
         super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
-        er = inputs.er
-        ts = inputs.line_thickness
-        h = inputs.height
 
         line_models = []
-        i = 1
         for line_len, S, WH, LH, WL, LL in inputs.line_dimensions:
             nfs = line_len // (LH + (2 * S) + LL)
             line_models.append(
-                SuperConductingArtificialCPWLine(LH, WH, LL, WL, S, nfs, er, ts, h, super_conductivity_model, line_len))
-            i += 1
-        floquet_line = SuperConductingFloquetLine_art(line_models, super_conductivity_model, ts)
+                SuperConductingArtificialCPWLine(LH, WH, LL, WL, S, nfs, inputs.er, inputs.line_thickness,
+                                                 inputs.height, super_conductivity_model, line_len))
+        floquet_line = SuperConductingFloquetLine_art(line_models, super_conductivity_model, inputs.line_thickness)
         return floquet_line
 
 
 
     else:
-        raise NotImplementedError(f"\"{line_model.type}\" not implemented")
+        raise NotImplementedError(
+            f"\"{line_model.type}\" not implemented need to go into Floquet_line_builder.py and Implement")
