@@ -7,7 +7,7 @@ import cmath
 import math
 from scipy.integrate import quad
 
-from simulation.utills.constants import MU_0, PI2, KB, PI_DIV_2, PLANCK_CONSTev
+from simulation.utills.constants import MU_0, PI2, BOLTZMANN_CONSTev, PI_DIV_2, PLANCK_CONSTev
 from simulation.utills.functions import ccoth
 
 
@@ -42,7 +42,7 @@ class SuperConductivity():
         self.__temp_div = operation_temperature_k / critical_temp_k
         self.__jPI2MU_0 = 1j * PI2 * MU_0
         self.__delta = self.__calc_delta(critical_temp_k)
-        self.__op_temp_times_kb = operation_temperature_k * KB
+        self.__op_temp_times_kb = operation_temperature_k * BOLTZMANN_CONSTev
 
     def get_sigma(self):
         return self.__sigma
@@ -144,7 +144,7 @@ class SuperConductivity():
         return self.__sigma_2_N_U(delt, frequency, tempK)
 
     def __Delta_O(self, critical_temp: float):
-        return 1.764 * KB * critical_temp
+        return 1.764 * BOLTZMANN_CONSTev * critical_temp
 
     def __calc_delta(self, critical_temp: float):
         return self.__Delta_O(critical_temp) * math.sqrt(math.cos(PI_DIV_2 * (self.__temp_div ** 2)))

@@ -2,7 +2,7 @@ from python_gui.utills.utills_gui import resolution, start_frequency, end_freque
     central_line_width, D0, Er, pump_frequency, pump_amplitude, idler_amplitude, signal_amplitude, SC_tangent_delta, \
     SC_normal_resistivity, SC_critical_current, SC_critical_temperature, SC_operation_temperature, SC_ground_thickness, \
     SC_thickness, SC_height, ground_spacing
-from simulation.utills.functions import toGHz, mm_to_meters, micro_meters_to_meters, nano_meters_to_meters, \
+from simulation.utills.functions import hertz_to_GHz, mm_to_meters, micro_meters_to_meters, nano_meters_to_meters, \
     micro_ohms_cm_to_ohms_m
 
 
@@ -11,8 +11,8 @@ class CPWInputs():
         # ---------------------------- Range and Resolution Inputs
 
         self.resoultion = int(inputs["Frequency Range"][resolution.get_name()])
-        self.start_freq_GHz = toGHz(int(inputs["Frequency Range"][start_frequency.get_name()]))
-        self.end_freq_GHz = toGHz(int(inputs["Frequency Range"][end_frequency.get_name()]))
+        self.start_freq_GHz = hertz_to_GHz(int(inputs["Frequency Range"][start_frequency.get_name()]))
+        self.end_freq_GHz = hertz_to_GHz(int(inputs["Frequency Range"][end_frequency.get_name()]))
 
         # todo convert to right units
         # todo refactor so that unit_cell_length holds its value and is connected to the change of the widget that represents its value
@@ -41,7 +41,7 @@ class CPWInputs():
         self.tangent_delta = float(inputs["SC"][SC_tangent_delta.get_name()])
 
         # ---------------------------- gain_models inputs
-        self.pump_freq = toGHz(float(inputs["gain_models"][pump_frequency.get_name()]))
+        self.pump_freq = hertz_to_GHz(float(inputs["gain_models"][pump_frequency.get_name()]))
 
         self.As_init = float(inputs["gain_models"][signal_amplitude.get_name()])  # todo make inputs complex
         self.Ai_init = float(inputs["gain_models"][idler_amplitude.get_name()])  # todo make inputs complex

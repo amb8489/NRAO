@@ -5,7 +5,7 @@ from scipy.signal import find_peaks, peak_widths
 from simulation.floquet_line_model.unit_cell import UnitCell, mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from simulation.utills.functions import Transmission
+from simulation.utills.functions import Transmission_Db
 
 # calc transmission todo add these inputs to UI
 N_unit_cells = 150
@@ -97,10 +97,10 @@ class SuperConductingFloquetLine():
         ZB = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
         floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
 
-        floquet_transmission = Transmission(N_unit_cells,
-                                            impedance,
-                                            ZB,
-                                            floquet_gamma_d)
+        floquet_transmission = Transmission_Db(N_unit_cells,
+                                               impedance,
+                                               ZB,
+                                               floquet_gamma_d)
 
         # get alpha beta r x
         floquet_beta = floquet_gamma_d.imag

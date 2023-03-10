@@ -99,7 +99,7 @@ def ODE_model_1(z, init_amplitudes, beta_s, beta_i, beta_p, delta_beta, I_Star):
 resolution = 1000
 n_unitcells = 150
 z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
-PUMP_FREQUENCY = utills.functions.toGHz(11.33)
+PUMP_FREQUENCY = utills.functions.hertz_to_GHz(11.33)
 
 I_star = 1  # todo i star val ??
 

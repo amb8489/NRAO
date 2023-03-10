@@ -46,7 +46,7 @@ n_unitcells = 150
 
 total_line_len = n_unitcells * unit_cell_length
 z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
-PUMP_FREQUENCY = utills.functions.toGHz(11.33)
+PUMP_FREQUENCY = utills.functions.hertz_to_GHz(11.33)
 
 I_star = 1  # todo i star val ??
 

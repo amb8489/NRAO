@@ -1,6 +1,7 @@
 
 
 how to add a line:
+- lets add a new model from start to end
     full from adding to the UI
     FL builder
     new line input

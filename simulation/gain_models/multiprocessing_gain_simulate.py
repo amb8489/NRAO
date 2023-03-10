@@ -5,7 +5,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 from simulation.gain_models.amplitude_equations.amplitude_equations1 import SIP_MODEL_1
-from simulation.utills.functions import toGHz, toDb, beta_unfold
+from simulation.utills.functions import hertz_to_GHz, toDb, beta_unfold
 
 
 def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=True):
@@ -32,7 +32,7 @@ def simulate_gain_multiprocesses(resolution, unit_cell_length, n_unitcells, freq
     # alpha_d, r, x are unused in this implentation of gain equation
 
     ################################## GAIN PARAMS #######################################
-    PUMP_FREQUENCY = toGHz(PUMP_FREQUENCY)
+    PUMP_FREQUENCY = hertz_to_GHz(PUMP_FREQUENCY)
     total_line_len = n_unitcells * unit_cell_length
     z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
     z_span = (z_eval[0], z_eval[-1])

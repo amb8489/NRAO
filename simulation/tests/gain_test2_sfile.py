@@ -86,7 +86,7 @@ for ap0 in [.12]:
 
         ################################## GAIN PARAMS #######################################
 
-        PUMP_FREQUENCY = utills.functions.toGHz(pf)
+        PUMP_FREQUENCY = utills.functions.hertz_to_GHz(pf)
 
         I_star = 1
         as0 = 1e-9+ 0j

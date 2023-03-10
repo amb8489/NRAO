@@ -3,7 +3,7 @@ import numpy as np
 import skrf as rf
 
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocesses
-from simulation.utills.functions import Transmission
+from simulation.utills.functions import Transmission_Db
 
 
 def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
@@ -79,10 +79,10 @@ def hsff_simulate(file_path, n_interp_points):
         floquet_propagation_const_gamma = gamma_d(unit_cell_abcd_mat)
         ZB = Bloch_impedance_Zb(unit_cell_abcd_mat)
 
-        floquet_transmission_ = Transmission(N_unit_cells,
-                                             impedance,
-                                             ZB,
-                                             floquet_propagation_const_gamma)
+        floquet_transmission_ = Transmission_Db(N_unit_cells,
+                                                impedance,
+                                                ZB,
+                                                floquet_propagation_const_gamma)
         floquet_transmission.append(floquet_transmission_)
 
 

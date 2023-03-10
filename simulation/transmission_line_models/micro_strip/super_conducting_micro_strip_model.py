@@ -2,7 +2,7 @@ import cmath
 import numpy as np
 
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from simulation.utills.constants import C, K0, Z0
+from simulation.utills.constants import SPEED_OF_LIGHT, K0, Z0
 
 '''
 
@@ -102,7 +102,7 @@ class SuperConductingMicroStripModel(AbstractSCTL):
         eps_fm_static = (er + 1) / 2 + (er - 1) / (2 * np.sqrt(1 + 12 * sc_height / sc_width))
 
         # From Roberto Sorretino's book (referencing Yamashita [13] at eq. 3.186, page 100 of PDF):
-        F_1_nu = (4 * sc_height * frequency / C) * np.sqrt(er - 1) * (
+        F_1_nu = (4 * sc_height * frequency / SPEED_OF_LIGHT) * np.sqrt(er - 1) * (
                 0.5 + (1 + 2 * np.log(1 + sc_width / sc_height)) ** 2)
         eps_fm_nu = ((np.sqrt(er) - np.sqrt(eps_fm_static)) / (1 + 4 * F_1_nu ** (-1.5)) + np.sqrt(
             eps_fm_static)) ** 2

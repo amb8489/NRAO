@@ -7,7 +7,7 @@ import scipy.special as sp
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import \
     capacitance_model_selector
-from simulation.utills.constants import KB, PLANCK_CONST_REDUCEDev, PI, MU_0, C, epsilon_0, PI2
+from simulation.utills.constants import BOLTZMANN_CONSTev, PLANCK_CONST_REDUCEDev, PI, MU_0, SPEED_OF_LIGHT, epsilon_0, PI2
 
 """
 
@@ -19,7 +19,7 @@ Artificial CPW MODEL FOR TRANSMISSION LINE
 
 
 def DELTA_O(sc_crit_temp):
-    return 1.764 * KB * sc_crit_temp
+    return 1.764 * BOLTZMANN_CONSTev * sc_crit_temp
 
 
 def lambda_0(sigma_n, delta_o):
@@ -86,7 +86,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
             f"line #{0} Length:{total_line_length}   N:{self.number_of_finger_sections}   Lu:{self.central_line_length_LH + (2 * S) + self.load_length_LL}   S:{S}   WH:{self.central_line_width_WH}   LH:{self.central_line_length_LH}   WL:{self.load_width_WL}   LL:{self.load_length_LL}")
 
     def __L_aprox(self, Zo, beta_so, l):
-        return Zo * beta_so * (l / C)
+        return Zo * beta_so * (l / SPEED_OF_LIGHT)
 
     def __clac_L1_L2(self, lH, lL: float, wL: float, wH: float, sM: float, s: float, t: float):
         # looking for errors in these functions
@@ -152,7 +152,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         Lg_ = self.Lg(w, s)
         Cg_ = self.Cg(epsilon_r, w, s)
         Ltot = Lkc + Lg_
-        return C * np.sqrt(Ltot * Cg_)
+        return SPEED_OF_LIGHT * np.sqrt(Ltot * Cg_)
 
     def propagation_constant(self, L1: float, L2: float, capacitance: float, omega: float):
 

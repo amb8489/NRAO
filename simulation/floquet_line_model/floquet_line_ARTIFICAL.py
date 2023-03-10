@@ -4,7 +4,7 @@ import numpy as np
 from simulation.floquet_line_model.unit_cell import mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from simulation.utills.functions import mult_mats, Transmission
+from simulation.utills.functions import mult_mats, Transmission_Db
 
 
 class SuperConductingFloquetLine_art():
@@ -86,10 +86,10 @@ class SuperConductingFloquetLine_art():
         floquet_r = ZB.real
         floquet_x = ZB.imag
 
-        floquet_transmission = Transmission(100,
-                                            50,
-                                            ZB,
-                                            floquet_gamma_d)
+        floquet_transmission = Transmission_Db(100,
+                                               50,
+                                               ZB,
+                                               floquet_gamma_d)
 
         # calculate central line alpha and beta
         cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,
