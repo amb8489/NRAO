@@ -1,0 +1,21 @@
+
+
+how to add a line:
+    full from adding to the UI
+    FL builder
+    new line input
+    new line models in transmission line model
+
+    floquet line if needed
+
+
+program flow and stucture
+
+
+adding new gain equations
+
+hfss program flow
+
+about the UI
+
+document all code and function
