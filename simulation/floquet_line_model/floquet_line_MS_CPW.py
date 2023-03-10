@@ -17,7 +17,7 @@ impedance = 50
 class SuperConductingFloquetLine():
 
     def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], load_line_models: [AbstractSCTL],
-                 central_line_model: AbstractSCTL, super_conductivity_model: SuperConductivity,
+                     central_line_model: AbstractSCTL, super_conductivity_model: SuperConductivity,
                  central_line_width: float, load_widths: [float], line_thickness: float):
         # ---------------------------------------------------------
 

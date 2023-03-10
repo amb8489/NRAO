@@ -46,4 +46,4 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
 
     def setValues(self, values):
         for i, input in enumerate(self.inputs):
-            input.setValue(values[input.objectName()])
+            input.setValue(values.get(input.objectName(),"0"))
