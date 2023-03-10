@@ -105,14 +105,21 @@ class inputdialogdemo(QDialog):
         self.fields = fields
         self.rows = rows
         self.setWindowTitle("File Name Input")
-        self.gettext()
+        self.get_save_file_name()
 
-    def gettext(self):
+    def get_save_file_name(self):
         text, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter file name:')
         if ok:
             dialog = QFileDialog()
             dialog.setFileMode(QFileDialog.Directory)
             save_location_path = dialog.getExistingDirectory(self, 'Select Directory')
+
+
+            # check to add .csv at the end and for empty string name
+            text = (str(text).replace(".csv",""))+'.csv'
+            if text == '.csv':
+                text = randomColorBright()+'.csv'
+
 
             print(f'saving data to {save_location_path}/{str(text)}')
             with open(f'{save_location_path}/{str(text)}', 'w') as f:
