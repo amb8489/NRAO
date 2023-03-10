@@ -75,15 +75,15 @@ class WidgetGraph_fig(QtWidgets.QWidget):
 
 
         for axs_idx,ax in enumerate(self.fig.axes):
-            for subplot_idx ,line in enumerate(ax.lines):
-                data.extend(line.get_data())
+            for subplot_idx ,sub_plot in enumerate(ax.lines):
+                data.extend(sub_plot.get_data())
 
 
-                x = ax.get_xlabel()
-                y = ax.get_ylabel()
+                x = ax.get_xlabel().replace(" ","_")
+                y = ax.get_ylabel().replace(" ","_")
 
                 if not x:
-                    x = "Frequency_[GHz]"
+                    x = "Frequency"
                 if not y:
                     y = "Y_DATA"
 
