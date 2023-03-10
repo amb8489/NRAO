@@ -1,16 +1,23 @@
 '''
-Testing file for calculating A B R X
+
+
+
+    this file will fun the simulation to make the plots that end up getting shown on
+    plot_window.py
+
+
+
+
+
 '''
 
 import numpy as np
 from matplotlib import pyplot as plt
-
-
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
 from simulation.floquet_line_model.floquet_line_builder import floquet_line_builder
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocesses
 from simulation.hfss.read_hsff_file import hsff_simulate
-from simulation.utills.functions import beta_unfold, toGHz
+from simulation.utills.functions import beta_unfold, hertz_to_GHz
 
 
 # ---------------------------- unit cell inputs from paper
@@ -37,7 +44,7 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
              color='tab:green')
     ax2.tick_params(axis='y', labelcolor='tab:green')
     fig1.tight_layout()
-    ax1.legend(['αd - α0d '])
+    ax1.legend(['αd - α0d '],loc = 'upper right')
     ax2.legend([ 'βd - β0d'],loc = 'upper left')
 
     # ---------------------R , X PLOTS ----------------------------
@@ -68,16 +75,13 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
 
     fig5, ax55 = plt.subplots(2)
     fig5.suptitle('Alpha and Transmission')
-
     ax55[0].set_ylabel('α0d', color='tab:red')
     ax55[0].plot(frequency_range,np.array(floquet_alpha) - np.array(central_line_alpha), color='tab:red')
-
     ax55[0].tick_params(axis='y', labelcolor='tab:red')
     ax55[1].set_ylabel('Transmission', color='tab:blue')
     ax55[1].plot(frequency_range, floquet_transmission, color='tab:blue')
     ax55[1].tick_params(axis='y', labelcolor='tab:blue')
     ax55[1].set_xlabel('Frequency [GHz]')
-
 
     fig3, ax33 = plt.subplots()
     fig3.suptitle('Transmission')
@@ -89,7 +93,6 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     #----------- GAIN ---------
 
     gain,gain_meta_data = gain_data
-
     gain_freq_range,PUMP_FREQUENCY,n_unitcells,pump_current = gain_meta_data
     fig6, ax66 = plt.subplots()
     plt.suptitle(f"[Pump Freq: {PUMP_FREQUENCY} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
@@ -98,29 +101,56 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     ax66.set_title(f"SIGNAL GAIN [Db]")
     ax66.set_xlabel('Frequency [GHz]')
 
+
+
     return [fig1,fig2,
             fig5,fig4,
             fig6]
 
 
-def simulate(line_model):
-    if line_model.type == "SMAT":
 
+
+
+def simulate(line_model):
+    """
+
+    this function is called from the GUI code, and given a line model made from the GUI code, it will
+    run the appropriate simulation for that line type
+
+    right now there is two ways it can go
+
+     1) HFSS_TOUCHSTONE_FILE: a touchstone file generated from hfss
+     2) or MS, CPW or ART-CPW floquet line that is being made from the GUI inputs
+
+
+
+    :param line_model: from the GUI that holds all the user inputs from the GUI
+    :return: matpltlib figures 1d list
+    """
+    if line_model.type == "HFSS_TOUCHSTONE_FILE":
         frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission,gain_data = __simulate_hfss_file(
             line_model)
     else:
-        frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission,gain_data = __simulate_transmission_line(
+        frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r, floquet_x, floquet_transmission,gain_data = __simulate_floquet_line(
             line_model)
 
     return mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, central_line_beta, floquet_r,
                     floquet_x, floquet_transmission,gain_data)
 
-
+# produces all the outputs over the simulated frequency frange from the HFSS file
 def __simulate_hfss_file(line_model):
     return hsff_simulate(line_model.file_path, int(line_model.n_interp_points.get_value()))
 
 
-def __simulate_transmission_line(line_model):
+def __simulate_floquet_line(line_model):
+
+    """
+
+    #todo document and comments steps that hapen in this function
+
+    :param line_model:
+    :return: characteristics of a floquet line at a given frequency
+    """
     # ----------------------- making  floquet_line -----------------
 
     floquet_line = floquet_line_builder(line_model)
@@ -134,8 +164,8 @@ def __simulate_transmission_line(line_model):
 
     # ---------------------------- simulation -------------------
     resoultion = int(inputs["Frequency Range"][resolution.get_name()])
-    start_freq_GHz = toGHz(int(inputs["Frequency Range"][start_frequency.get_name()]))
-    end_freq_GHz = toGHz(int(inputs["Frequency Range"][end_frequency.get_name()]))
+    start_freq_GHz = hertz_to_GHz(int(inputs["Frequency Range"][start_frequency.get_name()]))
+    end_freq_GHz = hertz_to_GHz(int(inputs["Frequency Range"][end_frequency.get_name()]))
     frequency_range = np.linspace(start_freq_GHz, end_freq_GHz, resoultion)
 
     for frequency in frequency_range:

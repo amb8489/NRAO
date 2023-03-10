@@ -11,7 +11,7 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(SMatrixInputsWidget, self).__init__(*args, **kwargs)
 
-        self.type = "SMAT"
+        self.type = "HFSS_TOUCHSTONE_FILE"
 
         self.setLayout(QGridLayout())
 
@@ -29,11 +29,11 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
         self.file_name_display = QLabel("")
         self.layout().addWidget(self.file_name_display, 2, 0,2,1)
 
-        self.n_interp_points = WidgetDoubleInput("unit cell length [meters]", MinVal=0)
-        self.layout().addWidget(self.n_interp_points, 1, 3)
+        self.unit_cell_length = WidgetDoubleInput("unit cell length [meters]", MinVal=0)
+        self.layout().addWidget(self.unit_cell_length, 1, 3)
 
-        self.n_interp_points = WidgetDoubleInput("N cells [Gain | Transmission]", MinVal=1)
-        self.layout().addWidget(self.n_interp_points, 0, 3)
+        self.N_cells = WidgetDoubleInput("N cells [Gain | Transmission]", MinVal=1)
+        self.layout().addWidget(self.N_cells, 0, 3)
 
         # set widget color
         self.setBackGroundColor(randomColorBright())

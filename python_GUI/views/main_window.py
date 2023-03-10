@@ -1,10 +1,10 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, Qt, QFont
 
-from python_gui.line_model_veiws.artificial_cpw_input_widget import ArtificialCPIInputsWidget
-from python_gui.line_model_veiws.cpw_input_widget import CPWInputsWidget
-from python_gui.line_model_veiws.micro_strip_input_widget import MicroStripInputsWidget
-from python_gui.line_model_veiws.s_matrix_input_widget import SMatrixInputsWidget
+from python_gui.line_models.artificial_cpw_input_widget import ArtificialCPIInputsWidget
+from python_gui.line_models.cpw_input_widget import CPWInputsWidget
+from python_gui.line_models.micro_strip_input_widget import MicroStripInputsWidget
+from python_gui.line_models.s_matrix_input_widget import SMatrixInputsWidget
 from python_gui.utills.simulation_plotter import simulate
 from python_gui.utills.utills_gui import BASE_COLOR
 from python_gui.views.load_veiw import LoadSettingsWindow

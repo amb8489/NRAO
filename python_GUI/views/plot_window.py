@@ -16,7 +16,7 @@ class Plot_Window(QScrollArea):
     def __init__(self, plots):
         super().__init__()
 
-        self.setWindowTitle(f"PLOTS")
+        self.setWindowTitle("PLOTS")
         self.grid = QGridLayout()
         self.vbox = QVBoxLayout()
 
@@ -32,7 +32,6 @@ class Plot_Window(QScrollArea):
 
         self.vbox.addWidget(holder)
         self.setWidget(holder)
-
         self.setMinimumWidth(1200)
         self.setMinimumHeight(800)
 

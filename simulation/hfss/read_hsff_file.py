@@ -41,6 +41,9 @@ def abcd_and_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path
     # make network
     network = rf.hfss_touchstone_2_network(hfss_touchstone_file_path)
 
+
+    print(n_interp_points)
+
     # zero points means don't do any interpolation
     if n_interp_points > 0:
         if n_interp_points < network.frequency.npoints:
