@@ -54,7 +54,7 @@ class UnitCell():
 
         central_line_lengths = []
 
-        # first central line length (special case where D0 is = to : D0/2)
+        # first central line length in unit cell (special case where D0 is = to : D0/2)
         central_line_lengths.append((D0 / 2) - (load_D_lengths[0] / 2))
 
         # normal case calculating central line length between two loads
@@ -66,7 +66,7 @@ class UnitCell():
             central_line_lengths.append(
                 self.__calc_central_line_length_between_two_loads(left_load_D, D0, right_load_D))
 
-        # last central line length (special case where D0 is = to : D0/2)
+        # last central line length in unit cell(special case where D0 is = to : D0/2)
         central_line_lengths.append((D0 / 2) - (load_D_lengths[-1] / 2))
 
         # weaving the central line and loads lengths together into one list
