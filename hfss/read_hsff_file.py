@@ -117,16 +117,3 @@ def hsff_simulate(file_path, n_interp_points):
 
     return frequency_range, floquet_alphas_d, [0] * len(floquet_alphas_d), floquet_betas_d, [0] * len(
         floquet_betas_d), floquet_rs, floquet_xs,floquet_transmission,gain_data
-
-
-    # import csv
-    #
-    # fields = ['Frequency', 'floquet_transmission', 'floquet_rs', 'floquet_xs']
-    #
-    # rows = list(zip(frequency_range,floquet_transmission,floquet_rs,floquet_xs))
-    #
-    # with open('data', 'w') as f:
-    #     # using csv.writer method from CSV package
-    #     write = csv.writer(f)
-    #     write.writerow(fields)
-    #     write.writerows(rows)

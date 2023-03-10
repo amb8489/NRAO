@@ -92,7 +92,7 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     gain_freq_range,PUMP_FREQUENCY,n_unitcells,pump_current = gain_meta_data
     fig6, ax66 = plt.subplots()
     plt.suptitle(f"[Pump Freq: {PUMP_FREQUENCY} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
-    ax66.plot(gain_freq_range/ 1e9, gain, '-', color='tab:orange')
+    ax66.plot(gain_freq_range/ 1e8, gain, '-', color='tab:orange')
     ax66.set_ylim([None, None])
     ax66.set_title(f"SIGNAL GAIN [Db]")
     ax66.set_xlabel('Frequency [GHz]')

@@ -1,3 +1,6 @@
+import csv
+import random
+
 import matplotlib
 import numpy as np
 from PySide6.QtGui import QPalette, QColor
@@ -8,17 +11,19 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QPushButton, QWidget, QFormLayout, QLineEdit, QInputDialog, \
+    QDialog
 
 
 class MplCanvas(FigureCanvasQTAgg):
 
-    def __init__(self, Xdata, Ydata, title="TBD", width=4, height=4, dpi=100):
+    def __init__(self, Xdata, Ydata, title, width=4, height=4, dpi=100):
+        self.plt.x_data = Xdata
+        self.plt.y_data = Ydata
+        self.plt.title = title
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         fig.suptitle(title)
-        self.axes.set_xlabel('Frequency')
-        self.axes.set_ylabel('Frequency')
         self.axes.plot(Xdata, Ydata)
 
         super(MplCanvas, self).__init__(fig)
@@ -35,15 +40,17 @@ class WidgetGraph_fig(QtWidgets.QWidget):
     def __init__(self, fig, *args, **kwargs):
         super(WidgetGraph_fig, self).__init__(*args, **kwargs)
         self.setLayout(QVBoxLayout())
-
-
-
+        self.fig = fig
         # matpltlib plot
-        self.plt = MplCanvas_fig(fig)
+        plt = MplCanvas_fig(fig)
 
         # navbar for plot
-        self.layout().addWidget(NavigationToolbar(self.plt, self))
-        self.layout().addWidget(self.plt)
+        self.layout().addWidget(NavigationToolbar(plt, self))
+        self.layout().addWidget(plt)
+
+
+        self.save_to_csv_button = QPushButton(text='save to csv', clicked=self.save_to_csv)
+        self.layout().addWidget(self.save_to_csv_button)
 
         # size policy
         self.setMinimumWidth(580)
@@ -60,29 +67,58 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
+    def save_to_csv(self):
 
-class WidgetGraph(QtWidgets.QWidget):
 
-    def __init__(self, title, Xdata, Ydata, *args, **kwargs):
-        super(WidgetGraph, self).__init__(*args, **kwargs)
-        self.setLayout(QVBoxLayout())
+        fields = []
+        data = []
 
-        # matpltlib plot
-        self.plt = MplCanvas(Xdata, Ydata, title=title, width=3, height=3, dpi=100)
 
-        # navbar for plot
-        self.layout().addWidget(NavigationToolbar(self.plt, self))
-        self.layout().addWidget(self.plt)
+        for axs_idx,ax in enumerate(self.fig.axes):
+            for subplot_idx ,line in enumerate(ax.lines):
+                data.extend(line.get_data())
 
-        # size policy
-        self.setMinimumWidth(250)
-        self.setMinimumHeight(250)
 
-        # set widget color
-        self.setBackGroundColor(randomColorBright())
+                x = ax.get_xlabel()
+                y = ax.get_ylabel()
 
-    def setBackGroundColor(self, hex_color: str):
-        palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(hex_color))
-        self.setPalette(palette)
-        self.setAutoFillBackground(True)
+                if not x:
+                    x = "Frequency_[GHz]"
+                if not y:
+                    y = "Y_DATA"
+
+                fields.extend([f"{x}", f"{y}"])
+        rows = np.column_stack(data)
+
+
+        popup_for_name = inputdialogdemo(fields,rows)
+        popup_for_name.close()
+
+
+
+
+
+
+class inputdialogdemo(QDialog):
+    def __init__(self,fields,rows,parent = None):
+        super(inputdialogdemo, self).__init__(parent)
+        self.fields = fields
+        self.rows = rows
+        self.setWindowTitle("File Name Input")
+        self.gettext()
+
+    def gettext(self):
+        text, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter file name:')
+        if ok:
+            dialog = QFileDialog()
+            dialog.setFileMode(QFileDialog.Directory)
+            save_location_path = dialog.getExistingDirectory(self, 'Select Directory')
+
+            print(f'saving data to {save_location_path}/{str(text)}')
+            with open(f'{save_location_path}/{str(text)}', 'w') as f:
+                # using csv.writer method from CSV package
+                write = csv.writer(f)
+                write.writerow(self.fields)
+                write.writerows(self.rows)
+
+        self.close()
