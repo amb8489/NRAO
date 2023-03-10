@@ -1,5 +1,4 @@
 import csv
-import random
 
 import matplotlib
 import numpy as np
@@ -11,7 +10,7 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QPushButton, QWidget, QFormLayout, QLineEdit, QInputDialog, \
+from PySide6.QtWidgets import QVBoxLayout, QFileDialog, QPushButton, QInputDialog, \
     QDialog
 
 
@@ -47,8 +46,6 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         # navbar for plot
         self.layout().addWidget(NavigationToolbar(plt, self))
         self.layout().addWidget(plt)
-
-
         self.save_to_csv_button = QPushButton(text='save to csv', clicked=self.save_to_csv)
         self.layout().addWidget(self.save_to_csv_button)
 
@@ -68,19 +65,15 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
     def save_to_csv(self):
-
-
         fields = []
         data = []
 
-
-        for axs_idx,ax in enumerate(self.fig.axes):
-            for subplot_idx ,sub_plot in enumerate(ax.lines):
+        for axs_idx, ax in enumerate(self.fig.axes):
+            for subplot_idx, sub_plot in enumerate(ax.lines):
                 data.extend(sub_plot.get_data())
 
-
-                x = ax.get_xlabel().replace(" ","_")
-                y = ax.get_ylabel().replace(" ","_")
+                x = ax.get_xlabel().replace(" ", "_")
+                y = ax.get_ylabel().replace(" ", "_")
 
                 if not x:
                     x = "Frequency"
@@ -89,18 +82,12 @@ class WidgetGraph_fig(QtWidgets.QWidget):
 
                 fields.extend([f"{x}", f"{y}"])
         rows = np.column_stack(data)
-
-
-        popup_for_name = inputdialogdemo(fields,rows)
+        popup_for_name = inputdialogdemo(fields, rows)
         popup_for_name.close()
 
 
-
-
-
-
 class inputdialogdemo(QDialog):
-    def __init__(self,fields,rows,parent = None):
+    def __init__(self, fields, rows, parent=None):
         super(inputdialogdemo, self).__init__(parent)
         self.fields = fields
         self.rows = rows
@@ -114,12 +101,10 @@ class inputdialogdemo(QDialog):
             dialog.setFileMode(QFileDialog.Directory)
             save_location_path = dialog.getExistingDirectory(self, 'Select Directory')
 
-
             # check to add .csv at the end and for empty string name
-            text = (str(text).replace(".csv",""))+'.csv'
+            text = (str(text).replace(".csv", "")) + '.csv'
             if text == '.csv':
-                text = randomColorBright()+'.csv'
-
+                text = randomColorBright() + '.csv'
 
             print(f'saving data to {save_location_path}/{str(text)}')
             with open(f'{save_location_path}/{str(text)}', 'w') as f:

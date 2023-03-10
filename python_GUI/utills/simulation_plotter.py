@@ -5,11 +5,12 @@ Testing file for calculating A B R X
 import numpy as np
 from matplotlib import pyplot as plt
 
-from floquet_line_model.floquet_line_builder import floquet_line_builder
-from gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocesses
-from hfss.read_hsff_file import hsff_simulate
+
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency
-from utills.functions import toGHz, beta_unfold
+from simulation.floquet_line_model.floquet_line_builder import floquet_line_builder
+from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocesses
+from simulation.hfss.read_hsff_file import hsff_simulate
+from simulation.utills.functions import beta_unfold, toGHz
 
 
 # ---------------------------- unit cell inputs from paper

@@ -1,7 +1,7 @@
 import matplotlib
 from PySide6.QtGui import QPalette, QColor, QFont
 
-from python_gui.utills.utills_gui import start_frequency, end_frequency, resolution, FREQ_WIDGET_COLOR
+from python_gui.utills.utills_gui import start_frequency, end_frequency, resolution, FREQ_WIDGET_COLOR, Ncells
 from python_gui.widgets.float_input_widget import WidgetDoubleInput
 
 matplotlib.use('Qt5Agg')
@@ -24,11 +24,13 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.inputs = []
 
         # inputs for frequency range and res
-        self.inputnames = [start_frequency,end_frequency,resolution]
+        self.inputnames = [start_frequency,end_frequency,resolution,Ncells]
         for j in range(len(self.inputnames)):
             input_widget = WidgetDoubleInput(self.inputnames[j].get_name(),unit_type=self.inputnames[j].get_unit(),color=FREQ_WIDGET_COLOR)
             self.layout().addWidget(input_widget, 1+(j//2), j%2)
             self.inputs.append(input_widget)
+
+
 
         # set widget color
         self.setBackGroundColor(FREQ_WIDGET_COLOR)
