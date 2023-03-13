@@ -27,21 +27,16 @@ def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=
 def simulate_gain_multiprocessing(resolution, unit_cell_length, n_unitcells, frequency_range, PUMP_FREQUENCY,
                                   init_amplitudes, I_star,
                                   beta_d, alpha_d, r, x, n_cores=6):
-
-
-
-
     # todo docs : frequency_range must >= 0 <--> 2*pump frequency to calc full gain plot
     # alpha_d, r, x are unused in this implentation of gain equation
 
     # only want to simulate between 0 and 2* pump freq
-
-    where_idxs = np.where(frequency_range <= 2.1 * PUMP_FREQUENCY)
-    frequency_range = frequency_range[where_idxs]
-    beta_d = np.array(beta_d)[where_idxs]
-    alpha_d = np.array(alpha_d)[where_idxs]
-    r = np.array(r)[where_idxs]
-    x = np.array(x)[where_idxs]
+    # where_idxs = np.where(frequency_range <= 2.1 * PUMP_FREQUENCY)
+    # frequency_range = frequency_range[where_idxs]
+    # beta_d = np.array(beta_d)[where_idxs]
+    # alpha_d = np.array(alpha_d)[where_idxs]
+    # r = np.array(r)[where_idxs]
+    # x = np.array(x)[where_idxs]
 
     resolution = len(frequency_range)
 
@@ -71,10 +66,6 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_unitcells, fre
     delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
     n_cores = max(1, int(n_cores))
-
-
-    print("---> ",n_unitcells,PUMP_FREQUENCY,resolution,init_amplitudes)
-
 
     with Pool(n_cores) as p:
         args = list(zip(betas_signal, betas_idler, betas_pump, delta_betas, [I_star] * resolution))

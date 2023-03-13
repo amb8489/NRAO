@@ -37,29 +37,11 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         self.inputnames = [nameUnit("Wu","mico"),nameUnit("Wl","mico")]
         self.inputs = []
 
-        # for i in range(len(self.inputnames)):
-        #     input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit(), color=DIMS_WIDGET_COLOR, onchange=self.calc_LL_WL)
-        #     x = i % 2
-        #     y = i // 2
-        #     self.layout().addWidget(input_widget, 3+y,x)
-        #     self.inputs.append(input_widget)
+
 
         self.displays = []
 
-        # self.tableInput.getData()
-        # for i, row in enumerate(self.tableInput.getData()):
-        #     Lu = row[1] * 2 + row[3] + row[5]
-        #     line_len =  (row[0]//Lu)*Lu
-        #
-        #
-        #
-        #
-        #     display_widget = QLabel(f"Line {i + 1} true length: {line_len} -- n sections: {line_len//Lu} --  lu {Lu}")
-        #
-        #     x = i % 2
-        #     y = i // 2
-        #     self.layout().addWidget(display_widget, y + 2, x)
-        #     self.displays.append(display_widget)
+
 
         # set widget color
         self.setBackGroundColor(DIMS_WIDGET_COLOR)
