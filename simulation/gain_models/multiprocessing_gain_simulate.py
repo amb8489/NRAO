@@ -4,7 +4,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 from scipy.integrate import solve_ivp
 
 from simulation.gain_models.amplitude_equations.amplitude_equations1 import SIP_MODEL_1
-from simulation.utills.functions import hertz_to_GHz, toDb, beta_unfold
+from simulation.utills.functions import toDb, beta_unfold
 
 
 def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=True):
@@ -24,22 +24,25 @@ def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=
     return betas_unfolded[sorted_keys[np.searchsorted(master, targets, sorter=sorted_keys)]]
 
 
-def simulate_gain_multiprocesses(resolution, unit_cell_length, n_unitcells, frequency_range, PUMP_FREQUENCY,
-                                 init_amplitudes, I_star,
-                                 beta_d, alpha_d, r, x):
+def simulate_gain_multiprocessing(resolution, unit_cell_length, n_unitcells, frequency_range, PUMP_FREQUENCY,
+                                  init_amplitudes, I_star,
+                                  beta_d, alpha_d, r, x, n_cores=6):
+
+
+
+
     # todo docs : frequency_range must >= 0 <--> 2*pump frequency to calc full gain plot
     # alpha_d, r, x are unused in this implentation of gain equation
 
-    PUMP_FREQUENCY = hertz_to_GHz(PUMP_FREQUENCY)
-
+    # only want to simulate between 0 and 2* pump freq
 
     where_idxs = np.where(frequency_range <= 2.1 * PUMP_FREQUENCY)
-
     frequency_range = frequency_range[where_idxs]
     beta_d = np.array(beta_d)[where_idxs]
     alpha_d = np.array(alpha_d)[where_idxs]
     r = np.array(r)[where_idxs]
     x = np.array(x)[where_idxs]
+
     resolution = len(frequency_range)
 
     ################################## GAIN PARAMS #######################################
@@ -67,7 +70,12 @@ def simulate_gain_multiprocesses(resolution, unit_cell_length, n_unitcells, freq
 
     delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
-    n_cores = 6
+    n_cores = max(1, int(n_cores))
+
+
+    print("---> ",n_unitcells,PUMP_FREQUENCY,resolution,init_amplitudes)
+
+
     with Pool(n_cores) as p:
         args = list(zip(betas_signal, betas_idler, betas_pump, delta_betas, [I_star] * resolution))
         power_gain = np.array(p.map(solve, args))

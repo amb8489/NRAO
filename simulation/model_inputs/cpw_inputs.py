@@ -1,13 +1,13 @@
 from python_gui.utills.utills_gui import resolution, start_frequency, end_frequency, unit_cell_length, \
     central_line_width, D0, Er, pump_frequency, pump_amplitude, idler_amplitude, signal_amplitude, SC_tangent_delta, \
     SC_normal_resistivity, SC_critical_current, SC_critical_temperature, SC_operation_temperature, SC_ground_thickness, \
-    SC_thickness, SC_height, ground_spacing
+    SC_thickness, SC_height, ground_spacing, n_repeated_cells
 from simulation.utills.functions import hertz_to_GHz, mm_to_meters, micro_meters_to_meters, nano_meters_to_meters, \
     micro_ohms_cm_to_ohms_m
 
 
 class CPWInputs():
-    def __init__(self, inputs :dict):
+    def __init__(self, inputs: dict):
         # ---------------------------- Range and Resolution Inputs
 
         self.resoultion = int(inputs["Frequency Range"][resolution.get_name()])
@@ -41,10 +41,10 @@ class CPWInputs():
         self.tangent_delta = float(inputs["SC"][SC_tangent_delta.get_name()])
 
         # ---------------------------- gain_models inputs
-        self.pump_freq = hertz_to_GHz(float(inputs["gain_models"][pump_frequency.get_name()]))
-
-        self.As_init = float(inputs["gain_models"][signal_amplitude.get_name()])  # todo make inputs complex
-        self.Ai_init = float(inputs["gain_models"][idler_amplitude.get_name()])  # todo make inputs complex
-        self.Ap_init = float(inputs["gain_models"][pump_amplitude.get_name()])  # todo make inputs complex
+        self.pump_frequency = hertz_to_GHz(float(inputs["gain_models"][pump_frequency.get_name()]))
+        self.As_init = complex(float(inputs["gain_models"][signal_amplitude.get_name()]), 0)
+        self.Ai_init = complex(float(inputs["gain_models"][idler_amplitude.get_name()]), 0)
+        self.Ap_init = complex(float(inputs["gain_models"][pump_amplitude.get_name()]), 0)
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)
-
+        # transmission and transmission
+        self.n_repeated_cells = int(inputs["Frequency Range"][n_repeated_cells.get_name()])

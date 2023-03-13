@@ -1,20 +1,25 @@
-import cmath
 import numpy as np
 
+from simulation.floquet_line_model.abstract_floquet_line import floquet_abs, floquet_base
 from simulation.floquet_line_model.unit_cell import mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.functions import mult_mats, Transmission_Db
 
 
-class SuperConductingFloquetLine_art():
+class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
 
     # todo make the other floquet line follow this method od just putting all the line legments into one array
-    def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness):
+    def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness:float,
+                 start_freq_GHz: float, end_freq_GHz: float, resoultion: int):
         # ---------------------------- model of the Super conductor
 
         self.thickness = thickness
         self.super_conductivity_model = super_conductivity_model
+
+        self.start_freq_GHz = start_freq_GHz
+        self.end_freq_GHz = end_freq_GHz
+        self.resoultion = resoultion
 
         # ---------------------------- unit cell inputs
 
@@ -25,30 +30,7 @@ class SuperConductingFloquetLine_art():
     def get_unit_cell_length(self):
         return sum(line.total_line_length for line in self.line_models)
 
-    def Bloch_impedance_Zb(self, ABCD_mat_2x2: [[float]]):
-        A = ABCD_mat_2x2[0][0]
-        B = ABCD_mat_2x2[0][1]
-        D = ABCD_mat_2x2[1][1]
-
-        ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
-        ADm = A - D
-
-        B2 = 2 * B
-
-        ZB = - (B2 / (ADm + ADs2))
-        ZB2 = - (B2 / (ADm - ADs2))
-        if ZB.real < 0:
-            ZB = ZB2
-
-        return ZB
-
-    def gamma_d(self, ABCD_mat_2x2: [[float]]):
-        A = ABCD_mat_2x2[0][0]
-        D = ABCD_mat_2x2[1][1]
-
-        return np.arccosh(((A + D) / 2))
-
-    def simulate(self, frequency):
+    def simulate_at_frequency(self, frequency):
         # frequency cant be too low
         frequency = max(frequency, 1e7)
 
@@ -76,7 +58,7 @@ class SuperConductingFloquetLine_art():
 
         # 6) calculate all the needed outputs
         # calc bloch impedance and propagation const for unit cell
-        ZB = self.Bloch_impedance_Zb(unit_cell_abcd_mat)
+        ZB = self.bloch_impedance_Zb(unit_cell_abcd_mat)
         floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
 
         # get alpha beta r
@@ -106,3 +88,42 @@ class SuperConductingFloquetLine_art():
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):
         return self.line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency, zs)
+
+
+
+    def get_resolution(self):
+        return self.resoultion
+    # TODO move this into base class ???
+    def simulate(self):
+
+        # ---------------------------- storage -------------------
+        # could make this a pandas df
+        floquet_alpha_d = []
+        floquet_beta_d = []
+        floquet_r = []
+        floquet_x = []
+        floquet_transmission = []
+        central_line_beta = []
+        central_line_alpha = []
+
+        # ---------------------------- simulation -------------------
+
+        frequency_range = np.linspace(self.start_freq_GHz, self.end_freq_GHz, self.resoultion)
+        for frequency in frequency_range:
+            alpha_d, beta_d, alpha_d_CL, beta_d_CL, r, x, transmission_ = self.simulate_at_frequency(frequency)
+            central_line_beta.append(beta_d_CL)
+            central_line_alpha.append(alpha_d_CL)
+            floquet_beta_d.append(beta_d)
+            floquet_alpha_d.append(alpha_d)
+            floquet_r.append(r)
+            floquet_x.append(x)
+            floquet_transmission.append(transmission_)
+
+        return frequency_range,\
+               floquet_alpha_d, \
+               central_line_alpha, \
+               floquet_beta_d, \
+               central_line_beta, \
+               floquet_r, \
+               floquet_x, \
+               floquet_transmission

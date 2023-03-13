@@ -51,7 +51,7 @@ ground_spacing = nameUnit("S", MICRO_METER)
 start_frequency =  nameUnit("Start Frequency", GHZ)
 end_frequency =  nameUnit("End Frequency", GHZ)
 resolution =  nameUnit("Resolution")
-Ncells = nameUnit("N cells")
+n_repeated_cells = nameUnit("n_repeated_cells")
 
 pump_frequency =  nameUnit("Pump Frequency", GHZ)
 signal_amplitude =  nameUnit("Signal Amplitude")

@@ -5,17 +5,122 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.integrate import solve_ivp
 
-import utills.functions
-from floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
-from hfss.read_hsff_file import hsff_simulate
-from model_inputs.cpw_inputs import CPWInputs
-from super_conductor_model.super_conductor_model import SuperConductivity
-from transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
-from utills.constants import PI
 import csv
 
+from simulation.utills.functions import beta_unfold, hertz_to_GHz, toDb
 
+import cmath
+import numpy as np
+import skrf as rf
+
+from simulation.utills.functions import Transmission_Db
+
+
+def Bloch_impedance_Zb(ABCD_mat_2x2: [[complex]]):
+    A = ABCD_mat_2x2[0][0]
+    B = ABCD_mat_2x2[0][1]
+    D = ABCD_mat_2x2[1][1]
+
+    ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
+    ADm = A - D
+
+    B2 = 2 * B
+
+    ZB = - (B2 / (ADm + ADs2))
+    ZB2 = - (B2 / (ADm - ADs2))
+    if ZB.real < 0:
+        ZB = ZB2
+
+    return ZB
+
+
+
+
+
+def gamma_d(ABCD_mat_2x2: [[complex]]):
+    A = ABCD_mat_2x2[0][0]
+    D = ABCD_mat_2x2[1][1]
+
+    return np.arccosh(((A + D) / 2))
+
+
+# reading in file and making a network
+
+
+def abcd_and_frequency_range_from_hfss_touchstone_file(hfss_touchstone_file_path: str, n_interp_points: int = 1000):
+    # make network
+    network = rf.hfss_touchstone_2_network(hfss_touchstone_file_path)
+
+
+    print(n_interp_points)
+
+    # zero points means don't do any interpolation
+    if n_interp_points > 0:
+        if n_interp_points < network.frequency.npoints:
+            raise Exception(
+                f"n_interp_points must be > number of already simulated frequency points: {n_interp_points} < {network.sim_frequency.npoints}")
+
+        interp_freq_range = rf.frequency.Frequency(start=network.frequency.start / 1e9,
+                                                   stop=network.frequency.stop / 1e9,
+                                                   npoints=n_interp_points, unit='ghz')
+
+        network = network.interpolate(interp_freq_range, basis="a")
+
+    # get abcd mats
+    unit_cell_ABCD_mats = network.a
+
+    # get the frequency range
+    simulated_frequency_range = network.f
+
+    return unit_cell_ABCD_mats, simulated_frequency_range
+
+
+#  todo add these inputs to UI for transmission
+N_unit_cells = 62
+impedance = 50
+unit_cell_length_todo = 0.003140
+
+def hsff_simulate(file_path, n_interp_points):
+    unit_cell_ABCD_mats, frequency_range = abcd_and_frequency_range_from_hfss_touchstone_file(file_path,
+                                                                                              n_interp_points)
+
+    floquet_alphas_d, floquet_betas_d, floquet_rs, floquet_xs,floquet_transmission = [], [], [], [],[]
+    for unit_cell_abcd_mat in unit_cell_ABCD_mats:
+        # 6) calculate all the needed outputs
+        # calc bloch impedance and propagation const for unit cell
+
+        floquet_propagation_const_gamma = gamma_d(unit_cell_abcd_mat)
+        ZB = Bloch_impedance_Zb(unit_cell_abcd_mat)
+
+        floquet_transmission_ = Transmission_Db(N_unit_cells,
+                                                impedance,
+                                                ZB,
+                                                floquet_propagation_const_gamma)
+        floquet_transmission.append(floquet_transmission_)
+
+
+        # floquet_bloch_impedance_pos_dir = abs(floquet_bloch_impedance_pos_dir.real)+ 1j*floquet_bloch_impedance_pos_dir.imag
+
+        # get alpha beta r x
+        floquet_alpha = floquet_propagation_const_gamma.real
+        floquet_beta = floquet_propagation_const_gamma.imag
+        floquet_r = ZB.real
+        floquet_x = ZB.imag
+
+        floquet_alphas_d.append(floquet_alpha)
+        floquet_betas_d.append(floquet_beta)
+        floquet_rs.append(floquet_r)
+        floquet_xs.append(floquet_x)
+
+
+
+
+    return frequency_range, floquet_alphas_d, [0] * len(floquet_alphas_d), floquet_betas_d, [0] * len(
+        floquet_betas_d), floquet_rs, floquet_xs,floquet_transmission
 ################################################################################################################################################
+
+
+
 
 def get_betas_d(filepath,resolution):
     frequency_range, _,_, floquet_betas, _, _, _,_ = hsff_simulate(filepath, resolution)
@@ -77,7 +182,7 @@ z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
 z_span = (z_eval[0], z_eval[-1])
 frequency_range, betas_d = get_betas_d(
     "/Users/aaron/PycharmProjects/NRAO/python_gui/Artificial_03_Artificial_UnitCell_Df=0.1GHz.s2p", resolution)
-betas_unfolded = utills.functions.beta_unfold(betas_d) / unit_cell_length
+betas_unfolded =beta_unfold(betas_d) / unit_cell_length
 
 i = 0
 # pf,ap0 = 3.284 , .12
@@ -86,7 +191,7 @@ for ap0 in [.12]:
 
         ################################## GAIN PARAMS #######################################
 
-        PUMP_FREQUENCY = utills.functions.hertz_to_GHz(pf)
+        PUMP_FREQUENCY =hertz_to_GHz(pf)
 
         I_star = 1
         as0 = 1e-9+ 0j
@@ -122,7 +227,7 @@ for ap0 in [.12]:
             signal_amplitude_before = amplitude_signal_over_z_range[0]
             signal_amplitude_after = amplitude_signal_over_z_range[-1]
 
-            power_gain.append(utills.functions.toDb((abs(sol.y[0][-1]) ** 2) / (abs(sol.y[0][0]) ** 2)))
+            power_gain.append(toDb((abs(sol.y[0][-1]) ** 2) / (abs(sol.y[0][0]) ** 2)))
 
             ds = np.abs(amplitude_signal_over_z_range)
             di = np.abs(amplitude_idler_over_z_range)
@@ -134,7 +239,7 @@ for ap0 in [.12]:
 
 
 
-
+        print(inital_amplitudes,)
         fig, ax = plt.subplots()
         plt.suptitle(f"Frequency Pump: {PUMP_FREQUENCY / 1e9} GHz -- ap0: {ap0.real} -- id:{i}")
         # ax.plot(frequency_range / 1e9, power_gain,'-',color='tab:orange')
