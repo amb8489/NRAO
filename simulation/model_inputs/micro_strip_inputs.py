@@ -41,6 +41,13 @@ class MicroStripInputs():
         self.normal_resistivity = micro_ohms_cm_to_ohms_m(float(inputs["SC"][SC_normal_resistivity.get_name()]))
         self.tangent_delta = float(inputs["SC"][SC_tangent_delta.get_name()])
 
+
+
+
+
+
+
+
         # ---------------------------- gain_models inputs
         self.pump_frequency = hertz_to_GHz(float(inputs["gain_models"][pump_frequency.get_name()]))
         self.As_init = complex(float(inputs["gain_models"][signal_amplitude.get_name()]), 0)

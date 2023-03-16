@@ -1,6 +1,6 @@
 import numpy as np
 
-from simulation.floquet_line_models.abstract_floquet_line import floquet_abs, floquet_base
+from simulation.floquet_line_models.models.abstract_floquet_line import floquet_base, floquet_abs
 from simulation.floquet_line_models.unit_cell import UnitCell, mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
@@ -13,6 +13,8 @@ impedance = 50
 
 # todo some refactoring and document all
 
+
+
 class SuperConductingFloquetLine(floquet_abs, floquet_base):
 
     def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], load_line_models: [AbstractSCTL],
@@ -24,6 +26,11 @@ class SuperConductingFloquetLine(floquet_abs, floquet_base):
         self.resolution = resolution
         self.start_freq_GHz = start_freq_GHz
         self.end_freq_GHz = end_freq_GHz
+
+
+
+
+
 
         self.IC = central_line_model.IC
         # ---------------------------- model of the Super conductor
@@ -74,6 +81,8 @@ class SuperConductingFloquetLine(floquet_abs, floquet_base):
                                                impedance,
                                                ZB,
                                                floquet_gamma_d)
+
+
 
         # get alpha beta r x
         floquet_beta = floquet_gamma_d.imag

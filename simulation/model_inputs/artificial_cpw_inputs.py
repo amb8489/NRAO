@@ -6,6 +6,10 @@ from simulation.utills.functions import hertz_to_GHz, nano_meters_to_meters, mic
 
 
 class ArtificialCPWInputs():
+
+
+
+    #todo could simplify because S == WH == LH == LL and wu and Wl of the loads are what else is needed
     def __init__(self, inputs: dict):
         # ---------------------------- Range and Resolution Inputs
 

@@ -2,7 +2,7 @@ import cmath
 import numpy as np
 import skrf as rf
 
-from simulation.floquet_line_models.abstract_floquet_line import floquet_abs, floquet_base
+from simulation.floquet_line_models.models.abstract_floquet_line import floquet_abs, floquet_base
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
 from simulation.utills.functions import Transmission_Db
 
