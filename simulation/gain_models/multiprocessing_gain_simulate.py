@@ -34,7 +34,7 @@ def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=
 
 def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitcells, frequency_range, PUMP_FREQUENCY_GHz,
                                   init_amplitudes, I_star,
-                                  beta_d, alpha_d, r, x, n_cores=6):
+                                  gamma_d_per_freq, bloch_impedance_per_freq, n_cores=6):
 
     '''
 
@@ -55,7 +55,6 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     :return: list of gain at each frequency and the frequency range it was simulated at
     '''
     # todo docs : frequency_range must >= 0 <--> 2*pump frequency to calc full gain plot
-    # alpha_d, r, x are unused in this implentation of gain equation
 
     ################################## gain / ODE solver params #######################################
 
@@ -79,7 +78,8 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
 
 
     # simulate batas_d and unfold betas*D, then divid by unitcell len to get just beta
-    betas_unfolded = beta_unfold(beta_d) / unit_cell_length
+
+    betas_unfolded = beta_unfold(np.imag(gamma_d_per_freq)) / unit_cell_length
 
     # get betas for signal, idler, pump, delta betas
     betas_signal = betas_unfolded

@@ -18,14 +18,12 @@ class floquet_abs(ABC):
         :param kwargs:
         :returns:
 
-        returns a of all the outputs simulated over a given frequency range
+        returns the outputs simulated over a given frequency range
         [
-        floquet_alpha : [],
-        floquet_beta: [],
+        floquetgamma_d : [],
+        floquet_ZB: [],
         central_line_alpha: [],
         central_line_beta: [],
-        floquet_r: [],
-        floquet_x: [],
         floquet_transmission: []
         ]
 

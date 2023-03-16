@@ -19,7 +19,7 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
 
         self.start_freq_GHz = start_freq_GHz
         self.end_freq_GHz = end_freq_GHz
-        self.resoultion = resoultion
+        self.resolution = resoultion
 
         # ---------------------------- unit cell inputs
 
@@ -61,17 +61,15 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
         ZB = self.bloch_impedance_Zb(unit_cell_abcd_mat)
         floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
 
-        # get alpha beta r
 
-        floquet_beta = floquet_gamma_d.imag
-        floquet_alpha = floquet_gamma_d.real
-        floquet_r = ZB.real
-        floquet_x = ZB.imag
 
+        #todo 100 needs to be brought in via GUI
         floquet_transmission = Transmission_Db(100,
                                                50,
                                                ZB,
                                                floquet_gamma_d)
+
+
 
         # calculate central line alpha and beta
         cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,
@@ -79,12 +77,11 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
         cental_line_ABCD = mk_ABCD_Mat(cental_line_Zc, cental_line_gamma, unit_cell_length)
 
         central_line_propagation_const = self.gamma_d(cental_line_ABCD)
-        central_line_beta = central_line_propagation_const.imag
-        central_line_alpha = central_line_propagation_const.real
+        alpha_d_CL = central_line_propagation_const.real
+        beta_d_CL = central_line_propagation_const.imag
 
         # retuning outputs
-        return floquet_alpha, floquet_beta, central_line_alpha, central_line_beta, floquet_r, floquet_x, \
-               floquet_transmission
+        return floquet_gamma_d, ZB, alpha_d_CL, beta_d_CL, floquet_transmission
 
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):
         return self.line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency, zs)
@@ -92,38 +89,31 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
 
 
     def get_resolution(self):
-        return self.resoultion
+        return self.resolution
+
+
     # TODO move this into base class ???
     def simulate(self):
 
         # ---------------------------- storage -------------------
         # could make this a pandas df
-        floquet_alpha_d = []
-        floquet_beta_d = []
-        floquet_r = []
-        floquet_x = []
+        gamma_d = []
+        bloch_impedance = []
+        central_line_beta_d = []
+        central_line_alpha_d = []
+
         floquet_transmission = []
-        central_line_beta = []
-        central_line_alpha = []
+
 
         # ---------------------------- simulation -------------------
 
-        frequency_range = np.linspace(self.start_freq_GHz, self.end_freq_GHz, self.resoultion)
+        frequency_range = np.linspace(self.start_freq_GHz, self.end_freq_GHz, self.resolution)
         for frequency in frequency_range:
-            alpha_d, beta_d, alpha_d_CL, beta_d_CL, r, x, transmission_ = self.simulate_at_frequency(frequency)
-            central_line_beta.append(beta_d_CL)
-            central_line_alpha.append(alpha_d_CL)
-            floquet_beta_d.append(beta_d)
-            floquet_alpha_d.append(alpha_d)
-            floquet_r.append(r)
-            floquet_x.append(x)
-            floquet_transmission.append(transmission_)
+            floquet_gamma_d, floquet_bloch_impedance, alpha_d_CL, beta_d_CL, transmission = self.simulate_at_frequency(frequency)
+            central_line_alpha_d.append(alpha_d_CL)
+            central_line_beta_d.append(beta_d_CL)
+            gamma_d.append(floquet_gamma_d)
+            bloch_impedance.append(floquet_bloch_impedance)
+            floquet_transmission.append(transmission)
 
-        return frequency_range,\
-               floquet_alpha_d, \
-               central_line_alpha, \
-               floquet_beta_d, \
-               central_line_beta, \
-               floquet_r, \
-               floquet_x, \
-               floquet_transmission
+        return frequency_range,gamma_d,bloch_impedance,central_line_alpha_d, central_line_beta_d,floquet_transmission
