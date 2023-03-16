@@ -221,8 +221,8 @@ for ap0 in [.12]:
 
             args = (betas_signal[f_idx], betas_idler[f_idx], betas_pump[f_idx], delta_betas[f_idx], I_star)
 
-            zstep = (z_eval[-1] - 0) / (len(z_eval) - 1)
-            sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval ,max_step=zstep)
+            # zstep = (z_eval[-1] - 0) / (len(z_eval) - 1)*n_unitcells*2
+            sol = solve_ivp(fun=ODE_model_1, t_span=z_span, y0=inital_amplitudes, args=args, t_eval=z_eval )#,max_step=zstep
             amplitude_signal_over_z_range, amplitude_idler_over_z_range, amplitude_pump_over_z_range = sol.y
             signal_amplitude_before = amplitude_signal_over_z_range[0]
             signal_amplitude_after = amplitude_signal_over_z_range[-1]

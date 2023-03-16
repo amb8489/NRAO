@@ -37,11 +37,11 @@ class Plot_Window(QScrollArea):
 
     def plot(self):
 
-        # todo destory all open plots
-
+        # destroy all open plots
         for child in self.grid.children():
             child.deleteLater()
 
+        # add in new plots
         for r, row in enumerate(self.plots):
             for c, plot in enumerate(row):
                 self.grid.addWidget(WidgetGraph_fig(plot), r + 1, c, Qt.AlignTop)

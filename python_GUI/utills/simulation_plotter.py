@@ -14,7 +14,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from simulation.floquet_line_model.floquet_line_builder import floquet_line_builder
+from simulation.floquet_line_models.floquet_line_builder import floquet_line_builder
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
 from simulation.utills.functions import beta_unfold
 
@@ -95,8 +95,10 @@ def mk_plots(frequency_range, floquet_alpha, central_line_alpha, floquet_beta, c
     fig6, ax66 = plt.subplots()
     plt.suptitle(
         f"[Pump Freq: {PUMP_FREQUENCY / 1e9} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
-    ax66.plot(gain_freq_range / 1e9, gain, '-', color='tab:orange')
+    ax66.plot(gain_freq_range * 1e9, gain, '-', color='tab:orange')
     ax66.set_ylim([None, None])
+    ax66.set_xlim([0, (2*PUMP_FREQUENCY)])
+
     ax66.set_title(f"SIGNAL GAIN [Db]")
     ax66.set_xlabel('Frequency [GHz]')
 

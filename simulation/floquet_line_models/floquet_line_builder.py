@@ -2,9 +2,9 @@
 this function makes a line model from the gui and returns a floquet line of the model type
 
 """
-from simulation.floquet_line_model.floquet_line_ARTIFICAL import SuperConductingFloquetLine_art
-from simulation.floquet_line_model.floquet_line_MS_CPW import SuperConductingFloquetLine
-from simulation.floquet_line_model.hfss.HFSS_line import hfss_touchstone_file_model
+from simulation.floquet_line_models.floquet_line_ARTIFICAL import SuperConductingFloquetLine_art
+from simulation.floquet_line_models.floquet_line_MS_CPW import SuperConductingFloquetLine
+from simulation.floquet_line_models.hfss.HFSS_line import hfss_touchstone_file_model
 from simulation.model_inputs.artificial_cpw_inputs import ArtificialCPWInputs
 from simulation.model_inputs.cpw_inputs import CPWInputs
 from simulation.model_inputs.hfss_touchstone_file_model_inputs import hfss_touchstone_file_model_inputs

@@ -9,9 +9,7 @@ from simulation.utills.functions import toDb, beta_unfold
 
 def __get_closest_betas_at_given_freq(master, targets, betas_unfolded, dointerp=True):
     # because frequency_range - PUMP_FREQUENCY could result in needing beta values at frequencies that were not
-    # simulated we find the closes frequency that was simulated to the one that was not and use that beta
-
-    # todo len(master) == len(targets)  in docs
+    # simulated we find the closest frequency that was simulated to the one that was not and use that beta
 
     if dointerp:
         x_len = len(master)
@@ -30,21 +28,11 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_unitcells, fre
     # todo docs : frequency_range must >= 0 <--> 2*pump frequency to calc full gain plot
     # alpha_d, r, x are unused in this implentation of gain equation
 
-    # only want to simulate between 0 and 2* pump freq
-    # where_idxs = np.where(frequency_range <= 2.1 * PUMP_FREQUENCY)
-    # frequency_range = frequency_range[where_idxs]
-    # beta_d = np.array(beta_d)[where_idxs]
-    # alpha_d = np.array(alpha_d)[where_idxs]
-    # r = np.array(r)[where_idxs]
-    # x = np.array(x)[where_idxs]
-
-    resolution = len(frequency_range)
-
     ################################## GAIN PARAMS #######################################
     total_line_len = n_unitcells * unit_cell_length
     z_eval = np.linspace(0, (unit_cell_length * n_unitcells), resolution)
     z_span = (z_eval[0], z_eval[-1])
-    zstep = (total_line_len / resolution) * 32
+    zstep = (total_line_len / resolution) * 64
     signal = 0
 
     ########################################################################################
@@ -60,9 +48,7 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_unitcells, fre
 
     betas_signal = betas_unfolded
     betas_pump = __get_closest_betas_at_given_freq(frequency_range, [PUMP_FREQUENCY] * resolution, betas_unfolded)
-    betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range),
-                                                    betas_unfolded)
-
+    betas_idler = __get_closest_betas_at_given_freq(frequency_range, (2 * PUMP_FREQUENCY - frequency_range),betas_unfolded)
     delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
     n_cores = max(1, int(n_cores))

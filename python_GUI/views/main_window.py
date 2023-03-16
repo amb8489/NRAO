@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.ButtonLayout.addWidget(self.button_plot, 0, 1)
 
         self.modelSelector = QComboBox()
-        self.modelSelector.addItems(['Micro Strip', 'CPW', 'Artificial CPW', 'S Matrix File'])
+        self.modelSelector.addItems(['Micro Strip', 'CPW', 'Artificial CPW', 'HFSS FILE UPLOAD'])
         self.modelSelector.currentTextChanged.connect(self.model_changed)
 
         self.ButtonLayout.addWidget(self.modelSelector, 0, 2)
@@ -89,7 +89,6 @@ class MainWindow(QMainWindow):
         self.ButtonLayoutWidget.setPalette(palette)
         self.ButtonLayoutWidget.setAutoFillBackground(True)
 
-        # todo loading different settings is not working ???
 
         self.Mainlayout.addWidget(self.ButtonLayoutWidget)
 
@@ -122,7 +121,7 @@ class MainWindow(QMainWindow):
         self.line_models = {'Micro Strip': self.Micro_strip_inputs_widget,
                             'CPW': self.CPW_inputs_widget,
                             'Artificial CPW': self.Atrifical_CPW_inputs_widget,
-                            'S Matrix File': self.S_matrix_inputs_widget}
+                            'HFSS FILE UPLOAD': self.S_matrix_inputs_widget}
         self.init()
 
     def showModel(self, line_model):
