@@ -1,12 +1,9 @@
 """
-
-
 BCS theory on conductivity
 """
 import cmath
 import math
 from scipy.integrate import quad
-
 from simulation.utills.constants import MU_0, PI2, BOLTZMANN_CONSTev, PI_DIV_2, PLANCK_CONSTev
 from simulation.utills.functions import ccoth
 
@@ -50,10 +47,7 @@ class SuperConductivity():
     def __fermiDistrib(self, E: float, temp_k: float):
 
         if temp_k == 0:
-            # todo retur 0 or .5 if E >= 0
-
             return 0 if E >= 0 else 1
-
         EdivT = E / temp_k
         return 0 if EdivT > 30 else 1 / (1 + math.exp(EdivT))
 
@@ -158,31 +152,26 @@ class SuperConductivity():
     def __conductivityNormalized(self, frequency: float, operation_temperature_k: float):
         return self.__sigma_N(self.__delta, frequency, operation_temperature_k)
 
-    """
-    -INPUTS-
-    frequency                    : frequency of DC i units of GHZ
-    operation_temperature_k  : the temperature of operation in Kelvin
-    critical_temp_k           : the temperature of transition between normal and super conductor in Kelvin
-    Pn                      : normal resistivity in micro ohms / cm
-    -OUT-
-     
-    conductivity            : is the conductivity at input conditions
-    """
-
     # @cache
     def conductivity(self, frequency: float):
+        '''
+
+        :param frequency:
+        :return: conductivity of super conductor at frequency and conditions
+        '''
         return self.__sigma * self.__sigma_N(self.__delta, frequency * PLANCK_CONSTev, self.__op_temp_times_kb)
 
-    """
-    -INPUTS-
-    frequency          : frequency of DC i units of GHZ
-    conductivity  : conductivity
-    sc_film_thickness            : thickness of super conductor
-    -OUT-
-    Zs - surface impedance           
-    """
 
     # @cache
     def surface_impedance_Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
+
+        '''
+
+
+        :param frequency:
+        :param conductivity:
+        :param sc_film_thickness:  thickness of super conductor
+        :return: surface impedance
+        '''
         return cmath.sqrt(self.__jPI2MU_0 * frequency / conductivity) * ccoth(
             cmath.sqrt(self.__jPI2MU_0 * frequency * conductivity) * sc_film_thickness)
