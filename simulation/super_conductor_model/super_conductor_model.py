@@ -30,7 +30,6 @@ class SuperConductivity():
 
     def __init__(self, operation_temperature_k: float, critical_temp_k: float, Pn: float):
 
-        # calulations that only need to be done once per run
 
         self.crit_temp = critical_temp_k
         self.operation_temperature_k = operation_temperature_k
