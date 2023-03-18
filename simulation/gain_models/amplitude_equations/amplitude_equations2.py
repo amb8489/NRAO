@@ -1,13 +1,12 @@
 import cmath
 
 
-# standanrd format is (z, init_amplitudes,args)
-def SIP_MODEL_2(z, init_amplitudes, betas, alphas, gs, delta_beta, I_Star):
+# standanrd format is (z, init_amplitudes: [], res of the args)
+def SIP_MODEL_2(z, init_amplitudes,
+                beta_s, beta_i, beta_p,
+                alpha_s, alpha_i, alpha_p,
+                g_s, g_i, g_p, delta_beta, I_Star):
     # signal-idler-pump equations for N = 3
-
-    beta_s, beta_i, beta_p = betas
-    alpha_s, alpha_i, alpha_p = alphas
-    g_s, g_i, g_p = gs
 
     amp_S, amp_I, amp_P = init_amplitudes
 
