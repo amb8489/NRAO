@@ -41,7 +41,7 @@ def __get_closest(find_in, needles, transform_to_lst, dointerp=True):
 def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitcells, frequency_range,
                                   PUMP_FREQUENCY_GHz,
                                   init_amplitudes, I_star,
-                                  gamma_d_per_freq, bloch_impedance_per_freq, n_cores=6):
+                                  gamma_d_per_freq, ZB_per_freq, n_cores=6):
     '''
 
     multiprocessing solving ODE
@@ -103,8 +103,18 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
         alphas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, alphas_signal)
         alphas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range),alphas_signal)
 
+
         # todo is r and x also nooed to be divied by d ... what was the optimization to not have to divid these all by
         #  d till after ?
+
+        r_signal = np.real(ZB_per_freq) / unit_cell_length
+        r_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, r_signal)
+        r_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), r_signal)
+
+        x_signal = np.imag(ZB_per_freq) / unit_cell_length
+        x_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, x_signal)
+        x_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), x_signal)
+
 
         gs_signal = ...
         gs_idler = ...
