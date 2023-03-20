@@ -71,7 +71,7 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     z_span = (z_eval[0], z_eval[-1])
 
     # step amount for ODE solver
-    zstep = (total_simulated_line_len / resolution) * 64
+    zstep = (total_simulated_line_len / resolution) * 2
     signal = 0
 
     amplitude_model = 1
@@ -117,7 +117,6 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
                              gs_signal, gs_idler, gs_pump, delta_betas, [I_star] * resolution))
     else:
         raise NotImplementedError(f"amplitude_model {amplitude_model} is not implemented")
-
 
     # -------- end refactor
 
