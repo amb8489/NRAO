@@ -32,7 +32,6 @@ def __get_closest(find_in, needles, transform_to_lst, dointerp=False):
         transform_to_lst = np.interp(x_interp, x_org, transform_to_lst)
 
     sorted_keys = np.argsort(find_in)
-
     return transform_to_lst[sorted_keys[np.searchsorted(find_in, needles, sorter=sorted_keys)]]
 
 
@@ -71,39 +70,39 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     z_span = (z_eval[0], z_eval[-1])
 
     # step amount for ODE solver
-    zstep = (total_simulated_line_len / resolution) * 2
+    # todo make this a UI option to pick mult factor to z step aka 32
+    zstep = (total_simulated_line_len / resolution) * 32
     signal = 0
 
+    # todo make this a UI option
     amplitude_model = 1
 
     ########################################################################################
     # -------- todo refacotr this into its own file or class --------
-    # simulate batas_d and unfold betas*D, then divid by unitcell len to get just beta
-    betas_unfolded = beta_unfold(np.imag(gamma_d_per_freq)) / unit_cell_length
 
-    # get betas for signal, idler, pump, delta betas
+    alphas_signal = np.real(gamma_d_per_freq) / unit_cell_length
+    alphas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, alphas_signal)
+    alphas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), alphas_signal)
+
+    betas_unfolded = beta_unfold(np.imag(gamma_d_per_freq)) / unit_cell_length
     betas_signal = betas_unfolded
     betas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, betas_unfolded)
     betas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), betas_unfolded)
     delta_betas = betas_signal + betas_idler - 2 * betas_pump
+
+    r_signal = np.real(ZB_per_freq)
+    r_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, r_signal)
+    r_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), r_signal)
+
+    x_signal = np.imag(ZB_per_freq)
+    x_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, x_signal)
+    x_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), x_signal)
 
     if amplitude_model == 1:
         func = SIP_MODEL_1
         func_args = list(zip(betas_signal, betas_idler, betas_pump, delta_betas, [I_star] * resolution))
     elif amplitude_model == 2:
         func = SIP_MODEL_2
-
-        alphas_signal = np.real(gamma_d_per_freq) / unit_cell_length
-        alphas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, alphas_signal)
-        alphas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), alphas_signal)
-
-        r_signal = np.real(ZB_per_freq)
-        r_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, r_signal)
-        r_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), r_signal)
-
-        x_signal = np.imag(ZB_per_freq)
-        x_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, x_signal)
-        x_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), x_signal)
 
         gs_signal = (alphas_signal ** 2 * r_signal ** 2 - betas_signal ** 2 * x_signal ** 2) / (
                 betas_signal * (r_signal ** 2 + x_signal ** 2))
