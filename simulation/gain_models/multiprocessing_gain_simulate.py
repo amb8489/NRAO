@@ -8,7 +8,7 @@ from simulation.gain_models.amplitude_equations.amplitude_equations2 import SIP_
 from simulation.utills.functions import toDb, beta_unfold
 
 
-def __get_closest(find_in, needles, transform_to_lst, dointerp=True):
+def __get_closest(find_in, needles, transform_to_lst, dointerp=False):
     '''
     todo refactor this explanation
     find the closest needle in find_in
@@ -33,9 +33,7 @@ def __get_closest(find_in, needles, transform_to_lst, dointerp=True):
 
     sorted_keys = np.argsort(find_in)
 
-    if transform_to_lst:
-        return transform_to_lst[sorted_keys[np.searchsorted(find_in, needles, sorter=sorted_keys)]]
-    return sorted_keys[np.searchsorted(find_in, needles, sorter=sorted_keys)]
+    return transform_to_lst[sorted_keys[np.searchsorted(find_in, needles, sorter=sorted_keys)]]
 
 
 def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitcells, frequency_range,
@@ -86,7 +84,7 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     # get betas for signal, idler, pump, delta betas
     betas_signal = betas_unfolded
     betas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, betas_unfolded)
-    betas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range),betas_unfolded)
+    betas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), betas_unfolded)
     delta_betas = betas_signal + betas_idler - 2 * betas_pump
 
     if amplitude_model == 1:
@@ -95,30 +93,24 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     elif amplitude_model == 2:
         func = SIP_MODEL_2
 
-
-        #todo this this right ?
-
-
         alphas_signal = np.real(gamma_d_per_freq) / unit_cell_length
         alphas_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, alphas_signal)
-        alphas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range),alphas_signal)
+        alphas_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), alphas_signal)
 
-
-        # todo is r and x also nooed to be divied by d ... what was the optimization to not have to divid these all by
-        #  d till after ?
-
-        r_signal = np.real(ZB_per_freq) / unit_cell_length
+        r_signal = np.real(ZB_per_freq)
         r_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, r_signal)
         r_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), r_signal)
 
-        x_signal = np.imag(ZB_per_freq) / unit_cell_length
+        x_signal = np.imag(ZB_per_freq)
         x_pump = __get_closest(frequency_range, [PUMP_FREQUENCY_GHz] * resolution, x_signal)
         x_idler = __get_closest(frequency_range, (2 * PUMP_FREQUENCY_GHz - frequency_range), x_signal)
 
-
-        gs_signal = ...
-        gs_idler = ...
-        gs_pump = ...
+        gs_signal = (alphas_signal ** 2 * r_signal ** 2 - betas_signal ** 2 * x_signal ** 2) / (
+                betas_signal * (r_signal ** 2 + x_signal ** 2))
+        gs_idler = (alphas_idler ** 2 * r_idler ** 2 - betas_idler ** 2 * x_idler ** 2) / (
+                betas_idler * (r_idler ** 2 + x_idler ** 2))
+        gs_pump = (alphas_pump ** 2 * r_pump ** 2 - betas_pump ** 2 * x_pump ** 2) / (
+                betas_pump * (r_pump ** 2 + x_pump ** 2))
 
         func_args = list(zip(betas_signal, betas_idler, betas_pump,
                              alphas_signal, alphas_idler, alphas_pump,
@@ -126,11 +118,13 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
     else:
         raise NotImplementedError(f"amplitude_model {amplitude_model} is not implemented")
 
+
+    # -------- end refactor
+
     def solve(solve_args):
         sol = solve_ivp(fun=func, t_span=z_span, y0=init_amplitudes, args=solve_args, t_eval=z_eval, max_step=zstep)
         return toDb((abs(sol.y[signal][-1]) ** 2) / (abs(sol.y[signal][0]) ** 2))
 
-    # -------- end refactor
     # number of cores to use
     n_cores = max(1, int(n_cores))
     with Pool(n_cores) as p:
