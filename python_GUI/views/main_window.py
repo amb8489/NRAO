@@ -157,8 +157,8 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.scroll)
 
-        self.setFixedWidth(1275)
-        self.setFixedHeight(800)
+        self.setMinimumHeight(800)
+        self.setMinimumWidth(1275)
 
         self.show()
 

@@ -87,7 +87,7 @@ class UnitCell():
         return self.segment_line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency,
                                                                                                        surface_impedance)
 
-    # ABCD matrix of unit sell line segment
+    # ABCD matrix of unit cell
     def get_unit_cell_ABCD_mat(self, frequency: float, surface_impedance: complex):
 
         segment_abcd_mats = []
