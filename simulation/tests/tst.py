@@ -48,8 +48,6 @@ def gamma_d(ABCD_mat_2x2: [[float]]):
 csv_data = np.loadtxt("/Users/aaron/Desktop/wL(um)-Zc(ohm)-bbo.csv",
                       delimiter="	", dtype=float)
 
-# unit cell len
-Lu = micro_meters_to_meters(3)
 sf = .1
 ef = 25
 
@@ -58,19 +56,22 @@ frequency_range = np.linspace(hertz_to_GHz(sf), hertz_to_GHz(ef), 10000)
 # plt.plot(csv_data[:, 2])
 # plt.show()
 
+
 # FLOQUET DIMENSIONS
 
-line_1_len = Lu * 220
-line_2_len = Lu * 80
-line_3_len = Lu * 442
-line_4_len = Lu * 80
-line_5_len = Lu * 402
-line_6_len = Lu * 160
-line_7_len = Lu * 186
+Lu = micro_meters_to_meters(4)
+
+line_1_len = Lu * 110
+line_2_len = Lu * 40
+line_3_len = Lu * 221
+line_4_len = Lu * 40
+line_5_len = Lu * 201
+line_6_len = Lu * 80
+line_7_len = Lu * 93
 
 # pick line widths
-Wu = 24
-Wl = 40
+Wu = 14
+Wl = 31
 
 seg_lens = [
     line_1_len,
@@ -92,38 +93,38 @@ gammas, ZBs = [], []
 
 CL_gammas = []
 
+V = (PI2 * frequency_range) / SPEED_OF_LIGHT
 start = time.time()
-for f in frequency_range:
+for i,f in enumerate(frequency_range):
     seg_abcds = []
 
-    V = (PI2 * f) / SPEED_OF_LIGHT
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[0]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L1] * V), complex(csv_data[:, 1][L1], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L1] * V[i]), complex(csv_data[:, 1][L1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[1]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[2]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L2] * V), complex(csv_data[:, 1][L2], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L2] * V[i]), complex(csv_data[:, 1][L2], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[3]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[4]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L3] * V), complex(csv_data[:, 1][L3], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L3] * V[i]), complex(csv_data[:, 1][L3], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[5]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[6]))
 
     unit_cell_mat = mult_mats(seg_abcds)
     gammas.append(gamma_d(unit_cell_mat))
     ZBs.append(bloch_impedance_Zb(unit_cell_mat))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
     CL_unit_cell_mat = ABCD_Mat(seg_Zc, seg_gamma, sum(seg_lens))
     CL_gammas.append(gamma_d(CL_unit_cell_mat))
 

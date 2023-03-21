@@ -10,7 +10,7 @@ from simulation.utills.functions import mult_mats, Transmission_Db
 class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
 
     # todo make the other floquet line follow this method od just putting all the line legments into one array
-    def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness:float,
+    def __init__(self, line_models: [AbstractSCTL], super_conductivity_model: SuperConductivity, thickness: float,
                  start_freq_GHz: float, end_freq_GHz: float, resoultion: int):
         # ---------------------------- model of the Super conductor
 
@@ -61,15 +61,8 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
         ZB = self.bloch_impedance_Zb(unit_cell_abcd_mat)
         floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
 
-
-
-        #todo 100 needs to be brought in via GUI
-        floquet_transmission = Transmission_Db(100,
-                                               50,
-                                               ZB,
-                                               floquet_gamma_d)
-
-
+        # todo 100 needs to be brought in via GUI
+        floquet_transmission = Transmission_Db(100, 50, ZB, floquet_gamma_d)
 
         # calculate central line alpha and beta
         cental_line_gamma, cental_line_Zc = self.get_segment_gamma_and_characteristic_impedance(0, frequency,
@@ -86,11 +79,8 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
     def get_segment_gamma_and_characteristic_impedance(self, segment_idx, frequency, zs):
         return self.line_models[segment_idx].get_propagation_constant_characteristic_impedance(frequency, zs)
 
-
-
     def get_resolution(self):
         return self.resolution
-
 
     # TODO move this into base class ???
     def simulate(self):
@@ -104,16 +94,16 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
 
         floquet_transmission = []
 
-
         # ---------------------------- simulation -------------------
 
         frequency_range = np.linspace(self.start_freq_GHz, self.end_freq_GHz, self.resolution)
         for frequency in frequency_range:
-            floquet_gamma_d, floquet_bloch_impedance, alpha_d_CL, beta_d_CL, transmission = self.simulate_at_frequency(frequency)
+            floquet_gamma_d, floquet_bloch_impedance, alpha_d_CL, beta_d_CL, transmission = self.simulate_at_frequency(
+                frequency)
             central_line_alpha_d.append(alpha_d_CL)
             central_line_beta_d.append(beta_d_CL)
             gamma_d.append(floquet_gamma_d)
             bloch_impedance.append(floquet_bloch_impedance)
             floquet_transmission.append(transmission)
 
-        return frequency_range,gamma_d,bloch_impedance,central_line_alpha_d, central_line_beta_d,floquet_transmission
+        return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission

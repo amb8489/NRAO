@@ -7,7 +7,8 @@ import scipy.special as sp
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import \
     capacitance_model_selector
-from simulation.utills.constants import BOLTZMANN_CONSTev, PLANCK_CONST_REDUCEDev, PI, MU_0, SPEED_OF_LIGHT, epsilon_0, PI2
+from simulation.utills.constants import BOLTZMANN_CONSTev, PLANCK_CONST_REDUCEDev, PI, MU_0, SPEED_OF_LIGHT, epsilon_0, \
+    PI2
 
 """
 
@@ -24,7 +25,6 @@ def DELTA_O(sc_crit_temp):
 
 def lambda_0(sigma_n, delta_o):
     return math.sqrt(PLANCK_CONST_REDUCEDev / (PI * MU_0 * sigma_n * delta_o))
-
 
 
 class SuperConductingArtificialCPWLine(AbstractSCTL):
@@ -82,14 +82,13 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg, thickness,
                                                  model_type=1)
 
-        print(
-            f"line #{0} Length:{total_line_length}   N:{self.number_of_finger_sections}   Lu:{self.central_line_length_LH + (2 * S) + self.load_length_LL}   S:{S}   WH:{self.central_line_width_WH}   LH:{self.central_line_length_LH}   WL:{self.load_width_WL}   LL:{self.load_length_LL}")
+        # print(
+        #     f"line #{0} Length:{total_line_length}   N:{self.number_of_finger_sections}   Lu:{self.central_line_length_LH + (2 * S) + self.load_length_LL}   S:{S}   WH:{self.central_line_width_WH}   LH:{self.central_line_length_LH}   WL:{self.load_width_WL}   LL:{self.load_length_LL}")
 
     def __L_aprox(self, Zo, beta_so, l):
         return Zo * beta_so * (l / SPEED_OF_LIGHT)
 
     def __clac_L1_L2(self, lH, lL: float, wL: float, wH: float, sM: float, s: float, t: float):
-        # looking for errors in these functions
 
         zH = self.characteristic_impedance_SC_cpw(self.lambda_O, self.epsilon_r, wH, s, t)
         beta_wtH = self.propagation_const_SC_cpw(self.lambda_O, self.epsilon_r, wH, s, t)
