@@ -22,6 +22,7 @@ def ABCD_Mat(zc, gamma, line_length):
     return [[coshGL, zc * sinhGL],
             [(1 / zc) * sinhGL, coshGL]]
 
+
 def bloch_impedance_Zb(ABCD_mat_2x2: [[float]]):
     A = ABCD_mat_2x2[0][0]
     B = ABCD_mat_2x2[0][1]
@@ -35,7 +36,8 @@ def bloch_impedance_Zb(ABCD_mat_2x2: [[float]]):
     ZB = - (B2 / (ADm + ADs2))
     ZB2 = - (B2 / (ADm - ADs2))
 
-    return max(ZB, ZB2,key = lambda c:c.real)
+    return max(ZB, ZB2, key=lambda c: c.real)
+
 
 def gamma_d(ABCD_mat_2x2: [[float]]):
     A = ABCD_mat_2x2[0][0]
@@ -60,19 +62,17 @@ frequency_range = np.linspace(hertz_to_GHz(sf), hertz_to_GHz(ef), 10000)
 
 # FLOQUET DIMENSIONS
 
-line_1_len = LC * 100
-line_2_len = LC * 400
-line_3_len = LC * 200
-line_4_len = LC * 300
-line_5_len = LC * 200
-line_6_len = LC * 600
-line_7_len = LC * 100
+line_1_len = LC * 30
+line_2_len = LC * 80
+line_3_len = LC * 42
+line_4_len = LC * 80
+line_5_len = LC * 42
+line_6_len = LC * 160
+line_7_len = LC * 30
 
 # pick line widths
-Wu = 15
-Wl = 30
-
-
+Wu = 12
+Wl = 21
 
 seg_lens = [
     line_1_len,
@@ -92,12 +92,13 @@ L3 = Wl
 
 gammas, ZBs = [], []
 
+CL_gammas = []
 
 start = time.time()
 for f in frequency_range:
     seg_abcds = []
 
-    V = (PI2*f)/SPEED_OF_LIGHT
+    V = (PI2 * f) / SPEED_OF_LIGHT
 
     seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[0]))
@@ -120,17 +121,19 @@ for f in frequency_range:
     seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[6]))
 
-
-
     unit_cell_mat = mult_mats(seg_abcds)
     gammas.append(gamma_d(unit_cell_mat))
     ZBs.append(bloch_impedance_Zb(unit_cell_mat))
 
-print(time.time()-start)
-fig,axs = plt.subplots(2)
-axs[0].plot(frequency_range,np.real(np.array(gammas)))
-axs[0].plot(frequency_range,np.imag(np.array(gammas)))
-axs[1].plot(frequency_range,np.real(np.array(ZBs)))
-axs[1].plot(frequency_range,np.imag(np.array(ZBs)))
-axs[1].set_ylim([-500,500])
+    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V), complex(csv_data[:, 1][Wu], 0)
+    CL_unit_cell_mat = ABCD_Mat(seg_Zc, seg_gamma, sum(seg_lens))
+    CL_gammas.append(gamma_d(CL_unit_cell_mat))
+
+print(time.time() - start)
+fig, axs = plt.subplots(2)
+axs[0].plot(frequency_range, np.real(np.array(gammas)))
+axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
+axs[1].plot(frequency_range, np.real(np.array(ZBs)))
+axs[1].plot(frequency_range, np.imag(np.array(ZBs)))
+axs[1].set_ylim([-500, 500])
 plt.show()
