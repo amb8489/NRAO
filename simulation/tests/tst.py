@@ -47,11 +47,9 @@ def gamma_d(ABCD_mat_2x2: [[float]]):
 
 csv_data = np.loadtxt("/Users/aaron/Desktop/wL(um)-Zc(ohm)-bbo.csv",
                       delimiter="	", dtype=float)
-print(csv_data[:, 0])
-print(csv_data[:, 1])
-print(csv_data[:, 2])
+
 # unit cell len
-LC = micro_meters_to_meters(3)
+Lu = micro_meters_to_meters(3)
 sf = .1
 ef = 25
 
@@ -62,17 +60,17 @@ frequency_range = np.linspace(hertz_to_GHz(sf), hertz_to_GHz(ef), 10000)
 
 # FLOQUET DIMENSIONS
 
-line_1_len = LC * 30
-line_2_len = LC * 80
-line_3_len = LC * 42
-line_4_len = LC * 80
-line_5_len = LC * 42
-line_6_len = LC * 160
-line_7_len = LC * 30
+line_1_len = Lu * 220
+line_2_len = Lu * 80
+line_3_len = Lu * 442
+line_4_len = Lu * 80
+line_5_len = Lu * 402
+line_6_len = Lu * 160
+line_7_len = Lu * 186
 
 # pick line widths
-Wu = 12
-Wl = 21
+Wu = 24
+Wl = 40
 
 seg_lens = [
     line_1_len,
@@ -84,12 +82,12 @@ seg_lens = [
     line_7_len
 ]
 
+# to we can vectorize this into something real ugly but fast , dont think its needed tho
+fig, axs = plt.subplots(2)
+
 L1 = Wl
 L2 = Wl
 L3 = Wl
-
-# to we can vectorize this into something real ugly
-
 gammas, ZBs = [], []
 
 CL_gammas = []
@@ -130,7 +128,6 @@ for f in frequency_range:
     CL_gammas.append(gamma_d(CL_unit_cell_mat))
 
 print(time.time() - start)
-fig, axs = plt.subplots(2)
 axs[0].plot(frequency_range, np.real(np.array(gammas)))
 axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
 axs[1].plot(frequency_range, np.real(np.array(ZBs)))
