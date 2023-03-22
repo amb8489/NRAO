@@ -34,9 +34,10 @@ def bloch_impedance_Zb(ABCD_mat_2x2: [[float]]):
     B2 = 2 * B
 
     ZB = - (B2 / (ADm + ADs2))
-    ZB2 = - (B2 / (ADm - ADs2))
 
-    return max(ZB, ZB2, key=lambda c: c.real)
+    if ZB.real<0:
+        return - (B2 / (ADm - ADs2))
+    return ZB
 
 
 def gamma_d(ABCD_mat_2x2: [[float]]):
@@ -83,6 +84,8 @@ seg_lens = [
     line_7_len
 ]
 
+D = sum(seg_lens)
+
 # to we can vectorize this into something real ugly but fast , dont think its needed tho
 fig, axs = plt.subplots(2)
 
@@ -94,41 +97,62 @@ gammas, ZBs = [], []
 CL_gammas = []
 
 V = (PI2 * frequency_range) / SPEED_OF_LIGHT
+
+
+tot= 0
 start = time.time()
-for i,f in enumerate(frequency_range):
+
+
+for i, f in enumerate(frequency_range):
     seg_abcds = []
 
+    s = time.time()
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma  = complex(0, csv_data[Wu][2] * V[i])
+    seg_Zc = complex(csv_data[Wu][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[0]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L1] * V[i]), complex(csv_data[:, 1][L1], 0)
+    seg_gamma = complex(0, csv_data[L1][2] * V[i])
+    seg_Zc = complex(csv_data[L1][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[1]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma = complex(0, csv_data[Wu][2] * V[i])
+    seg_Zc = complex(csv_data[Wu][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[2]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L2] * V[i]), complex(csv_data[:, 1][L2], 0)
+    seg_gamma = complex(0, csv_data[L2][2] * V[i])
+    seg_Zc = complex(csv_data[L2][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[3]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma = complex(0, csv_data[Wu][2] * V[i])
+    seg_Zc = complex(csv_data[Wu][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[4]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][L3] * V[i]), complex(csv_data[:, 1][L3], 0)
+    seg_gamma = complex(0, csv_data[L3][2] * V[i])
+    seg_Zc = complex(csv_data[L3][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[5]))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
+    seg_gamma = complex(0, csv_data[Wu][2] * V[i])
+    seg_Zc = complex(csv_data[Wu][1], 0)
     seg_abcds.append(ABCD_Mat(seg_Zc, seg_gamma, seg_lens[6]))
+    tot += time.time() - s
 
     unit_cell_mat = mult_mats(seg_abcds)
+
     gammas.append(gamma_d(unit_cell_mat))
     ZBs.append(bloch_impedance_Zb(unit_cell_mat))
 
-    seg_gamma, seg_Zc = complex(0, csv_data[:, 2][Wu] * V[i]), complex(csv_data[:, 1][Wu], 0)
-    CL_unit_cell_mat = ABCD_Mat(seg_Zc, seg_gamma, sum(seg_lens))
+
+    seg_gamma  = complex(0, csv_data[Wu][2] * V[i])
+    seg_Zc = complex(csv_data[Wu][1], 0)
+    CL_unit_cell_mat = ABCD_Mat(seg_Zc, seg_gamma, D)
     CL_gammas.append(gamma_d(CL_unit_cell_mat))
 
-print(time.time() - start)
+
+overall = time.time() - start
+print((tot / overall)*100,overall)
+
+
 axs[0].plot(frequency_range, np.real(np.array(gammas)))
 axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
 axs[1].plot(frequency_range, np.real(np.array(ZBs)))

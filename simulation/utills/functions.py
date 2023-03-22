@@ -43,9 +43,13 @@ def mult_2x2_mat(mat1, mat2):
 def mult_mats(mats):
     # input is an array of 2x2 matrices
     # does floquet_alpha matrix multiplication of all 2x2 matrices passed in,in array
+
     res = mats[0]
     for mat in mats[1:]:
-        res = mult_2x2_mat(res, mat)
+        res = [
+            [res[0][0] * mat[0][0] + res[0][1] * mat[1][0], res[0][0] * mat[0][1] + res[0][1] * mat[1][1]],
+            [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]
+        ]
     return res
 
 
