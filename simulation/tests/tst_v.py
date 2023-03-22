@@ -138,14 +138,15 @@ if __name__ == '__main__':
         gammas.append(gamma_d(unit_cell_mat))
         ZBs.append(bloch_impedance_Zb(unit_cell_mat))
 
+        CL_gammas.append(gamma_d(ABCD_Mat(seg_zc[0], seg_gamma[0]*V[i], D)))
+
 
     overall = time.time() - start
     print((tot / overall)*100,"%  ",overall)
 
 
     axs[0].plot(frequency_range, np.real(np.array(gammas)))
-    # axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
-    axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))))
+    axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
     axs[1].plot(frequency_range, np.real(np.array(ZBs)))
     axs[1].plot(frequency_range, np.imag(np.array(ZBs)))
     axs[1].set_ylim([-500, 500])

@@ -33,7 +33,7 @@ class TableModel1(QtCore.QAbstractTableModel):
     def insertRows(self, position, rows, QModelIndex, parent):
 
         self.beginInsertRows(QModelIndex, position, position + rows - 1)
-        default_row = ['10'] * len(self._data[0])  # or _headers if you have that defined.
+        default_row = ['1'] * len(self._data[0])  # or _headers if you have that defined.
         for i in range(rows):
             self._data.insert(position, default_row)
         self.endInsertRows()
@@ -56,9 +56,15 @@ class TableModel1(QtCore.QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             if orientation == Qt.Vertical:
-                return str(f"{self._row_name} {section + 1}")
+
+                if section % 2 == 1:
+                    return  str(f"{section + 1}") + " [Load]"
+
+
+                return str(f"{section + 1}")+" [CL]"
 
             if orientation == Qt.Horizontal:
+
                 return self.colNames[section]
 
     def removeRows(self, position, rows, QModelIndex):
@@ -101,15 +107,15 @@ class TableModel1(QtCore.QAbstractTableModel):
 
 class TableInputWidget(QtWidgets.QWidget):
 
-    def __init__(self, colName, onChange=None, row_name="",height = 100):
+    def __init__(self, colName, onChange=None, row_name="",height = 100,title = "n loads",isarttanle = False):
         super().__init__()
         self.setLayout(QVBoxLayout())
 
         self.onChange = onChange
 
         # input for load number selection
-        self.NloadsInput = WidgetDoubleInput("Number of loads", MaxVal=100, MinVal=1, DefaultVal=2,
-                                             onchange=self.setNLoads)
+        self.NloadsInput = WidgetDoubleInput(title, MaxVal=100, MinVal=3, DefaultVal=3,
+                                             onchange=self.setNLoads,inc_amt = 2)
         self.layout().addWidget(self.NloadsInput)
 
         # inputs materials_table

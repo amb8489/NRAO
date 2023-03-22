@@ -53,8 +53,8 @@ class WidgetGraph_fig(QtWidgets.QWidget):
         self.setMinimumWidth(580)
         self.setMinimumHeight(570)
 
-        self.setMaximumHeight(580)
-        self.setMaximumWidth(580)
+        # self.setMaximumHeight(580)
+        # self.setMaximumWidth(580)
         # set widget color
         self.setBackGroundColor(randomColorBright())
 

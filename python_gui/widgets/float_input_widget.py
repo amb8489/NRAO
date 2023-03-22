@@ -9,7 +9,7 @@ from PySide6 import QtWidgets
 # todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
     def __init__(self, Title, unit_type="", MaxVal=10 ** 10, MinVal=0, DefaultVal=0, onchange=None, widget_name=None,
-                 color=None, *args,
+                 color=None,Decimals = 5,inc_amt = 1,*args,
                  **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
@@ -20,10 +20,10 @@ class WidgetDoubleInput(QtWidgets.QWidget):
         self.label.setFont(QFont('Arial', 14))
 
         self.input = QDoubleSpinBox()
-
+        self.input.setSingleStep(inc_amt)
         self.input.setMinimum(MinVal)
         self.input.setMaximum(MaxVal)
-        self.input.setDecimals(15)
+        self.input.setDecimals(Decimals)
 
         self.input.setValue(DefaultVal)
 
@@ -55,6 +55,14 @@ class WidgetDoubleInput(QtWidgets.QWidget):
             self.input.setValue(float(val))
         except:
             print("error setting val in float inputs")
+
+    def set_title(self,title):
+        self.label.setText(title)
+
+
+    def setMinMaxRange(self,min,max):
+        self.input.setMinimum(min)
+        self.input.setMaximum(max)
 
     def get_value(self):
         return float(self.input.value())
