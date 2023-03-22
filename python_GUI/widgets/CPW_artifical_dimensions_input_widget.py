@@ -13,7 +13,7 @@ from PySide6 import QtWidgets
 
 class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, column_names, input_names, row_name="Load", *args, **kwargs):
+    def __init__(self, column_names, input_names, row_name="Load", line_input_title = "Number of loads",*args, **kwargs):
         super(WidgetCPWARTDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -23,22 +23,18 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
         # component title
 
-        self.title = QLabel("Unit Cell Dimensions")
+        self.title = QLabel("Line Dimensions")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
         # materials_table for load widths and lengths inputs
-        self.tableInput = TableInputWidget(column_names, onChange=self.update_line_data, row_name=row_name,height=200)
+        self.tableInput = TableInputWidget(column_names, onChange=self.update_line_data, row_name=row_name,height=200,title=line_input_title,isarttanle = True)
 
         self.layout().addWidget(self.tableInput, 0, 0, 3, 2, Qt.AlignTop)
 
         # input widgets for UC length and Line Width
         self.container = QVBoxLayout()
-        self.inputnames = [nameUnit("Wu","mico"),nameUnit("Wl","mico")]
         self.inputs = []
-
-
-
         self.displays = []
 
 
