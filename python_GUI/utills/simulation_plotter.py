@@ -129,6 +129,10 @@ def simulate(line_model):
     :return: matpltlib figures 1d list
     """
 
+    if line_model.type == "SIM_FILE":
+        print("here")
+        exit(1)
+
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     central_line_beta_d, floquet_transmission, gain_data = __simulate_floquet_line(line_model)
 
