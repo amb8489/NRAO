@@ -38,7 +38,7 @@ class sim_file(QtWidgets.QWidget):
 
         self.dimensionsInputWidget = WidgetCPWARTDimensionsInputs(
             # ["Line length [microns]"]
-            ["N Lu repeated"],
+            ["N Lu segments repeated"],
             [], row_name="Line", line_input_title="Numer of lines in unit cell")
         self.layout().addWidget(self.dimensionsInputWidget, 2, 1, 1, 1)
 
@@ -136,8 +136,8 @@ class sim_file(QtWidgets.QWidget):
     def setArtLineInputs(self):
         if self.use_art_line_inputs.isChecked():
             self.Lu_length.show()
-            self.dimensionsInputWidget.tableInput.model.colNames = ["N Lu Cells [microns]"]
+            self.dimensionsInputWidget.tableInput.model.colNames = ["N Lu segments repeated"]
         else:
             self.Lu_length.hide()
-            self.dimensionsInputWidget.tableInput.model.colNames = ["line length [microns]"]
+            self.dimensionsInputWidget.tableInput.model.colNames = ["Line length [microns]"]
         self.dimensionsInputWidget.tableInput.model.layoutChanged.emit()

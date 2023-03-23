@@ -15,23 +15,24 @@ impedance = 50
 
 class SuperConductingFloquetLine(floquet_abs, floquet_base):
 
-    def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], wl_microns,
-                 wu_microns, csv_data_list,
-                 Lu_microns: float, dimensions: [float], is_art_cpw_line: bool, start_freq_GHz: float,
+    def __init__(self, csv_data_list, wl_microns:float,wu_microns:float,Lu_microns: float, dimensions: [[float]], is_art_cpw_line: bool, start_freq_GHz: float,
                  end_freq_GHz: float, resolution: int):
         # ---------------------------------------------------------
 
         self.csv_data = csv_data_list
 
         # FLOQUET DIMENSIONS
-        self.line_lengths = np.array([n[0] for n in dimensions])
 
         # if we are doing an art cpw then dimensions will be the number of Lu segments
         # and need to multiply #lu segs by Lu to get line length
         self.Lu_length = Lu_microns
         if is_art_cpw_line:
+            self.line_lengths = np.array([n[0] for n in dimensions])
             self.Lu = micro_meters_to_meters(self.Lu_length)
             self.line_lengths *= self.Lu
+        else:
+            #make sure the inuts line lengths are right dimensions
+            self.line_lengths = np.array([micro_meters_to_meters(n[0]) for n in dimensions])
 
         self.unit_cell_length = sum(self.line_lengths)
 
