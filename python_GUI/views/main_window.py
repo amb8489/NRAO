@@ -5,7 +5,7 @@ from python_gui.line_models.artificial_cpw_input_widget import ArtificialCPIInpu
 from python_gui.line_models.cpw_input_widget import CPWInputsWidget
 from python_gui.line_models.micro_strip_input_widget import MicroStripInputsWidget
 from python_gui.line_models.s_matrix_input_widget import SMatrixInputsWidget
-from python_gui.line_models.hfss_sim_2 import sim_file
+from python_gui.line_models.hfss_pre_sim_widget import sim_file
 
 from python_gui.utills.simulation_plotter import simulate
 from python_gui.utills.utills_gui import BASE_COLOR

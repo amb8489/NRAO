@@ -55,15 +55,18 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
 
     def simulate(self):
 
-        fig, axs = plt.subplots(2)
         frequency_range = np.linspace(self.start_frequency, self.end_frequency, self.resolution)
 
         # index in data where the wanted widths are ... todo some type of interpolation if value not in list
         Wu_idx = self.csv_data[:, 0].tolist().index(self.wu)
         Wl_idx = self.csv_data[:, 0].tolist().index(self.wl)
 
+
+
+
+
         # getting the Zc and gammas for the central line width and load widths
-        unit_cell_segment_gammas = np.array(
+        unit_cell_segment_gammas = 1 / np.array(
             [self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2],
              self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2],
              self.csv_data[Wu_idx][2]]) * 1j
@@ -72,6 +75,10 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
             [self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1],
              self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1],
              self.csv_data[Wu_idx][1]]) + 0j
+
+
+
+        print(self.csv_data[Wu_idx][2],self.csv_data[Wl_idx][2])
 
         gammas_d = []
         ZBs = []
@@ -88,7 +95,7 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
             seg_abcds = []
             for j in range(len(unit_cell_segment_gammas)):
                 seg_abcds.append(
-                    ABCD_Mat(unit_cell_segment_zc[j], (1 / unit_cell_segment_gammas[j]) * Vs[i], self.line_lengths[j]))
+                    ABCD_Mat(unit_cell_segment_zc[j], (unit_cell_segment_gammas[j]) * Vs[i], self.line_lengths[j]))
 
             unit_cell_mat = mult_mats(seg_abcds)
 

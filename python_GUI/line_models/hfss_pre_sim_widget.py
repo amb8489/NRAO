@@ -30,12 +30,19 @@ class sim_file(QtWidgets.QWidget):
         self.file_choose_button.clicked.connect(self.selectFile)
         self.layout().addWidget(self.file_choose_button, 1, 0)
 
+        self.freqRangeWidget = WidgetFrequencyInputs()
+        self.layout().addWidget(self.freqRangeWidget, 2, 0)
+
+        self.WidgetGainInputs = WidgetGainInputs()
+        self.layout().addWidget(self.WidgetGainInputs, 3, 0)
+
+
+
         self.use_art_line_inputs = QRadioButton("SIMULATE ART CPW LINE")
 
         self.use_art_line_inputs.setChecked(True)
         self.use_art_line_inputs.toggled.connect(lambda: self.setArtLineInputs())
         self.layout().addWidget(self.use_art_line_inputs, 0, 1)
-
 
 
 
@@ -55,11 +62,9 @@ class sim_file(QtWidgets.QWidget):
         self.Wl_length = WidgetDoubleInput("Wl [microns]", DefaultVal=0, MinVal=0, MaxVal=0)
         self.layout().addWidget(self.Wl_length, 1, 2)
 
-        self.WidgetGainInputs = WidgetGainInputs()
-        self.layout().addWidget(self.WidgetGainInputs, 2, 0)
 
-        self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 1, 0)
+
+
 
 
         # set widget color

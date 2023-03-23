@@ -31,6 +31,8 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
 
     plt.close()
 
+    figs = []
+
     # scaling down so plots look nice on x axis (this does not afect any calculation , purly for looks)
     frequency_range /= 10e8
     # -------------------delta ALPHA , delta BETA PLOTS---------------------------------
@@ -39,6 +41,7 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     fig1.suptitle('αd - α0d  |  βd - β0d')
     ax1.set_ylabel('δ αd', color='tab:red')
     ax1.plot(frequency_range, np.array(floquet_alpha) - np.array(central_line_alpha_d), color='tab:red')
+
     ax1.tick_params(axis='y', labelcolor='tab:red')
     ax1.set_xlabel('Frequency [GHz]')
 
@@ -50,6 +53,7 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     fig1.tight_layout()
     ax1.legend(['αd - α0d '], loc='upper right')
     ax2.legend(['βd - β0d'], loc='upper left')
+    figs.append(fig1)
 
     # ---------------------R , X PLOTS ----------------------------
     fig2, ax22 = plt.subplots()
@@ -64,6 +68,8 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax22.plot(frequency_range, floquet_x, '--', color='tab:orange')
     fig2.tight_layout()
     ax22.legend(['r', 'x'])
+    figs.append(fig2)
+
 
     # ------------------- BETA vs BETA UNFOLDED---------------------------------
 
@@ -75,6 +81,8 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax44.tick_params(axis='y', labelcolor=color)
     ax44.set_xlabel('Frequency [GHz]')
     fig4.tight_layout()
+    # figs.append(fig4)
+
     # ---------------------Alpha vs Transmission  PLOT ----------------------------
 
     fig5, ax55 = plt.subplots(2)
@@ -86,12 +94,16 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax55[1].plot(frequency_range, floquet_transmission, color='tab:blue')
     ax55[1].tick_params(axis='y', labelcolor='tab:blue')
     ax55[1].set_xlabel('Frequency [GHz]')
+    figs.append(fig5)
+
 
     fig3, ax33 = plt.subplots()
     fig3.suptitle('Transmission')
     ax33.set_ylabel('α0d', color='tab:red')
     ax33.plot(frequency_range, floquet_transmission, color='tab:blue')
     ax33.tick_params(axis='y', labelcolor='tab:red')
+    figs.append(fig3)
+
 
     # ----------- GAIN ---------
     fig6, ax66 = plt.subplots()
@@ -107,9 +119,9 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
         ax66.set_title(f"SIGNAL GAIN [Db]")
         ax66.set_xlabel('Frequency [GHz]')
 
-    return [fig1, fig2,
-            fig5, fig4,
-            fig6]
+        figs.append(fig6)
+
+    return figs
 
 
 def simulate(line_model):
