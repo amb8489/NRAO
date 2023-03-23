@@ -54,6 +54,40 @@ def mult_mats(mats):
 
 
 
+def ABCD_Mat(zc, gamma, line_length):
+    gl = gamma * line_length
+    coshGL = cmath.cosh(gl)
+    sinhGL = cmath.sinh(gl)
+
+    return [[coshGL, zc * sinhGL],
+            [(1 / zc) * sinhGL, coshGL]]
+
+
+def bloch_impedance_Zb(ABCD_mat_2x2: [[float]]):
+    A = ABCD_mat_2x2[0][0]
+    B = ABCD_mat_2x2[0][1]
+    D = ABCD_mat_2x2[1][1]
+
+    ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
+    ADm = A - D
+
+    B2 = 2 * B
+
+    ZB = - (B2 / (ADm + ADs2))
+
+    if ZB.real<0:
+        return - (B2 / (ADm - ADs2))
+    return ZB
+
+
+def gamma_d(ABCD_mat_2x2: [[float]]):
+    A = ABCD_mat_2x2[0][0]
+    D = ABCD_mat_2x2[1][1]
+    return cmath.acosh(((A + D) / 2))
+
+
+
+
 #  elliptic integral redefined to contemplate Jochems change
 def ellip_k(n):
     return scipy.special.ellipk(n)

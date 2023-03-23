@@ -1,137 +1,97 @@
 import numpy as np
+from matplotlib import pyplot as plt
 
 from simulation.floquet_line_models.models.abstract_floquet_line import floquet_base, floquet_abs
 from simulation.floquet_line_models.unit_cell import UnitCell, mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from simulation.utills.functions import Transmission_Db, micro_meters_to_meters
+from simulation.utills.constants import PI2, SPEED_OF_LIGHT
+from simulation.utills.functions import Transmission_Db, micro_meters_to_meters, beta_unfold, mult_mats, ABCD_Mat, \
+    gamma_d, bloch_impedance_Zb
 
 # calc transmission todo add these inputs to UI
 impedance = 50
 
 
-
-
-
 class SuperConductingFloquetLine(floquet_abs, floquet_base):
 
-    def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], load_line_models: [AbstractSCTL],
-                 central_line_model: AbstractSCTL, super_conductivity_model: SuperConductivity,
-                 central_line_width: float, load_widths: [float], line_thickness: float, start_freq_GHz: float,
+    def __init__(self, unit_cell_length: float, D0: float, load_lengths: [float], wl_microns,
+                 wu_microns, csv_data_list,
+                 Lu_microns: float, dimensions: [float], is_art_cpw_line: bool, start_freq_GHz: float,
                  end_freq_GHz: float, resolution: int):
         # ---------------------------------------------------------
 
-        self.resolution = resolution
+        self.csv_data = csv_data_list
+
+        # FLOQUET DIMENSIONS
+        self.line_lengths = np.array([n[0] for n in dimensions])
+
+        # if we are doing an art cpw then dimensions will be the number of Lu segments
+        # and need to multiply #lu segs by Lu to get line length
+        self.Lu_length = Lu_microns
+        if is_art_cpw_line:
+            self.Lu = micro_meters_to_meters(self.Lu_length)
+            self.line_lengths *= self.Lu
+
+        self.unit_cell_length = sum(self.line_lengths)
+
+        self.wu = wu_microns
+        self.wl = wl_microns
+
         self.start_freq_GHz = start_freq_GHz
         self.end_freq_GHz = end_freq_GHz
-
-
-
-
-
+        self.resolution = resolution
 
     def get_unit_cell_length(self):
-        return self.unit_cell.unit_cell_length
-
+        return self.unit_cell_length
 
     def get_resolution(self):
         return self.resolution
 
     def simulate_at_frequency(self, frequency):
-        # frequency cant be too low
-        frequency = max(frequency, 1e6)
-
-        # todo move the conductivity model into the line model
-        # 1) calculate Zs
-        conductivity = self.super_conductivity_model.conductivity(frequency)
-
-        # 2) calculate Zs for given frequency, conductivity ,line thickness
-        surface_impedance = self.super_conductivity_model.surface_impedance_Zs(frequency, conductivity,
-                                                                               self.unit_cell.thickness)
-
-        # 5) get unit cell ABCD -- steps 3 - 4 inside get_unit_cell_ABCD_mat()
-        unit_cell_abcd_mat = self.unit_cell.get_unit_cell_ABCD_mat(frequency, surface_impedance)
-
-        # 6) calculate all the needed outputs
-        # calc bloch impedance and propagation const for unit cell
-        ZB = self.bloch_impedance_Zb(unit_cell_abcd_mat)
-        floquet_gamma_d = self.gamma_d(unit_cell_abcd_mat)
-
-        floquet_transmission = Transmission_Db(N_unit_cells,
-                                               impedance,
-                                               ZB,
-                                               floquet_gamma_d)
-
-
-        # calculate central line alpha and beta
-        central_line_gamma, central_line_characteristic_impedance = self.unit_cell.get_segment_gamma_and_characteristic_impedance(
-            0, frequency, surface_impedance)
-
-        central_line_mat = mk_ABCD_Mat(central_line_characteristic_impedance, central_line_gamma,
-                                       self.unit_cell.unit_cell_length)
-        central_line_propagation_const = self.gamma_d(central_line_mat)
-        beta_d_CL = central_line_propagation_const.imag
-        alpha_d_CL = central_line_propagation_const.real
-
-        # retuning outputs
-        return floquet_gamma_d, ZB, alpha_d_CL, beta_d_CL, floquet_transmission
+        pass
 
     def simulate(self):
+
+        fig, axs = plt.subplots(2)
         frequency_range = np.linspace(self.start_freq_GHz, self.end_freq_GHz, self.resolution)
 
-        # plt.plot(csv_data[:, 2])
-        # plt.show()
+        # index in data where the wanted widths are ... todo some type of interpolation if value not in list
+        Wu_idx = self.csv_data[:, 0].index(self.wu)
+        Wl_idx = self.csv_data[:, 0].index(self.wl)
 
-        # FLOQUET DIMENSIONS
-        if self.is_art_cpw_line:
-            Lu = micro_meters_to_meters(self.lu_length)
+        # getting the Zc and gammas for the central line width and load widths
+        unit_cell_segment_gammas = np.array(
+            [self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2],
+             self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2],
+             self.csv_data[Wu_idx][2]]) * 1j
 
-            seg_lens = []
-            for n_lu_repeating in self.dimensions:
-                seg_lens.append(Lu * n_lu_repeating)
-
-        # pick line widths
-        Wu = self.wu_length
-        Wl = self.wl_length
-
-
-        D = sum(seg_lens)
-
-        # to we can vectorize this into something real ugly but fast , dont think its needed tho
-        fig, axs = plt.subplots(2)
-
-        L1 = Wl
-        L2 = Wl
-        L3 = Wl
-        gammas, ZBs = [], []
+        unit_cell_segment_zc = np.array(
+            [self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1],
+             self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1],
+             self.csv_data[Wu_idx][1]]) + 0j
 
         CL_gammas = []
+        gammas = []
+        ZBs = []
 
-        V = (PI2 * frequency_range) / SPEED_OF_LIGHT
-
-        seg_gamma = np.array([csv_data[Wu][2], csv_data[L1][2], csv_data[Wu][2], csv_data[L2][2],
-                              csv_data[Wu][2], csv_data[L3][2], csv_data[Wu][2]]) * 1j
-
-        seg_zc = np.array([csv_data[Wu][1], csv_data[L1][1], csv_data[Wu][1], csv_data[L2][1],
-                           csv_data[Wu][1], csv_data[L3][1], csv_data[Wu][1]]) + 0j
-
-        tot = 0
-        start = time.time()
+        # facotors to turn Beta/C into beta
+        Vs = (PI2 * frequency_range) / SPEED_OF_LIGHT
 
         for i, f in enumerate(frequency_range):
 
+            # FOR EACH LINE SEGMENT IN THE UNIT CELL GET THE SEGMENTS ABCD MAT
             seg_abcds = []
-            for j in range(len(seg_gamma)):
-                seg_abcds.append(ABCD_Mat(seg_zc[j], seg_gamma[j] * V[i], seg_lens[j]))
+            for j in range(len(unit_cell_segment_gammas)):
+                seg_abcds.append(
+                    ABCD_Mat(unit_cell_segment_zc[j], unit_cell_segment_gammas[j] * Vs[i], self.line_lengths[j]))
 
             unit_cell_mat = mult_mats(seg_abcds)
             gammas.append(gamma_d(unit_cell_mat))
             ZBs.append(bloch_impedance_Zb(unit_cell_mat))
 
-            CL_gammas.append(gamma_d(ABCD_Mat(seg_zc[0], seg_gamma[0] * V[i], D)))
-
-        overall = time.time() - start
-        print((tot / overall) * 100, "%  ", overall)
+            CL_gammas.append(
+                gamma_d(ABCD_Mat(unit_cell_segment_zc[0], unit_cell_segment_gammas[0] * Vs[i], self.unit_cell_length)))
 
         axs[0].plot(frequency_range, np.real(np.array(gammas)))
         axs[0].plot(frequency_range, beta_unfold(np.imag(np.array(gammas))) - beta_unfold(np.imag(np.array(CL_gammas))))
@@ -139,5 +99,7 @@ class SuperConductingFloquetLine(floquet_abs, floquet_base):
         axs[1].plot(frequency_range, np.imag(np.array(ZBs)))
         axs[1].set_ylim([-500, 500])
         plt.show()
+        exit(1)
 
-    return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission
+    # floquet_transmission = Transmission_Db(150,impedance,ZB,floquet_gamma_d)
+    # return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission
