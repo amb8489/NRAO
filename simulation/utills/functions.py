@@ -133,15 +133,19 @@ def Transmission_Db(N, z0, ZB, floquet_gamma_d):
     return toDb(abs(s21))
 
 
-def RLGC_circuit_factors(propagationConst: complex, Zb: complex):
-    Z = propagationConst * Zb
-    Y = propagationConst / Zb
+def RLGC_circuit_factors(gammas_d: [complex], Zbs: [complex]):
+    gammas_d = np.array(gammas_d)
+    Zbs = np.array(Zbs)
 
-    R = Z.real
-    L = Z.imag
 
-    G = Y.real
-    C = Y.imag
+    Z = gammas_d * Zbs
+    Y = gammas_d / Zbs
+
+    R = np.real(Z)
+    L = np.imag(Z)
+
+    G = np.real(Y)
+    C = np.imag(Y)
     return R, L, G, C
 
 # converts a number to Decibel
