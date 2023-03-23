@@ -196,7 +196,7 @@ for ap0 in [.12]:
         I_star = 1
         as0 = 1e-9+ 0j
         ai0 = 0 + 0j
-        inital_amplitudes = [as0, ai0, ap0]
+        inital_amplitudes = [as0+0j, ai0+0j, ap0+0j]
         # print("z/d = ", z_eval[-1] / unit_cell_length)
 
         ########################################################################################

@@ -118,6 +118,7 @@ def printDb(*args):
 # calculates transmission s21 of N repeaded unit cells
 def Transmission_Db(N, z0, ZB, floquet_gamma_d):
     # convert to ABCD N-cell matrix
+
     cosh_N_gamma_d = cmath.cosh(N * floquet_gamma_d)
     sinh_N_gammma_d = cmath.sinh(N * floquet_gamma_d)
 

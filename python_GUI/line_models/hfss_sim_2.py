@@ -1,7 +1,7 @@
 import numpy as np
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel, QFileDialog, QRadioButton
+from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel, QFileDialog, QRadioButton, QCheckBox
 
 from python_gui.utills.setting_gui import GUI_setting
 from python_gui.utills.utills_gui import randomColorBright
@@ -16,6 +16,8 @@ class sim_file(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(sim_file, self).__init__(*args, **kwargs)
 
+        self.csv_data = None
+
         self.type = "SIM_FILE"
 
         self.setLayout(QGridLayout())
@@ -29,9 +31,13 @@ class sim_file(QtWidgets.QWidget):
         self.layout().addWidget(self.file_choose_button, 1, 0)
 
         self.use_art_line_inputs = QRadioButton("SIMULATE ART CPW LINE")
+
         self.use_art_line_inputs.setChecked(True)
         self.use_art_line_inputs.toggled.connect(lambda: self.setArtLineInputs())
         self.layout().addWidget(self.use_art_line_inputs, 0, 1)
+
+
+
 
         self.Lu_length = WidgetDoubleInput("Lu length [microns]", MinVal=0, Decimals=2)
         self.layout().addWidget(self.Lu_length, 1, 1)
@@ -42,9 +48,10 @@ class sim_file(QtWidgets.QWidget):
             [], row_name="Line", line_input_title="Numer of lines in unit cell")
         self.layout().addWidget(self.dimensionsInputWidget, 2, 1, 1, 1)
 
-        # todo add to set and get values
+
         self.Wu_length = WidgetDoubleInput("Wu [microns]", DefaultVal=0, MinVal=0, MaxVal=0)
         self.layout().addWidget(self.Wu_length, 0, 2)
+
         self.Wl_length = WidgetDoubleInput("Wl [microns]", DefaultVal=0, MinVal=0, MaxVal=0)
         self.layout().addWidget(self.Wl_length, 1, 2)
 
@@ -52,7 +59,8 @@ class sim_file(QtWidgets.QWidget):
         self.layout().addWidget(self.WidgetGainInputs, 2, 0)
 
         self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 3, 0)
+        self.layout().addWidget(self.freqRangeWidget, 1, 0)
+
 
         # set widget color
         self.setBackGroundColor(randomColorBright())
@@ -78,11 +86,11 @@ class sim_file(QtWidgets.QWidget):
 
             # load in csv
 
-            csv_data = np.loadtxt(self.file_path, delimiter="	", dtype=float)
+            self.csv_data = np.loadtxt(self.file_path, delimiter="	", dtype=float)
 
             # get how many widths there are
 
-            self.width_range = (csv_data[0][0], csv_data[-1][0])
+            self.width_range = (self.csv_data [0][0], self.csv_data [-1][0])
 
             self.Wu_length.setMinMaxRange(self.width_range[0], self.width_range[-1])
             self.Wl_length.setMinMaxRange(self.width_range[0], self.width_range[-1])
@@ -90,7 +98,6 @@ class sim_file(QtWidgets.QWidget):
             self.Wu_length.setValue(self.width_range[0])
             self.Wl_length.setValue(self.width_range[-1])
 
-            print(self.width_range)
             return True
         except:
             return False
@@ -103,8 +110,8 @@ class sim_file(QtWidgets.QWidget):
             "Dimensions_inputs": self.dimensionsInputWidget.getValues(),
             "using_art_line": int(self.use_art_line_inputs.isChecked()),
             "file_path": self.file_path,
-            "Wl_len":self.Wl_length.get_value(),
-            "wu_len":self.Wu_length.get_value()
+            "wl_len":self.Wl_length.get_value(),
+            "wu_len":self.Wu_length.get_value(),
         }
 
     def set_setting(self, setting: GUI_setting):
@@ -116,6 +123,7 @@ class sim_file(QtWidgets.QWidget):
         self.freqRangeWidget.setValues(input["Frequency_Range"])
         self.dimensionsInputWidget.setValues(input["Dimensions_inputs"])
         self.use_art_line_inputs.setChecked(bool(int(input.get("using_art_line", 0))))
+
         self.file_path = input.get('file_path', '')
         if not self.file_path:
             return

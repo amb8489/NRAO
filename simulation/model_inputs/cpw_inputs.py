@@ -48,3 +48,5 @@ class CPWInputs():
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)
         # transmission and transmission
         self.n_repeated_cells = int(inputs["Frequency Range"][n_repeated_cells.get_name()])
+        self.calc_gain =  bool(inputs["gain_models"]["calc_gain"])
+

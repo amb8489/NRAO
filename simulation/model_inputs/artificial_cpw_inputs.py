@@ -23,7 +23,7 @@ class ArtificialCPWInputs():
         self.Ai_init = complex(float(inputs["gain_models"][idler_amplitude.get_name()]), 0)
         self.Ap_init = complex(float(inputs["gain_models"][pump_amplitude.get_name()]), 0)
         self.init_amplitudes = (self.As_init, self.Ai_init, self.Ap_init)
-
+        self.calc_gain =  bool(inputs["gain_models"]["calc_gain"])
         # ---------------------------- Super Conductor Inputs
         self.er = float(inputs["SC"][Er.get_name()])
         self.height = nano_meters_to_meters(float(inputs["SC"][SC_height.get_name()]))

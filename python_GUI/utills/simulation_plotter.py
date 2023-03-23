@@ -94,18 +94,18 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax33.tick_params(axis='y', labelcolor='tab:red')
 
     # ----------- GAIN ---------
-
-    gain, gain_meta_data = gain_data
-    gain_freq_range, PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
     fig6, ax66 = plt.subplots()
-    plt.suptitle(
-        f"[Pump Freq: {PUMP_FREQUENCY / 1e9} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
-    ax66.plot(gain_freq_range * 1e9, gain, '-', color='tab:orange')
-    ax66.set_ylim([None, None])
-    ax66.set_xlim([0, (2 * PUMP_FREQUENCY)])
+    if gain_data:
+        gain, gain_meta_data = gain_data
+        gain_freq_range, PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
+        plt.suptitle(
+            f"[Pump Freq: {PUMP_FREQUENCY / 1e9} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
+        ax66.plot(gain_freq_range * 1e9, gain, '-', color='tab:orange')
+        ax66.set_ylim([None, None])
+        ax66.set_xlim([0, (2 * PUMP_FREQUENCY)])
 
-    ax66.set_title(f"SIGNAL GAIN [Db]")
-    ax66.set_xlabel('Frequency [GHz]')
+        ax66.set_title(f"SIGNAL GAIN [Db]")
+        ax66.set_xlabel('Frequency [GHz]')
 
     return [fig1, fig2,
             fig5, fig4,
@@ -129,9 +129,7 @@ def simulate(line_model):
     :return: matpltlib figures 1d list
     """
 
-    if line_model.type == "SIM_FILE":
-        print("here")
-        exit(1)
+
 
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     central_line_beta_d, floquet_transmission, gain_data = __simulate_floquet_line(line_model)
@@ -156,20 +154,27 @@ def __simulate_floquet_line(line_model):
 
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate()
 
-    resoultion = floquet_line.get_resolution()
-    unit_cell_length = floquet_line.get_unit_cell_length()
-    n_unitcells = inputs.n_repeated_cells
-    pump_frequency = inputs.pump_frequency
-    init_amplitudes = inputs.init_amplitudes
-    I_star = 1  # todo istar
 
-    print(n_unitcells, pump_frequency, resoultion, init_amplitudes)
 
-    gain, gain_freq_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells, frequency_range,
-                                                          pump_frequency, init_amplitudes, I_star,
-                                                          gamma_d, bloch_impedance)
 
-    gain_data = (gain, (gain_freq_range, pump_frequency, n_unitcells, init_amplitudes[2]))
+    gain_data = None
+    if inputs.calc_gain:
+        resoultion = floquet_line.get_resolution()
+        unit_cell_length = floquet_line.get_unit_cell_length()
+        n_unitcells = inputs.n_repeated_cells
+        pump_frequency = inputs.pump_frequency
+        init_amplitudes = inputs.init_amplitudes
+        I_star = 1  # todo istar
+
+
+
+        gain, gain_freq_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells, frequency_range,
+                                                              pump_frequency, init_amplitudes, I_star,
+                                                              gamma_d, bloch_impedance)
+
+        gain_data = (gain, (gain_freq_range, pump_frequency, n_unitcells, init_amplitudes[2]))
+
+        print(gain_data)
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
            central_line_beta_d, floquet_transmission, gain_data
