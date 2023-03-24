@@ -16,14 +16,17 @@ from matplotlib import pyplot as plt
 
 from simulation.floquet_line_models.floquet_line_builder import floquet_line_builder
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
-from simulation.utills.functions import beta_unfold
+from simulation.utills.functions import beta_unfold, RLGC_circuit_factors
 
 
 # ---------------------------- unit cell inputs from paper
 
 
 def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-             central_line_beta_d, floquet_transmission, gain_data):
+             central_line_beta_d, floquet_transmission, gain_data, unit_cell_len):
+    gamma_d = np.array(gamma_d)
+    bloch_impedance = np.array(bloch_impedance)
+
     floquet_alpha = np.real(gamma_d)
     floquet_beta = np.imag(gamma_d)
     floquet_r = np.real(bloch_impedance)
@@ -70,7 +73,6 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax22.legend(['r', 'x'])
     figs.append(fig2)
 
-
     # ------------------- BETA vs BETA UNFOLDED---------------------------------
 
     fig4, ax44 = plt.subplots()
@@ -96,14 +98,12 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax55[1].set_xlabel('Frequency [GHz]')
     figs.append(fig5)
 
-
     fig3, ax33 = plt.subplots()
     fig3.suptitle('Transmission')
     ax33.set_ylabel('α0d', color='tab:red')
     ax33.plot(frequency_range, floquet_transmission, color='tab:blue')
     ax33.tick_params(axis='y', labelcolor='tab:red')
     figs.append(fig3)
-
 
     # ----------- GAIN ---------
     fig6, ax66 = plt.subplots()
@@ -120,6 +120,33 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
         ax66.set_xlabel('Frequency [GHz]')
 
         figs.append(fig6)
+
+    # ----------- circute facotrs ---------
+    fig7, ax77 = plt.subplots()
+
+    R, L, G, C = RLGC_circuit_factors(gamma_d, bloch_impedance)
+    I = .2
+    w_nu = 2 * np.pi * frequency_range
+    EngTerm1 = np.abs(gamma_d ** 2 * I)
+    EngTerm2 = np.abs(C * L * w_nu ** 2 * I)
+    EngTerm3 = np.abs(C * R * w_nu * I)
+    EngTerm4 = np.abs(G * L * w_nu * I)
+    EngTerm5 = np.abs(R * G * I)
+    EngTerm6 = np.abs(L * G * w_nu / 3 * (I ** 3))
+    EngTerm7 = np.abs(L * C * w_nu ** 2 / 3 * (I ** 3))
+
+    ax77.plot(frequency_range, EngTerm1, color='darkslategray', label='$\gamma^2 I$')
+    ax77.plot(frequency_range, EngTerm2, '--', color='c', label='$CL_0\omega^2 I$', ls='--')
+    ax77.plot(frequency_range, EngTerm3, color='tab:orange', label='$CR\omega$ I')
+    ax77.plot(frequency_range, EngTerm4, '--', color='tab:red', label='$GL_0\omega I$')
+    ax77.plot(frequency_range, EngTerm5, color='tab:purple', label='$RG I$')
+    ax77.plot(frequency_range, EngTerm6, color='tab:brown', label='$GL_0 I^3 \omega/3$')
+    ax77.plot(frequency_range, EngTerm7, color='navy', label='$CL_0 I^3 \omega^2/3$')
+    ax77.set_xlabel('Frequency [GHz]')
+    ax77.set_yscale('log')
+    ax77.legend()
+
+    figs.append(fig7)
 
     return figs
 
@@ -141,13 +168,11 @@ def simulate(line_model):
     :return: matpltlib figures 1d list
     """
 
-
-
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-    central_line_beta_d, floquet_transmission, gain_data = __simulate_floquet_line(line_model)
+    central_line_beta_d, floquet_transmission, gain_data, unit_cell_len = __simulate_floquet_line(line_model)
 
     return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-           central_line_beta_d, floquet_transmission, gain_data)
+                    central_line_beta_d, floquet_transmission, gain_data, unit_cell_len)
 
 
 def __simulate_floquet_line(line_model):
@@ -166,9 +191,6 @@ def __simulate_floquet_line(line_model):
 
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate()
 
-
-
-
     gain_data = None
     if inputs.calc_gain:
         resoultion = floquet_line.get_resolution()
@@ -178,9 +200,8 @@ def __simulate_floquet_line(line_model):
         init_amplitudes = inputs.init_amplitudes
         I_star = 1  # todo istar
 
-
-
-        gain, gain_freq_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells, frequency_range,
+        gain, gain_freq_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
+                                                              frequency_range,
                                                               pump_frequency, init_amplitudes, I_star,
                                                               gamma_d, bloch_impedance)
 
@@ -189,4 +210,4 @@ def __simulate_floquet_line(line_model):
         print(gain_data)
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-           central_line_beta_d, floquet_transmission, gain_data
+           central_line_beta_d, floquet_transmission, gain_data, floquet_line.get_unit_cell_length()
