@@ -17,7 +17,7 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        # ---------------------------------- model_inputs MS
+        # ---------------------------------- inputs_containters MS
 
         self.layout().addWidget(QLabel("input a file"))
 

@@ -26,7 +26,7 @@ class ArtificialCPIInputsWidget(QtWidgets.QWidget):
         self.title.setFont(QFont('Arial', 28))
         self.layout().addWidget(self.title)
 
-        # ---------------------------------- model_inputs MS
+        # ---------------------------------- inputs_containters MS
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 4)

@@ -14,8 +14,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from simulation.floquet_line_models.floquet_line_builder import floquet_line_builder
+from simulation.floquet_line_models.floquet_line_builder import floquet_line_from_line_model
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
+from simulation.utills.constants import PI2
 from simulation.utills.functions import beta_unfold, RLGC_circuit_factors
 
 
@@ -109,31 +110,33 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     fig6, ax66 = plt.subplots()
     if gain_data:
         gain, gain_meta_data = gain_data
-        gain_freq_range, PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
+        pump_range,PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
+
         plt.suptitle(
             f"[Pump Freq: {PUMP_FREQUENCY / 1e9} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
-        ax66.plot(gain_freq_range * 1e9, gain, '-', color='tab:orange')
+        ax66.plot(pump_range*1E9, gain, '-', color='tab:orange')
         ax66.set_ylim([None, None])
         ax66.set_xlim([0, (2 * PUMP_FREQUENCY)])
-
         ax66.set_title(f"SIGNAL GAIN [Db]")
         ax66.set_xlabel('Frequency [GHz]')
-
         figs.append(fig6)
 
-    # ----------- circute facotrs ---------
+    # ----------- jav's RLGC circuit factors ---------
     fig7, ax77 = plt.subplots()
 
-    R, L, G, C = RLGC_circuit_factors(gamma_d, bloch_impedance)
-    I = .2
-    w_nu = 2 * np.pi * frequency_range
-    EngTerm1 = np.abs(gamma_d ** 2 * I)
-    EngTerm2 = np.abs(C * L * w_nu ** 2 * I)
-    EngTerm3 = np.abs(C * R * w_nu * I)
-    EngTerm4 = np.abs(G * L * w_nu * I)
+    # todo does jav use beta*d or just beta and do we unfold beta before putting in RLGC_circuit_factors
+
+    gamma_unfolded = beta_unfold(gamma_d)
+    R, L, G, C = RLGC_circuit_factors(gamma_unfolded, bloch_impedance)
+    I = .1
+    omega = PI2 * frequency_range
+    EngTerm1 = np.abs(gamma_unfolded ** 2 * I)
+    EngTerm2 = np.abs(C * L * omega ** 2 * I)
+    EngTerm3 = np.abs(C * R * omega * I)
+    EngTerm4 = np.abs(G * L * omega * I)
     EngTerm5 = np.abs(R * G * I)
-    EngTerm6 = np.abs(L * G * w_nu / 3 * (I ** 3))
-    EngTerm7 = np.abs(L * C * w_nu ** 2 / 3 * (I ** 3))
+    EngTerm6 = np.abs(L * G * omega / 3 * (I ** 3))
+    EngTerm7 = np.abs(L * C * omega ** 2 / 3 * (I ** 3))
 
     ax77.plot(frequency_range, EngTerm1, color='darkslategray', label='$\gamma^2 I$')
     ax77.plot(frequency_range, EngTerm2, '--', color='c', label='$CL_0\omega^2 I$', ls='--')
@@ -144,25 +147,18 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     ax77.plot(frequency_range, EngTerm7, color='navy', label='$CL_0 I^3 \omega^2/3$')
     ax77.set_xlabel('Frequency [GHz]')
     ax77.set_yscale('log')
-    ax77.legend()
-
+    ax77.legend(loc='lower right', ncol=2)
     figs.append(fig7)
 
+    # list of figures to display in GUI
     return figs
 
 
 def simulate(line_model):
     """
 
-    this function is called from the GUI code, and given a line model made from the GUI code, it will
+    this function is called from the GUI code, and given a line model made from the GUI, it will
     run the appropriate simulation for that line type
-
-    right now there is two ways it can go
-
-     1) HFSS_TOUCHSTONE_FILE: a touchstone file generated from hfss
-     2) or MS, CPW or ART-CPW floquet line that is being made from the GUI inputs
-
-
 
     :param line_model: from the GUI that holds all the user inputs from the GUI
     :return: matpltlib figures 1d list
@@ -171,14 +167,14 @@ def simulate(line_model):
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     central_line_beta_d, floquet_transmission, gain_data, unit_cell_len = __simulate_floquet_line(line_model)
 
-    return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
+    return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d,
                     central_line_beta_d, floquet_transmission, gain_data, unit_cell_len)
 
 
 def __simulate_floquet_line(line_model):
     """
 
-    #todo document and comments steps that hapen in this function
+    # todo document and comments steps that hapen in this function
     # todo model input checking and catching any errors raised
     # todo rename gamma_d and bloch_impedance to indicate its a list of bloch_impedance and gama_d
 
@@ -187,27 +183,26 @@ def __simulate_floquet_line(line_model):
     """
     # ----------------------- making the right floquet_line given GUI inputs -----------------
 
-    floquet_line, inputs = floquet_line_builder(line_model)
+    floquet_line, floquet_inputs = floquet_line_from_line_model(line_model)
 
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate()
 
+    # if gain was selected in GUI not not
     gain_data = None
-    if inputs.calc_gain:
+    if floquet_inputs.calc_gain:
         resoultion = floquet_line.get_resolution()
         unit_cell_length = floquet_line.get_unit_cell_length()
-        n_unitcells = inputs.n_repeated_cells
-        pump_frequency = inputs.pump_frequency
-        init_amplitudes = inputs.init_amplitudes
-        I_star = 1  # todo istar
+        n_unitcells = floquet_inputs.n_repeated_cells
+        pump_frequency = floquet_inputs.pump_frequency
+        init_amplitudes = floquet_inputs.init_amplitudes
+        I_star = 1  # todo other way to calculate i_star by alpha_k equation
 
-        gain, gain_freq_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
-                                                              frequency_range,
-                                                              pump_frequency, init_amplitudes, I_star,
-                                                              gamma_d, bloch_impedance)
+        gain,pump_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
+                                             frequency_range,
+                                             pump_frequency, init_amplitudes, I_star,
+                                             gamma_d, bloch_impedance)
 
-        gain_data = (gain, (gain_freq_range, pump_frequency, n_unitcells, init_amplitudes[2]))
-
-        print(gain_data)
+        gain_data = (gain, (pump_range,pump_frequency, n_unitcells, init_amplitudes[2]))
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
            central_line_beta_d, floquet_transmission, gain_data, floquet_line.get_unit_cell_length()

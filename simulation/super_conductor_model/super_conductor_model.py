@@ -3,6 +3,8 @@ BCS theory on conductivity
 """
 import cmath
 import math
+from functools import cache
+
 from scipy.integrate import quad
 from simulation.utills.constants import MU_0, PI2, BOLTZMANN_CONSTev, PI_DIV_2, PLANCK_CONSTev
 from simulation.utills.functions import ccoth
@@ -151,7 +153,7 @@ class SuperConductivity():
     def __conductivityNormalized(self, frequency: float, operation_temperature_k: float):
         return self.__sigma_N(self.__delta, frequency, operation_temperature_k)
 
-    # @cache
+    @cache
     def conductivity(self, frequency: float):
         '''
 
@@ -161,7 +163,7 @@ class SuperConductivity():
         return self.__sigma * self.__sigma_N(self.__delta, frequency * PLANCK_CONSTev, self.__op_temp_times_kb)
 
 
-    # @cache
+    @cache
     def surface_impedance_Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
 
         '''

@@ -22,7 +22,7 @@ class sim_file(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        # ---------------------------------- model_inputs MS
+        # ---------------------------------- inputs_containters MS
         self.file_name_display = QLabel("")
         self.layout().addWidget(self.file_name_display, 0, 0)
 

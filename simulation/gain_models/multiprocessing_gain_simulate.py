@@ -129,4 +129,4 @@ def simulate_gain_multiprocessing(resolution, unit_cell_length, n_repeated_unitc
         # list of lists of arguments for each frequency we want to simulate at
         power_gain = np.array(p.map(solve, func_args))
 
-    return power_gain, frequency_range
+    return power_gain,frequency_range

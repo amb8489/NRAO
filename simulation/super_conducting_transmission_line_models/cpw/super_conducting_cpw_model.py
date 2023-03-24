@@ -1,7 +1,7 @@
 import cmath
 import math
 
-from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
+from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import PI, K0, Z0
 from simulation.utills.functions import ellip_k
 

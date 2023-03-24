@@ -2,20 +2,20 @@
 this function makes a line model from the gui and returns a floquet line of the model type
 
 """
-from simulation.floquet_line_models.models.HFSS_line import hfss_touchstone_file_model
-from simulation.floquet_line_models.models.floquet_line_ARTIFICAL import SuperConductingFloquetLine_art
-from simulation.floquet_line_models.models.floquet_line_MS_CPW import SuperConductingFloquetLine
+from simulation.floquet_line_models.models.hfss_line import hfss_touchstone_file_model
+from simulation.floquet_line_models.models.floquet_line_art_cpw import SuperConductingFloquetLine_art
+from simulation.floquet_line_models.models.floquet_line_ms_cpw import SuperConductingFloquetLine
 from simulation.floquet_line_models.models.hfss_pre_sim_file_line import pre_sim_floquet_line
-from simulation.model_inputs.artificial_cpw_inputs import ArtificialCPWInputs
-from simulation.model_inputs.cpw_inputs import CPWInputs
-from simulation.model_inputs.hfss_touchstone_file_model_inputs import hfss_touchstone_file_model_inputs
-from simulation.model_inputs.micro_strip_inputs import MicroStripInputs
-from simulation.model_inputs.pre_sim_file_inputs import pre_sim_file_inputs
+from simulation.inputs_containters.artificial_cpw_inputs import ArtificialCPWInputs
+from simulation.inputs_containters.cpw_inputs import CPWInputs
+from simulation.inputs_containters.hfss_touchstone_file_model_inputs import hfss_touchstone_file_model_inputs
+from simulation.inputs_containters.micro_strip_inputs import MicroStripInputs
+from simulation.inputs_containters.pre_sim_file_inputs import pre_sim_file_inputs
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
-from simulation.transmission_line_models.artificial_cpw.super_conducting_artificial_cpw_model import \
+from simulation.super_conducting_transmission_line_models.artificial_cpw.super_conducting_artificial_cpw_model import \
     SuperConductingArtificialCPWLine
-from simulation.transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
-from simulation.transmission_line_models.micro_strip.super_conducting_micro_strip_model import \
+from simulation.super_conducting_transmission_line_models.cpw.super_conducting_cpw_model import SuperConductingCPWLine
+from simulation.super_conducting_transmission_line_models.micro_strip.super_conducting_micro_strip_model import \
     SuperConductingMicroStripModel
 from simulation.utills.constants import CPW_TYPE, MICRO_STRIP_TYPE, ARTIFICIAL_CPW
 from simulation.utills.functions import hertz_to_GHz
@@ -23,7 +23,7 @@ from simulation.utills.functions import hertz_to_GHz
 
 # todo refactor and document all
 
-def floquet_line_builder(line_model):
+def floquet_line_from_line_model(line_model):
     GUI_json_inputs = line_model.get_inputs()
 
     print(GUI_json_inputs)

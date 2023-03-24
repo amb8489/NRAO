@@ -4,8 +4,8 @@ import math
 import numpy as np
 import scipy.special as sp
 
-from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
-from simulation.transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import \
+from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
+from simulation.super_conducting_transmission_line_models.artificial_cpw.artificial_cpw_capacitance_models import \
     capacitance_model_selector
 from simulation.utills.constants import BOLTZMANN_CONSTev, PLANCK_CONST_REDUCEDev, PI, MU_0, SPEED_OF_LIGHT, epsilon_0, \
     PI2

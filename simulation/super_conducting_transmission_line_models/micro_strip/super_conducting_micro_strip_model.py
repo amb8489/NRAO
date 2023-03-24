@@ -1,7 +1,7 @@
 import cmath
 import numpy as np
 
-from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
+from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import SPEED_OF_LIGHT, K0, Z0
 
 '''

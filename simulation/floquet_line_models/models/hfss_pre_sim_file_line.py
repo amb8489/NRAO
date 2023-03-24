@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from simulation.floquet_line_models.models.abstract_floquet_line import floquet_base, floquet_abs
 from simulation.floquet_line_models.unit_cell import UnitCell, mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
-from simulation.transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
+from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import PI2, SPEED_OF_LIGHT
 from simulation.utills.functions import Transmission_Db, micro_meters_to_meters, beta_unfold, mult_mats, ABCD_Mat
 

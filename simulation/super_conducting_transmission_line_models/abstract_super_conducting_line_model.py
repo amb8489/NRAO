@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 class AbstractSCTL(ABC):
 
     # sc transmissioin line outputs
