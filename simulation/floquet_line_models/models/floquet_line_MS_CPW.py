@@ -27,12 +27,6 @@ class SuperConductingFloquetLine(floquet_abs, floquet_base):
         self.start_freq_GHz = start_freq_GHz
         self.end_freq_GHz = end_freq_GHz
 
-
-
-
-
-
-        self.IC = central_line_model.IC
         # ---------------------------- model of the Super conductor
 
         self.super_conductivity_model = super_conductivity_model
@@ -40,15 +34,14 @@ class SuperConductingFloquetLine(floquet_abs, floquet_base):
         # ---------------------------- unit cell inputs
         self.central_Line_width = central_line_width
 
-        # todo are these even being used in any calculations
         self.load_widths = load_widths
 
         # model of the dimensions for the floquet line
         self.unit_cell = UnitCell(unit_cell_length, D0, load_lengths, central_line_model,
                                   line_thickness, load_line_models)
 
-        self.target_pump_zone_start = 0
-        self.target_pump_zone_end = 0
+
+
 
     def get_unit_cell_length(self):
         return self.unit_cell.unit_cell_length
