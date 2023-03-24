@@ -4,7 +4,7 @@ from simulation.floquet_line_models.models.abstract_floquet_line import floquet_
 from simulation.utills.functions import Transmission_Db
 
 
-class hfss_touchstone_file_model(floquet_abs, floquet_base):
+class hfss_touchstone_floquet_line(floquet_abs, floquet_base):
 
     def __init__(self, hfss_touchstone_file_path, n_interp_points, unit_cell_length, n_repeated_unit_cells):
 
