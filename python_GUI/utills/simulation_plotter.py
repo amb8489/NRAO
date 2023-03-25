@@ -110,11 +110,11 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     fig6, ax66 = plt.subplots()
     if gain_data:
         gain, gain_meta_data = gain_data
-        pump_range,PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
+        pump_range, PUMP_FREQUENCY, n_unitcells, pump_current = gain_meta_data
 
         plt.suptitle(
             f"[Pump Freq: {PUMP_FREQUENCY / 1e9} GHz] [# cells: {n_unitcells}] [pump current: {pump_current.real}]")
-        ax66.plot(pump_range*1E9, gain, '-', color='tab:orange')
+        ax66.plot(pump_range * 1E9, gain, '-', color='tab:orange')
         ax66.set_ylim([None, None])
         ax66.set_xlim([0, (2 * PUMP_FREQUENCY)])
         ax66.set_title(f"SIGNAL GAIN [Db]")
@@ -187,7 +187,7 @@ def __simulate_floquet_line(line_model):
 
     frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate()
 
-    # if gain was selected in GUI not not
+    # only run if gain was selected in GUI
     gain_data = None
     if floquet_inputs.calc_gain:
         resoultion = floquet_line.get_resolution()
@@ -197,12 +197,12 @@ def __simulate_floquet_line(line_model):
         init_amplitudes = floquet_inputs.init_amplitudes
         I_star = 1  # todo other way to calculate i_star by alpha_k equation
 
-        gain,pump_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
-                                             frequency_range,
-                                             pump_frequency, init_amplitudes, I_star,
-                                             gamma_d, bloch_impedance)
+        gain, pump_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
+                                                         frequency_range,
+                                                         pump_frequency, init_amplitudes, I_star,
+                                                         gamma_d, bloch_impedance)
 
-        gain_data = (gain, (pump_range,pump_frequency, n_unitcells, init_amplitudes[2]))
+        gain_data = (gain, (pump_range, pump_frequency, n_unitcells, init_amplitudes[2]))
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
            central_line_beta_d, floquet_transmission, gain_data, floquet_line.get_unit_cell_length()

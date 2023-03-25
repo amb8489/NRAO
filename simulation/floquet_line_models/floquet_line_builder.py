@@ -41,8 +41,7 @@ def floquet_line_from_line_model(line_model):
                                                      micro_strip_inputs.normal_resistivity)
 
         # todo is this taking in both width and unit_cell_length??
-        central_line_model = SuperConductingMicroStripModel(micro_strip_inputs.height,
-                                                            micro_strip_inputs.central_line_width,
+        central_line_model = SuperConductingMicroStripModel(micro_strip_inputs.height, micro_strip_inputs.central_line_width,
                                                             micro_strip_inputs.line_thickness, micro_strip_inputs.er,
                                                             micro_strip_inputs.tangent_delta,
                                                             micro_strip_inputs.crit_current)
@@ -50,13 +49,11 @@ def floquet_line_from_line_model(line_model):
         load_line_models = [
 
             # todo is this taking in accont  width and unit_cell_length val not just width??
-            SuperConductingMicroStripModel(micro_strip_inputs.height, width, micro_strip_inputs.line_thickness,
-                                           micro_strip_inputs.er,
+            SuperConductingMicroStripModel(micro_strip_inputs.height, width, micro_strip_inputs.line_thickness, micro_strip_inputs.er,
                                            micro_strip_inputs.tangent_delta,
                                            micro_strip_inputs.crit_current) for width in micro_strip_inputs.load_widths]
 
-        floquet_line = SuperConductingFloquetLine(micro_strip_inputs.unit_cell_length, micro_strip_inputs.D0,
-                                                  micro_strip_inputs.load_D_vals,
+        floquet_line = SuperConductingFloquetLine(micro_strip_inputs.unit_cell_length, micro_strip_inputs.D0, micro_strip_inputs.load_D_vals,
                                                   load_line_models, central_line_model, super_conductivity_model,
                                                   micro_strip_inputs.central_line_width, micro_strip_inputs.load_widths,
                                                   micro_strip_inputs.line_thickness, micro_strip_inputs.start_freq_GHz,
@@ -97,11 +94,9 @@ def floquet_line_from_line_model(line_model):
         for line_len, S, WH, LH, WL, LL in art_cpw_inputs.line_dimensions:
             nfs = line_len // (LH + (2 * S) + LL)
             line_models.append(
-                SuperConductingArtificialCPWLine(LH, WH, LL, WL, S, nfs, art_cpw_inputs.er,
-                                                 art_cpw_inputs.line_thickness,
+                SuperConductingArtificialCPWLine(LH, WH, LL, WL, S, nfs, art_cpw_inputs.er, art_cpw_inputs.line_thickness,
                                                  art_cpw_inputs.height, super_conductivity_model, line_len))
-        floquet_line = SuperConductingFloquetLine_art(line_models, super_conductivity_model,
-                                                      art_cpw_inputs.line_thickness,
+        floquet_line = SuperConductingFloquetLine_art(line_models, super_conductivity_model, art_cpw_inputs.line_thickness,
                                                       art_cpw_inputs.start_freq_GHz, art_cpw_inputs.end_freq_GHz,
                                                       art_cpw_inputs.resoultion)
         return floquet_line, art_cpw_inputs
@@ -109,9 +104,10 @@ def floquet_line_from_line_model(line_model):
 
     elif model_type == "HFSS_TOUCHSTONE_FILE":
 
+
         hfss_s_inputs = hfss_touchstone_file_model_inputs(GUI_json_inputs)
 
-        # todo refacor this into hfss_touchstone_file_model_inputs
+        #todo refacor this into hfss_touchstone_file_model_inputs
         hfss_touchstone_file_path = GUI_json_inputs.get("hfss_touchstone_file_path")
         n_interpt_points = GUI_json_inputs.get("n_interpt_points")
         unit_cell_length = GUI_json_inputs.get("unit_cell_length")
@@ -120,18 +116,18 @@ def floquet_line_from_line_model(line_model):
         return hfss_touchstone_floquet_line(hfss_touchstone_file_path, n_interpt_points, unit_cell_length,
                                             n_repeated_cells), hfss_s_inputs
 
-    # todo rename to pre sim file
+    #todo rename to pre sim file
     elif model_type == "SIM_FILE":
+
+
 
         pre_sim_inputs = pre_sim_file_inputs(GUI_json_inputs)
 
         csv_data_list = line_model.csv_data
 
         floquet_line = pre_sim_floquet_line(csv_data_list, pre_sim_inputs.wl_microns, pre_sim_inputs.wu_microns,
-                                            pre_sim_inputs.Lu_microns, pre_sim_inputs.dimensions,
-                                            pre_sim_inputs.is_art_cpw_line,
-                                            pre_sim_inputs.start_freq, pre_sim_inputs.end_freq,
-                                            pre_sim_inputs.resolution,
+                                            pre_sim_inputs.Lu_microns, pre_sim_inputs.dimensions, pre_sim_inputs.is_art_cpw_line,
+                                            pre_sim_inputs.start_freq, pre_sim_inputs.end_freq, pre_sim_inputs.resolution,
                                             pre_sim_inputs.n_repeated_cells)
 
         return floquet_line, pre_sim_inputs

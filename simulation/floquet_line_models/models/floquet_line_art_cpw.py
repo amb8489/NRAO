@@ -47,8 +47,7 @@ class SuperConductingFloquetLine_art(floquet_abs, floquet_base):
         for segment_idx in range(len(self.line_models)):
             # 3) for each  line segment of unit cell make sub ABCD matrices
 
-            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,
-                                                                                            surface_impedance)
+            segment_gamma, segment_Zc = self.get_segment_gamma_and_characteristic_impedance(segment_idx, frequency,                                                                      surface_impedance)
             segment_abcd_mat = mk_ABCD_Mat(segment_Zc, segment_gamma, self.line_models[segment_idx].total_line_length)
             segment_abcd_mats.append(segment_abcd_mat)
             unit_cell_length += self.line_models[segment_idx].total_line_length
