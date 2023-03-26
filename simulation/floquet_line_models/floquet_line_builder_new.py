@@ -58,12 +58,15 @@ def floquet_line_from_line_model(line_model):
     # simulated by mathematical model
     if model_type in [MICRO_STRIP_TYPE, CPW_TYPE, ARTIFICIAL_CPW_TYPE]:
 
+
         super_conductivity_model = SuperConductivity(op_temp, crit_temp, pn, thickness)
 
         unit_cell_line_segments = []
         if model_type == MICRO_STRIP_TYPE:
+
+            print([ [length, width ] for length, width in lengths_widths])
             unit_cell_line_segments = [
-                MicroStripSC(width, length, height, thickness, er, tan_d, ic) for length, width in lengths_widths]
+                MicroStripSC(width, length, thickness,height, er, tan_d, ic) for length, width in lengths_widths]
 
         elif model_type == CPW_TYPE:
 

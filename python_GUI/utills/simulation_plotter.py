@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 from simulation.floquet_line_models.floquet_line_builder_new import floquet_line_from_line_model
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
 from simulation.utills.constants import PI2
-from simulation.utills.functions import beta_unfold, RLGC_circuit_factors
+from simulation.utills.functions import beta_unfold, RLGC_circuit_factors, hertz_to_GHz
 
 
 # ---------------------------- unit cell inputs from paper
@@ -183,26 +183,45 @@ def __simulate_floquet_line(line_model):
     """
     # ----------------------- making the right floquet_line given GUI inputs -----------------
 
-    floquet_line, floquet_inputs = floquet_line_from_line_model(line_model)
+    inputs = line_model.get_inputs()
+    frequecy_data = inputs.get("frequency_range", {})
+    gain_properties = inputs.get("gain_properties", {})
 
-    frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range()
+    start_frequency = hertz_to_GHz(float(frequecy_data.get("Start Frequency")))
+    end_frequency = hertz_to_GHz(float(frequecy_data.get("End Frequency")))
+    delta_f = hertz_to_GHz(float(frequecy_data.get("Resolution")))
+
+    should_calc_gain = bool(int(gain_properties.get('calc_gain')))
+    s_amp_0 = float(gain_properties.get('Signal Amplitude'))
+    i_amp_0 = float(gain_properties.get('Idler Amplitude'))
+    p_amp_0 = float(gain_properties.get('Pump Amplitude'))
+    pump_frequency = hertz_to_GHz(float(gain_properties.get('Pump Frequency')))
+    frequency_range = np.arange(start_frequency,end_frequency,delta_f)
+
+
+    floquet_line = floquet_line_from_line_model(line_model)
+
+    gamma_d, \
+    bloch_impedance, central_line_alpha_d, \
+    central_line_beta_d, floquet_transmission = \
+        floquet_line.simulate_over_frequency_range(frequency_range)
 
     # only run if gain was selected in GUI
-    gain_data = None
-    if floquet_inputs.calc_gain:
-        resoultion = floquet_line.get_resolution()
-        unit_cell_length = floquet_line.get_unit_cell_length()
-        n_unitcells = floquet_inputs.n_repeated_cells
-        pump_frequency = floquet_inputs.pump_frequency
-        init_amplitudes = floquet_inputs.init_amplitudes
-        I_star = 1  # todo other way to calculate i_star by alpha_k equation
 
-        gain, pump_range = simulate_gain_multiprocessing(resoultion, unit_cell_length, n_unitcells,
+    gain_data = None
+    if should_calc_gain:
+        unit_cell_length = floquet_line.get_unit_cell_length()
+        n_unit_cells = floquet_line.get_n_repeated_cells()
+        init_amplitudes = [s_amp_0 + 0j, i_amp_0 + 0j, p_amp_0 + 0j]
+        I_star = 1
+
+        res = len(frequency_range)
+        gain, pump_range = simulate_gain_multiprocessing(res, unit_cell_length, n_unit_cells,
                                                          frequency_range,
                                                          pump_frequency, init_amplitudes, I_star,
                                                          gamma_d, bloch_impedance)
 
-        gain_data = (gain, (pump_range, pump_frequency, n_unitcells, init_amplitudes[2]))
+        gain_data = (gain, (pump_range, pump_frequency, n_unit_cells, init_amplitudes[2]))
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
            central_line_beta_d, floquet_transmission, gain_data, floquet_line.get_unit_cell_length()

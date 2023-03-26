@@ -1,4 +1,5 @@
-import cmath
+import numpy as cmath
+
 from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import SPEED_OF_LIGHT, K0, Z0
 
@@ -38,13 +39,13 @@ class MicroStripSC(AbstractSCTL):
         p = 2 * b ** 2 - 1 + 2 * b * cmath.sqrt(b ** 2 - 1)
 
         ra = cmath.exp(
-            -1 - cmath.pi * sc_width / (2 * sc_height) - ((p + 1) / cmath.sqrt(p)) * cmath.atanh(
+            -1 - cmath.pi * sc_width / (2 * sc_height) - ((p + 1) / cmath.sqrt(p)) * cmath.arctanh(
                 1 / cmath.sqrt(p))) * 4 * p / (
                      p - 1)
 
         Lambda = cmath.sqrt(p) * (
                 cmath.pi * sc_width / (2 * sc_height) + (1 + cmath.log(4 / (p - 1))) * (p + 1) / (
-                2 * cmath.sqrt(p)) - 2 * cmath.atanh(
+                2 * cmath.sqrt(p)) - 2 * cmath.arctanh(
             1 / cmath.sqrt(p)))
         Gamma = max(Lambda, p)
         rb0 = Lambda + (p + 1) * cmath.log(Gamma) / 2
@@ -53,8 +54,8 @@ class MicroStripSC(AbstractSCTL):
         if w_h_ratio >= 5:
             rb = rb0
         else:
-            rb = rb0 - cmath.sqrt((rb0 - 1) * (rb0 - p)) + (p + 1) * cmath.atanh(cmath.sqrt((rb0 - p) / (rb0 - 1))) \
-                 - 2 * cmath.sqrt(p) * cmath.atanh(cmath.sqrt((rb0 - p) / (p * (rb0 - 1)))) + cmath.pi * cmath.sqrt(
+            rb = rb0 - cmath.sqrt((rb0 - 1) * (rb0 - p)) + (p + 1) * cmath.arctanh(cmath.sqrt((rb0 - p) / (rb0 - 1))) \
+                 - 2 * cmath.sqrt(p) * cmath.arctanh(cmath.sqrt((rb0 - p) / (p * (rb0 - 1)))) + cmath.pi * cmath.sqrt(
                 p) * sc_width / (
                          2 * sc_height)
 
@@ -69,13 +70,13 @@ class MicroStripSC(AbstractSCTL):
         p = 2 * b ** 2 - 1 + 2 * b * cmath.sqrt(b ** 2 - 1)
 
         ra = cmath.exp(
-            -1 - cmath.pi * sc_width / (2 * sc_height) - ((p + 1) / cmath.sqrt(p)) * cmath.atanh(
+            -1 - cmath.pi * sc_width / (2 * sc_height) - ((p + 1) / cmath.sqrt(p)) * cmath.arctanh(
                 1 / cmath.sqrt(p))) * 4 * p / (
                      p - 1)
 
         Lambda = cmath.sqrt(p) * (
                 cmath.pi * sc_width / (2 * sc_height) + (1 + cmath.log(4 / (p - 1))) * (p + 1) / (
-                2 * cmath.sqrt(p)) - 2 * cmath.atanh(
+                2 * cmath.sqrt(p)) - 2 * cmath.arctanh(
             1 / cmath.sqrt(p)))
         Gamma = max(Lambda, p)
         rb0 = Lambda + (p + 1) * cmath.log(Gamma) / 2
@@ -84,8 +85,8 @@ class MicroStripSC(AbstractSCTL):
         if w_h_ratio >= 5:
             rb = rb0
         else:
-            rb = rb0 - cmath.sqrt((rb0 - 1) * (rb0 - p)) + (p + 1) * cmath.atanh(cmath.sqrt((rb0 - p) / (rb0 - 1))) \
-                 - 2 * cmath.sqrt(p) * cmath.atanh(cmath.sqrt((rb0 - p) / (p * (rb0 - 1)))) + cmath.pi * cmath.sqrt(
+            rb = rb0 - cmath.sqrt((rb0 - 1) * (rb0 - p)) + (p + 1) * cmath.arctanh(cmath.sqrt((rb0 - p) / (rb0 - 1))) \
+                 - 2 * cmath.sqrt(p) * cmath.arctanh(cmath.sqrt((rb0 - p) / (p * (rb0 - 1)))) + cmath.pi * cmath.sqrt(
                 p) * sc_width / (
                          2 * sc_height)
 
