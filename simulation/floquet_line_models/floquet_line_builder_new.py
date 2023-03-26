@@ -7,23 +7,60 @@ from simulation.floquet_line_models.models.floquet_line import FloquetLine
 from simulation.hfss_sims.hfss_line import hfss_touchstone_floquet_line
 from simulation.hfss_sims.hfss_pre_sim_file_line import pre_sim_floquet_line
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
-from simulation.super_conducting_transmission_line_models.cpw.super_conducting_cpw_model import SC_CoplanarWaveguide
+from simulation.super_conducting_transmission_line_models.cpw.super_conducting_cpw_model import CoplanarWaveguideSC
 from simulation.super_conducting_transmission_line_models.micro_strip.super_conducting_micro_strip_model import \
-    SC_MicroStrip
+    MicroStripSC
 from simulation.utills.constants import CPW_TYPE, MICRO_STRIP_TYPE, ARTIFICIAL_CPW_TYPE
 
 
 def floquet_line_from_line_model(line_model):
     inputs = line_model.get_inputs()
 
-    print(inputs)
+    super_conductor = inputs["super_conductor_properties"]
+    line_dimensions = inputs["line_dimensions"]
+    frequency_range = inputs["frequency_range"]
+    gain_properties = inputs["gain_properties"]
+    lu_dimensions = inputs["lu_dimensions"]
+
+
+    er =  super_conductor.get()
+    height = super_conductor.get()
+    ts = super_conductor.get()
+    gt = super_conductor.get()
+    op_temp = super_conductor.get()
+    tc = super_conductor.get()
+    ic = super_conductor.get()
+    pn =  super_conductor.get()
+    tan_d = super_conductor.get()
+
+
+    lengths_widths =
+    cpw_S =
+
+    start_frequency =
+    end_frequency =
+    resolution =
+    n_repeated_cells =
+
+    should_calc_gain =
+    s_amp_0 =
+    i_amp_0 =
+    p_amp_0 =
+    pump_freq =
+
+    lu_S =
+    lu_WH =
+    lu_LH =
+    lu_LL =
+
 
     model_type = line_model.type
 
+    print(model_type, inputs)
 
-    #todo hook inputs up to this
-    #fix and simplify gui
+    # fix and simplify gui
 
+    # simulated by mathematical model
     if model_type in [MICRO_STRIP_TYPE, CPW_TYPE, ARTIFICIAL_CPW_TYPE]:
 
         super_conductivity_model = SuperConductivity(inputs.op_temp, inputs.crit_temp, inputs.normal_resistivity)
@@ -33,8 +70,8 @@ def floquet_line_from_line_model(line_model):
 
             unit_cell_line_segments = [
 
-                SC_MicroStrip(width, length, inputs.height, inputs.thickness,
-                              inputs.er, inputs.tangent_delta, inputs.crit_current)
+                MicroStripSC(width, length, inputs.height, inputs.thickness,
+                             inputs.er, inputs.tangent_delta, inputs.crit_current)
 
                 for length, width in inputs.lens_widths]
 
@@ -42,8 +79,8 @@ def floquet_line_from_line_model(line_model):
 
             # todo SC_CoplanarWaveguide and SC_MicroStrip need to checked
             unit_cell_line_segments = [
-                SC_CoplanarWaveguide(width, length, inputs.ground_spacing, inputs.line_thickness,
-                                     inputs.er, inputs.tangent_delta, inputs.crit_current)
+                CoplanarWaveguideSC(width, length, inputs.ground_spacing, inputs.line_thickness,
+                                    inputs.er, inputs.tangent_delta, inputs.crit_current)
 
                 for length, width in inputs.lens_widths]
 
@@ -55,14 +92,11 @@ def floquet_line_from_line_model(line_model):
             # have user define the Lu dimensions -- then the floquet lens by #lu's for each line
             # calcuate line lenght in SuperConductingArtificialCPWLine
 
-
             line_models = []
-
 
             raise NotImplementedError(
                 "ARTIFICIAL_CPW waiting on Patricio's new model to implement")
 
-        # todo 150 from GUI inputs
         return FloquetLine(unit_cell_line_segments, super_conductivity_model, inputs.get("n_repeated_unit_cells"))
     elif model_type == "HFSS_TOUCHSTONE_FILE":
 

@@ -16,7 +16,7 @@ CPW MODEL FOR TRANSMISSION LINE
 """
 
 
-class SC_CoplanarWaveguide(AbstractSCTL):
+class CoplanarWaveguideSC(AbstractSCTL):
 
     def __init__(self, line_width: float, length: float, s_width: float, thickness: float, er: float, tand: float,
                  crit_current):
@@ -25,7 +25,7 @@ class SC_CoplanarWaveguide(AbstractSCTL):
         self.s_width = s_width
         self.thickness = thickness
         self.line_width = line_width
-        self.length = length
+        self.line_length = length
         self.er = er
         self.efm = self.epsilon_fm(er, tand)
         self.g1 = self.__G1(line_width, s_width, thickness)
@@ -46,6 +46,12 @@ class SC_CoplanarWaveguide(AbstractSCTL):
     FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS DEPARTAMENTO DE INGENIERÍA ELÉCTRICA
     
     '''
+
+    def get_line_length(self):
+        return self.line_length
+
+    def get_line_width(self):
+        return self.line_width
 
     def __G2(self, g1, width, ground_spacing, thickness, thickness_sc):
         a = width / 2
@@ -114,12 +120,11 @@ class SC_CoplanarWaveguide(AbstractSCTL):
     def series_impedance_Z(self, g1, list_of_g2, list_of_Zs, f):
         assert len(list_of_Zs) == len(list_of_g2), f"should be an equal number of g2 and Zs"
         return (1j * (K0(f) * Z0) * g1) + (2 * sum(list_of_g2 * list_of_Zs))
-        #todo sum(list_of_g2* list_of_Zs) ? same as prev below
+        # todo sum(list_of_g2* list_of_Zs) ? same as prev below
         # return (1j * (K0(f) * Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
 
     # this will need to be refactored to take some list of Zs to be made general
     def get_gamma_Zc(self, frequency, surface_impedance):
-
         zs_ground = surface_impedance
         zs_line = surface_impedance
         surface_impedance_list = np.array([zs_line, zs_ground])

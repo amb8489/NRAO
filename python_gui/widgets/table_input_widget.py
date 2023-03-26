@@ -184,7 +184,6 @@ class TableInputWidget(QtWidgets.QWidget):
         selection = QItemSelection()
         model_index = model.index(idx, 0)
         selection.select(model_index, model_index)  # top left, bottom right identical
-
         mode = QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
         self.table.selectionModel().select(selection, mode)
 

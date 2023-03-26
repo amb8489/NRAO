@@ -64,7 +64,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         return self.tableInput.getWidths()
 
     def getValues(self):
-        values = {f"loads": self.tableInput.getData()}
+        values = {f"lengths_widths": self.tableInput.getData()}
         for input in self.inputs:
             values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
 
@@ -74,7 +74,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
         return self.inputs[1].get_value()
 
     def setValues(self, inputs):
-        loads = inputs['loads']
+        loads = inputs['lengths_widths']
 
         self.tableInput.setData(loads)
 

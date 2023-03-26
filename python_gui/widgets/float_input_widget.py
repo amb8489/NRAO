@@ -9,7 +9,7 @@ from PySide6 import QtWidgets
 # todo set names for each input to the names of the dict
 class WidgetDoubleInput(QtWidgets.QWidget):
     def __init__(self, Title, unit_type="", MaxVal=10 ** 10, MinVal=0, DefaultVal=0, onchange=None, widget_name=None,
-                 color=None,Decimals = 5,inc_amt = 1,*args,
+                 color=None, Decimals=5, inc_amt=1, *args,
                  **kwargs):
         super(WidgetDoubleInput, self).__init__(*args, **kwargs)
 
@@ -50,17 +50,16 @@ class WidgetDoubleInput(QtWidgets.QWidget):
     def getInputWidget(self):
         return self.input
 
-    def setValue(self, val):
+    def setValue(self, str_val):
         try:
-            self.input.setValue(float(val))
+            self.input.setValue(float(str_val))
         except:
             print("error setting val in float inputs")
 
-    def set_title(self,title):
+    def set_title(self, title):
         self.label.setText(title)
 
-
-    def setMinMaxRange(self,min,max):
+    def setMinMaxRange(self, min, max):
         self.input.setMinimum(min)
         self.input.setMaximum(max)
 
