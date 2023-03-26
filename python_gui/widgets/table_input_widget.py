@@ -107,7 +107,7 @@ class TableModel1(QtCore.QAbstractTableModel):
 
 class TableInputWidget(QtWidgets.QWidget):
 
-    def __init__(self, colName, onChange=None, row_name="",height = 100,title = "n loads",isarttanle = False):
+    def __init__(self, colName, onChange=None, row_name="",height = 100,title = "Number of Lines in Unit Cell",isarttanle = False):
         super().__init__()
         self.setLayout(QVBoxLayout())
 
@@ -125,8 +125,8 @@ class TableInputWidget(QtWidgets.QWidget):
         self.table.setSelectionBehavior(QTableView.SelectRows)
 
         # defualt materials_table data and materials_table model
-        defualt_n_loads = 2
-        data = [[1] * len(colName) for i in range(defualt_n_loads)]
+        defualt_n_lines = 3
+        data = [[1] * len(colName) for i in range(defualt_n_lines)]
 
         self.model = TableModel1(data, colName, self.onChange, row_name)
         self.table.setModel(self.model)

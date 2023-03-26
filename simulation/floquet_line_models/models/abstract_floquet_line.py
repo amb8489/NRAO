@@ -11,7 +11,7 @@ class floquet_abs(ABC):
 
     # sc transmissioin line outputs
     @abstractmethod
-    def simulate(self, *args, **kwargs):
+    def simulate_over_frequency_range(self, *args, **kwargs):
         '''
 
         :param args:
@@ -55,22 +55,17 @@ class floquet_base():
         ZB2 = - (B2 / (ADm - ADs2))
 
         # todo test that this works
-        return max(ZB, ZB2,key = lambda c:c.real)
+        return max(ZB, ZB2, key=lambda c: c.real)
 
     def gamma_d(self, ABCD_mat_2x2: [[float]]):
         A = ABCD_mat_2x2[0][0]
         D = ABCD_mat_2x2[1][1]
         return cmath.acosh(((A + D) / 2))
 
+    def ABCD_Mat(self,zc, gamma, line_length):
+        gl = gamma * line_length
+        coshGL = cmath.cosh(gl)
+        sinhGL = cmath.sinh(gl)
 
-
-    def FindPumpZone(self, peak_number: int, alphas: [float]):
-        x = np.array(alphas)
-        peaks, _ = find_peaks(x, prominence=.005)
-
-        if len(peaks) < peak_number:
-            self.target_pump_zone_start, self.target_pump_zone_end = 0, 0
-            return
-
-        y, self.target_pump_zone_start, self.target_pump_zone_end = \
-            list(zip(*peak_widths(x, peaks, rel_height=.95)[1:]))[max(peak_number - 1, 0)]
+        return [[coshGL, zc * sinhGL],
+                [(1 / zc) * sinhGL, coshGL]]

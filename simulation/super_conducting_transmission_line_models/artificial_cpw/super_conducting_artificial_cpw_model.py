@@ -174,7 +174,7 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
     def calc_capacitance(self, n, epsilon_r, sg, s1, gg, gendg, h: float, l: float, t: float, model_type: int = 1):
         return capacitance_model_selector(n, epsilon_r, sg, s1, gg, gendg, h, l, t, model_type=model_type)
 
-    def get_propagation_constant_characteristic_impedance(self, frequency: float, zs: complex = None):
+    def get_gamma_Zc(self, frequency: float, zs: complex = None):
 
         propagation_constant = self.propagation_constant(self.L1, self.L2, 2 * self.capacitance, PI2 * frequency)
 

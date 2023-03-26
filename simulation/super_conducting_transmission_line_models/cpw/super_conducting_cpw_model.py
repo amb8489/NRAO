@@ -1,6 +1,8 @@
 import cmath
 import math
 
+import numpy as np
+
 from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import PI, K0, Z0
 from simulation.utills.functions import ellip_k
@@ -14,21 +16,22 @@ CPW MODEL FOR TRANSMISSION LINE
 """
 
 
-class SuperConductingCPWLine(AbstractSCTL):
+class SC_CoplanarWaveguide(AbstractSCTL):
 
-    def __init__(self, line_width: float, s_width: float, thickness: float, er: float, tand: float,crit_current):
+    def __init__(self, line_width: float, length: float, s_width: float, thickness: float, er: float, tand: float,
+                 crit_current):
         self.ncpw = 2
 
         self.s_width = s_width
         self.thickness = thickness
         self.line_width = line_width
+        self.length = length
         self.er = er
         self.efm = self.epsilon_fm(er, tand)
         self.g1 = self.__G1(line_width, s_width, thickness)
         self.g2_line, self.g2_ground = self.__G2(self.g1, line_width, s_width, thickness, thickness)
         self.g2_list = [self.g2_ground, self.g2_line]
-        self.IC = crit_current * s_width*thickness
-
+        self.IC = crit_current * s_width * thickness
 
     '''
     Equations from:
@@ -110,15 +113,16 @@ class SuperConductingCPWLine(AbstractSCTL):
 
     def series_impedance_Z(self, g1, list_of_g2, list_of_Zs, f):
         assert len(list_of_Zs) == len(list_of_g2), f"should be an equal number of g2 and Zs"
-
-        return (1j * (K0(f) * Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
+        return (1j * (K0(f) * Z0) * g1) + (2 * sum(list_of_g2 * list_of_Zs))
+        #todo sum(list_of_g2* list_of_Zs) ? same as prev below
+        # return (1j * (K0(f) * Z0) * g1) + (2 * sum([g2_n * Zs_n for g2_n, Zs_n in zip(list_of_g2, list_of_Zs)]))
 
     # this will need to be refactored to take some list of Zs to be made general
-    def get_propagation_constant_characteristic_impedance(self, frequency, surface_impedance):
-        # todo what is surface_impedance for ground and line g2
+    def get_gamma_Zc(self, frequency, surface_impedance):
+
         zs_ground = surface_impedance
         zs_line = surface_impedance
-        surface_impedance_list = [zs_line, zs_ground]
+        surface_impedance_list = np.array([zs_line, zs_ground])
 
         Z = self.series_impedance_Z(self.g1, self.g2_list, surface_impedance_list, frequency)
         Y = self.shunt_admittance_Y(self.efm, self.g1, frequency)

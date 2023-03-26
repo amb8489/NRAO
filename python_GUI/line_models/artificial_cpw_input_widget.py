@@ -8,14 +8,14 @@ from python_gui.widgets.CPW_artifical_dimensions_input_widget import WidgetCPWAR
 from python_gui.widgets.frequency_range_input_widget import WidgetFrequencyInputs
 from python_gui.widgets.gain_input_widget import WidgetGainInputs
 from python_gui.widgets.super_conductor_input_widget import WidgetSCInputs
-from simulation.utills.constants import ARTIFICIAL_CPW
+from simulation.utills.constants import ARTIFICIAL_CPW_TYPE
 
 
 class ArtificialCPIInputsWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super(ArtificialCPIInputsWidget, self).__init__(*args, **kwargs)
-        self.type = ARTIFICIAL_CPW
+        self.type = ARTIFICIAL_CPW_TYPE
 
         self.setLayout(QGridLayout())
 
@@ -30,25 +30,31 @@ class ArtificialCPIInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 4)
-        self.dimensionsInputWidget = WidgetCPWARTDimensionsInputs(
-            ["Length [μm]", "S [μm]", "WH [μm]", "LH [μm]", "WL [μm]", "LL [μm]"],
+        self.Lu_dimensionsInputWidget = WidgetCPWARTDimensionsInputs(
+            ["S [μm]", "WH [μm]", "LH [μm]", "LL [μm]"],
             [unit_cell_length, central_line_width, D0,
              ground_spacing], row_name="Line")
-        self.layout().addWidget(self.dimensionsInputWidget, 3, 0, 3, 3)
+        self.layout().addWidget(self.Lu_dimensionsInputWidget, 3, 0,  2, 2)
 
-        imgPath = "images/cpw_diagram_img.png"
+
+        self.Fl_dimensionsInputWidget = WidgetCPWARTDimensionsInputs(
+            ["N repeated Lu segments","Line width"],
+            [], row_name="Line")
+        self.layout().addWidget(self.Fl_dimensionsInputWidget, 5, 0, 2,2)
+
+        imgPath = "images/Lu_diagram.png"
 
         pixmap = QtGui.QPixmap(imgPath)
-        pixmap = pixmap.scaled(800, 400, QtCore.Qt.KeepAspectRatio)
+        pixmap = pixmap.scaled(400, 200, QtCore.Qt.KeepAspectRatio)
         picture = QLabel(self)
         picture.setPixmap(pixmap)
         picture.setScaledContents(True)
 
-        self.layout().addWidget(picture, 6, 0, 3, 3)
+        self.layout().addWidget(picture, 5, 2, 3, 2)
         self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 3, 3, 1, 1)
+        self.layout().addWidget(self.freqRangeWidget, 3, 2, 1, 1)
         self.WidgetGainInputs = WidgetGainInputs()
-        self.layout().addWidget(self.WidgetGainInputs, 4, 3, 1, 1)
+        self.layout().addWidget(self.WidgetGainInputs, 4, 2, 1, 1)
         self.layout().setSpacing(5)
 
         # set widget color
@@ -62,14 +68,14 @@ class ArtificialCPIInputsWidget(QtWidgets.QWidget):
 
     def get_inputs(self):
         return {"SC": self.SCW.getValues(),
-                "Dimensions": self.dimensionsInputWidget.getValues(),
+                "Dimensions": self.Lu_dimensionsInputWidget.getValues(),
                 "Frequency Range": self.freqRangeWidget.getValues(),
                 "gain_models": self.WidgetGainInputs.getValues()
                 }
 
     def set_values(self, input: dict):
         self.SCW.setValues(input["SC"])
-        self.dimensionsInputWidget.setValues(input["Dimensions"])
+        self.Lu_dimensionsInputWidget.setValues(input["Dimensions"])
         self.freqRangeWidget.setValues(input["Frequency Range"])
         self.WidgetGainInputs.setValues(input["gain_models"])
 

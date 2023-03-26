@@ -2,11 +2,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from simulation.floquet_line_models.models.abstract_floquet_line import floquet_base, floquet_abs
-from simulation.floquet_line_models.unit_cell import UnitCell, mk_ABCD_Mat
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import PI2, SPEED_OF_LIGHT
-from simulation.utills.functions import Transmission_Db, micro_meters_to_meters, beta_unfold, mult_mats, ABCD_Mat
+from simulation.utills.functions import Transmission_Db, micro_meters_to_meters, beta_unfold, mult_mats
 
 # calc transmission todo add these inputs to UI
 impedance = 50
@@ -53,7 +52,7 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
     def simulate_at_frequency(self, frequency):
         pass
 
-    def simulate(self):
+    def simulate_over_frequency_range(self):
 
         frequency_range = np.linspace(self.start_frequency, self.end_frequency, self.resolution)
 
@@ -95,7 +94,7 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
             seg_abcds = []
             for j in range(len(unit_cell_segment_gammas)):
                 seg_abcds.append(
-                    ABCD_Mat(unit_cell_segment_zc[j], (unit_cell_segment_gammas[j]) * Vs[i], self.line_lengths[j]))
+                    self.ABCD_Mat(unit_cell_segment_zc[j], (unit_cell_segment_gammas[j]) * Vs[i], self.line_lengths[j]))
 
             unit_cell_mat = mult_mats(seg_abcds)
 
@@ -108,7 +107,7 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
             ZBs.append(ZB)
 
             CL_gamma = self.gamma_d(
-                ABCD_Mat(unit_cell_segment_zc[0], unit_cell_segment_gammas[0] * Vs[i], self.unit_cell_length))
+                self.ABCD_Mat(unit_cell_segment_zc[0], unit_cell_segment_gammas[0] * Vs[i], self.unit_cell_length))
 
             floquet_transmission = Transmission_Db(self.n_repeated_cells, impedance, ZB, floquet_gamma_d)
             floquet_transmissions.append(floquet_transmission)

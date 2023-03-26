@@ -45,7 +45,7 @@ class hfss_touchstone_floquet_line(floquet_abs, floquet_base):
 
         return unit_cell_ABCD_mats, simulated_frequency_range
 
-    def simulate(self):
+    def simulate_over_frequency_range(self):
 
         # could make this a pandas df
         gamma_d = []

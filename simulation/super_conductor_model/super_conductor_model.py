@@ -30,12 +30,12 @@ class SuperConductivity():
     ------------------------------functions to support conductivity ------------------------------
     '''
 
-    def __init__(self, operation_temperature_k: float, critical_temp_k: float, Pn: float):
+    def __init__(self, operation_temperature_k: float, critical_temp_k: float, Pn: float,thickness):
 
 
         self.crit_temp = critical_temp_k
         self.operation_temperature_k = operation_temperature_k
-
+        self.thickness = thickness
         self.__sigma = 1 / Pn
         self.__temp_div = operation_temperature_k / critical_temp_k
         self.__jPI2MU_0 = 1j * PI2 * MU_0
@@ -153,7 +153,8 @@ class SuperConductivity():
     def __conductivityNormalized(self, frequency: float, operation_temperature_k: float):
         return self.__sigma_N(self.__delta, frequency, operation_temperature_k)
 
-    @cache
+    # @cache
+
     def conductivity(self, frequency: float):
         '''
 
@@ -163,8 +164,8 @@ class SuperConductivity():
         return self.__sigma * self.__sigma_N(self.__delta, frequency * PLANCK_CONSTev, self.__op_temp_times_kb)
 
 
-    @cache
-    def surface_impedance_Zs(self, frequency: float, conductivity: float, sc_film_thickness: float):
+    # @cache
+    def surface_impedance_Zs(self, frequency: float):
 
         '''
 
@@ -174,5 +175,8 @@ class SuperConductivity():
         :param sc_film_thickness:  thickness of super conductor
         :return: surface impedance
         '''
+
+        conductivity = self.conductivity(frequency)
+
         return cmath.sqrt(self.__jPI2MU_0 * frequency / conductivity) * ccoth(
-            cmath.sqrt(self.__jPI2MU_0 * frequency * conductivity) * sc_film_thickness)
+            cmath.sqrt(self.__jPI2MU_0 * frequency * conductivity) * self.thickness)

@@ -14,7 +14,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from simulation.floquet_line_models.floquet_line_builder import floquet_line_from_line_model
+from simulation.floquet_line_models.floquet_line_builder_new import floquet_line_from_line_model
 from simulation.gain_models.multiprocessing_gain_simulate import simulate_gain_multiprocessing
 from simulation.utills.constants import PI2
 from simulation.utills.functions import beta_unfold, RLGC_circuit_factors
@@ -185,7 +185,7 @@ def __simulate_floquet_line(line_model):
 
     floquet_line, floquet_inputs = floquet_line_from_line_model(line_model)
 
-    frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate()
+    frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range()
 
     # only run if gain was selected in GUI
     gain_data = None

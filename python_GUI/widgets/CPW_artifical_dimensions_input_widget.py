@@ -13,7 +13,7 @@ from PySide6 import QtWidgets
 
 class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, column_names, input_names, row_name="Load", line_input_title = "Number of loads",*args, **kwargs):
+    def __init__(self, column_names, input_names, row_name="Load", line_input_title = "Number of Lines in Unit Cell",*args, **kwargs):
         super(WidgetCPWARTDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -75,20 +75,6 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
     def update_line_data(self):
 
-        # for display in self.displays:
-        #     display.deleteLater()
-        # self.displays = []
-        #
-        # for i, row in enumerate(self.tableInput.getData()):
-        #     Lu = float(row[1]) * 2 + float(row[3]) + float(row[5])
-        #     line_len = (float(row[0]) // Lu) * Lu
-        #
-        #     display_widget = QLabel(f"Line {i + 1} true length: {line_len} -- n sections: {line_len // Lu} --  lu {Lu}")
-        #
-        #     x = i % 2
-        #     y = i // 2
-        #     self.layout().addWidget(display_widget, 2 + y, x)
-        #     self.displays.append(display_widget)
         pass
 
     def get_central_line_width(self):

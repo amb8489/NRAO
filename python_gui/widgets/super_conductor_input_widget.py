@@ -39,7 +39,9 @@ class WidgetSCInputs(QtWidgets.QWidget):
 
         # set widget color
         self.setBackGroundColor(SUPER_CONDUCTOR_WIDGET_COLOR)
-        self.layout().setSpacing(5)
+
+        self.layout().setSpacing(0)
+        # self.setMinimumHeight(250)
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

@@ -19,15 +19,6 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-        # self.materials_table = WidgetMaterialsSelect()
-        # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
-
-        # self.toggel_materials_table_button = QPushButton(text='Hide materials table',
-        #                                                  objectName='toggel_materials_table_button',
-        #                                                  clicked=self.toggel_materials_table)
-        # self.layout().addWidget(self.toggel_materials_table_button, 0, 1)
-        # self.layout().addWidget(self.materials_table, 0, 0, 2, 2)
-
         # settings title
         self.title = QLabel("")
         self.title.setMaximumHeight(40)
@@ -38,9 +29,8 @@ class CPWInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["unit_cell_length [μm]", "Widths [μm]"],
-                                                                 [unit_cell_length, central_line_width, D0,
-                                                                  ground_spacing])
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Line Length [μm]", " Line Width [μm]"],
+                                                                 [ground_spacing])
         self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
 
         imgPath = "images/cpw_diagram_img.png"

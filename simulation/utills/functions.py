@@ -4,8 +4,6 @@ import numpy as np
 import scipy
 
 
-
-
 # Computes the hyperbolic tangent of 𝑥 if x is floquet_alpha complex number
 def ccoth(x):
     return 1 / cmath.tanh(x)
@@ -31,14 +29,6 @@ def micro_ohms_cm_to_ohms_m(micro_ohms):
     return micro_ohms / 100000000
 
 
-# matrix multiplication of 2x2 matrix
-def mult_2x2_mat(mat1, mat2):
-    # definition of matrix mult for 2x2 * 2x2
-    return [
-        [mat1[0][0] * mat2[0][0] + mat1[0][1] * mat2[1][0], mat1[0][0] * mat2[0][1] + mat1[0][1] * mat2[1][1]],
-        [mat1[1][0] * mat2[0][0] + mat1[1][1] * mat2[1][0], mat1[1][0] * mat2[0][1] + mat1[1][1] * mat2[1][1]]]
-
-
 # matrix multiplication of a list of 2x2 matrix
 def mult_mats(mats):
     # input is an array of 2x2 matrices
@@ -47,45 +37,11 @@ def mult_mats(mats):
     res = mats[0]
     for mat in mats[1:]:
         res = [
+            # two by two matrix mult
             [res[0][0] * mat[0][0] + res[0][1] * mat[1][0], res[0][0] * mat[0][1] + res[0][1] * mat[1][1]],
             [res[1][0] * mat[0][0] + res[1][1] * mat[1][0], res[1][0] * mat[0][1] + res[1][1] * mat[1][1]]
         ]
     return res
-
-
-
-def ABCD_Mat(zc, gamma, line_length):
-    gl = gamma * line_length
-    coshGL = cmath.cosh(gl)
-    sinhGL = cmath.sinh(gl)
-
-    return [[coshGL, zc * sinhGL],
-            [(1 / zc) * sinhGL, coshGL]]
-
-
-def bloch_impedance_Zb(ABCD_mat_2x2: [[float]]):
-    A = ABCD_mat_2x2[0][0]
-    B = ABCD_mat_2x2[0][1]
-    D = ABCD_mat_2x2[1][1]
-
-    ADs2 = cmath.sqrt(((A + D) ** 2) - 4)
-    ADm = A - D
-
-    B2 = 2 * B
-
-    ZB = - (B2 / (ADm + ADs2))
-
-    if ZB.real<0:
-        return - (B2 / (ADm - ADs2))
-    return ZB
-
-
-def gamma_d(ABCD_mat_2x2: [[float]]):
-    A = ABCD_mat_2x2[0][0]
-    D = ABCD_mat_2x2[1][1]
-    return cmath.acosh(((A + D) / 2))
-
-
 
 
 #  elliptic integral redefined to contemplate Jochems change
@@ -107,9 +63,10 @@ def beta_unfold(lst):
     return lst
 
 
-
 # debug print function that can be turned on and off using DEBUG_FLAG
 DEBUG_FLAG = False
+
+
 def printDb(*args):
     if DEBUG_FLAG:
         print("DEBUG: ", *args)
@@ -137,7 +94,6 @@ def RLGC_circuit_factors(gammas_d: [complex], Zbs: [complex]):
     gammas_d = np.array(gammas_d)
     Zbs = np.array(Zbs)
 
-
     Z = gammas_d * Zbs
     Y = gammas_d / Zbs
 
@@ -147,6 +103,7 @@ def RLGC_circuit_factors(gammas_d: [complex], Zbs: [complex]):
     G = np.real(Y)
     C = np.imag(Y)
     return R, L, G, C
+
 
 # converts a number to Decibel
 def toDb(number):

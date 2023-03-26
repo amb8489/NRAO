@@ -29,8 +29,8 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.SCW = WidgetSCInputs()
         self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["unit_cell_length [μm]", "Widths [μm]"],
-                                                                 [unit_cell_length, central_line_width, D0])
+        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Line Length [μm]", "Line Width [μm]"],
+                                                                 [])
         imgPath = "images/micro_strip_diagram_img.png"
 
         pixmap = QtGui.QPixmap(imgPath)
