@@ -13,7 +13,8 @@ from PySide6 import QtWidgets
 
 class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
 
-    def __init__(self, column_names, input_names, row_name="Load", line_input_title = "Number of Lines in Unit Cell",*args, **kwargs):
+    def __init__(self, column_names, input_names, row_name="Load", line_input_title="Number of Lines in Unit Cell",
+                 *args, **kwargs):
         super(WidgetCPWARTDimensionsInputs, self).__init__(*args, **kwargs)
 
         self.HideLine = False
@@ -27,8 +28,9 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
-        # materials_table for load widths and lengths inputs
-        self.tableInput = TableInputWidget(column_names, onChange=self.update_line_data, row_name=row_name,height=200,title=line_input_title,isarttanle = True)
+        # todo isarttanle = True refacote out ? whats the difff now ?
+        self.tableInput = TableInputWidget(column_names, row_name=row_name, height=200, title=line_input_title,
+                                           isarttanle=True)
 
         self.layout().addWidget(self.tableInput, 0, 0, 3, 2, Qt.AlignTop)
 
@@ -36,8 +38,6 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         self.container = QVBoxLayout()
         self.inputs = []
         self.displays = []
-
-
 
         # set widget color
         self.setBackGroundColor(DIMS_WIDGET_COLOR)
@@ -48,42 +48,22 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def getLengths(self):
-        return self.tableInput.getLengths()
-
-    def getWidths(self):
-        return self.tableInput.getWidths()
-
     def getValues(self):
-        values = {f"loads": self.tableInput.getData()}
+        values = {f"lengths_widths": self.tableInput.getData()}
         for input in self.inputs:
             values[input.getTitleAndValue()[0]] = input.getTitleAndValue()[1]
 
         return values
 
-
-
-
-
-
-
-
-
-
-
-
-
     def update_line_data(self):
-
         pass
 
     def get_central_line_width(self):
         return self.inputs[1].get_value()
 
     def setValues(self, inputs):
-        loads = inputs['loads']
-
-        self.tableInput.setData(loads)
+        lens_widths = inputs['lengths_widths']
+        self.tableInput.setData(lens_widths)
 
         for i, input in enumerate(self.inputs):
             input.setValue(inputs[input.objectName()])

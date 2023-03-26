@@ -107,26 +107,26 @@ class MainWindow(QMainWindow):
         self.Mainlayout.addWidget(self.title)
 
         # ---------------------------------- input models
-        self.Micro_strip_inputs_widget = MicroStripInputsWidget()
-        self.CPW_inputs_widget = CPWInputsWidget()
-        self.Atrifical_CPW_inputs_widget = ArtificialCPIInputsWidget()
-        self.S_matrix_inputs_widget = SMatrixInputsWidget()
-        self.sim_file = sim_file()
+        self.micro_strip = MicroStripInputsWidget()
+        self.cpw_input = CPWInputsWidget()
+        self.art_cpw_input = ArtificialCPIInputsWidget()
+        self.hfss_sim_s2p_file = SMatrixInputsWidget()
+        self.pre_sim_file = sim_file()
 
-        self.Micro_strip_inputs_widget.setFixedWidth(1250)
-        self.Mainlayout.addWidget(self.Micro_strip_inputs_widget)
-        self.Mainlayout.addWidget(self.CPW_inputs_widget)
-        self.Mainlayout.addWidget(self.Atrifical_CPW_inputs_widget)
-        self.Mainlayout.addWidget(self.S_matrix_inputs_widget)
-        self.Mainlayout.addWidget(self.sim_file)
+        self.micro_strip.setFixedWidth(1250)
+        self.Mainlayout.addWidget(self.micro_strip)
+        self.Mainlayout.addWidget(self.cpw_input)
+        self.Mainlayout.addWidget(self.art_cpw_input)
+        self.Mainlayout.addWidget(self.hfss_sim_s2p_file)
+        self.Mainlayout.addWidget(self.pre_sim_file)
 
 
         self.line_model = None
-        self.line_models = {'Micro Strip': self.Micro_strip_inputs_widget,
-                            'CPW': self.CPW_inputs_widget,
-                            'Artificial CPW': self.Atrifical_CPW_inputs_widget,
-                            'HFSS FILE UPLOAD': self.S_matrix_inputs_widget,
-                            'HFSS Simulated':self.sim_file
+        self.line_models = {'Micro Strip': self.micro_strip,
+                            'CPW': self.cpw_input,
+                            'Artificial CPW': self.art_cpw_input,
+                            'HFSS FILE UPLOAD': self.hfss_sim_s2p_file,
+                            'HFSS Simulated':self.pre_sim_file
                             }
         self.init()
 
@@ -153,9 +153,9 @@ class MainWindow(QMainWindow):
         self.Mainlayout.insertStretch(-1, 1)
 
         # start off with self.sim_file showing first
-        self.showModel(self.sim_file)
+        self.showModel(self.micro_strip)
 
-        self.setWindowTitle("TKIPA DESIGN TOOL")
+        self.setWindowTitle("T.K.I.P.A DESIGN TOOL")
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(BASE_COLOR))
         self.setPalette(palette)

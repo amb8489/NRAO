@@ -19,7 +19,6 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.setLayout(QGridLayout())
 
-
         self.title = QLabel("")
         self.title.setMaximumHeight(40)
         self.title.setFont(QFont('Arial', 28))
@@ -27,10 +26,9 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         # ---------------------------------- inputs_containters MS
 
-        self.SCW = WidgetSCInputs()
-        self.layout().addWidget(self.SCW, 2, 0, 1, 2)
-        self.dimensionsInputWidget = WidgetFLineDimensionsInputs(["Line Length [μm]", "Line Width [μm]"],
-                                                                 [])
+        self.super_conductor_inputs = WidgetSCInputs()
+        self.layout().addWidget(self.super_conductor_inputs, 2, 0, 1, 2)
+        self.dimensions_inputs = WidgetFLineDimensionsInputs(["Line Length [μm]", "Line Width [μm]"],[])
         imgPath = "images/micro_strip_diagram_img.png"
 
         pixmap = QtGui.QPixmap(imgPath)
@@ -41,11 +39,11 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
 
         self.layout().addWidget(picture, 5, 0, 1, 1)
 
-        self.layout().addWidget(self.dimensionsInputWidget, 3, 1, 2, 1)
-        self.freqRangeWidget = WidgetFrequencyInputs()
-        self.layout().addWidget(self.freqRangeWidget, 4, 0)
-        self.WidgetGainInputs = WidgetGainInputs()
-        self.layout().addWidget(self.WidgetGainInputs, 3, 0)
+        self.layout().addWidget(self.dimensions_inputs, 3, 1, 2, 1)
+        self.freq_range_inputs = WidgetFrequencyInputs()
+        self.layout().addWidget(self.freq_range_inputs, 4, 0)
+        self.gain_inputs = WidgetGainInputs()
+        self.layout().addWidget(self.gain_inputs, 3, 0)
 
         # set widget color
         self.setBackGroundColor(BASE_COLOR)
@@ -57,18 +55,19 @@ class MicroStripInputsWidget(QtWidgets.QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-    def get_inputs(self):
-        return {"SC": self.SCW.getValues(),
-                "Dimensions": self.dimensionsInputWidget.getValues(),
-                "Frequency Range": self.freqRangeWidget.getValues(),
-                "gain_models": self.WidgetGainInputs.getValues()
-                }
-
     def set_setting(self, setting: GUI_setting):
         self.title.setText(f"Current setting: {setting.name}")
 
-    def set_values(self, input: dict):
-        self.SCW.setValues(input["SC"])
-        self.dimensionsInputWidget.setValues(input["Dimensions"])
-        self.freqRangeWidget.setValues(input["Frequency Range"])
-        self.WidgetGainInputs.setValues(input["gain_models"])
+    def get_inputs(self):
+        return {
+            "super_conductor_properties": self.super_conductor_inputs.getValues(),
+            "line_dimensions": self.dimensions_inputs.getValues(),
+            "frequency_range": self.freq_range_inputs.getValues(),
+            "gain_properties": self.gain_inputs.getValues()
+        }
+
+    def set_values(self, inputs: dict):
+        self.super_conductor_inputs.setValues(inputs.get("super_conductor_properties"))
+        self.dimensions_inputs.setValues(inputs.get("line_dimensions"))
+        self.freq_range_inputs.setValues(inputs.get("frequency_range"))
+        self.gain_inputs.setValues(inputs.get("gain_properties"))

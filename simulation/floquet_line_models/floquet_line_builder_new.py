@@ -16,43 +16,55 @@ from simulation.utills.constants import CPW_TYPE, MICRO_STRIP_TYPE, ARTIFICIAL_C
 def floquet_line_from_line_model(line_model):
     inputs = line_model.get_inputs()
 
-    super_conductor = inputs["super_conductor_properties"]
-    line_dimensions = inputs["line_dimensions"]
-    frequency_range = inputs["frequency_range"]
-    gain_properties = inputs["gain_properties"]
-    lu_dimensions = inputs["lu_dimensions"]
+    super_conductor = inputs.get("super_conductor_properties", {})
+    line_dimensions = inputs.get("line_dimensions", {})
+    frequency_range = inputs.get("frequency_range", {})
+    gain_properties = inputs.get("gain_properties", {})
+    lu_dimensions = inputs.get("lu_dimensions", {})
+
+    er = super_conductor.get("Er")
+    height = super_conductor.get("Height")
+    ts = super_conductor.get("Ts")
+    gt = super_conductor.get("Ground Thickness")
+    op_temp = super_conductor.get("Super Conductor Operation Temperature")
+    tc = super_conductor.get("Super Conductor Critical Temperature")
+    ic = super_conductor.get("Super Conductor Critical Current")
+    pn = super_conductor.get("Super Conductor Normal Resistivity")
+    tan_d = super_conductor.get("Super Conductor Tangent Delta")
+
+    print(f"er:{er} height:{height} ts:{ts} gt:{gt} op_temp:{op_temp} tc:{tc} ic:{ic} pn:{pn} tan_d:{tan_d}")
+
+    lengths_widths = line_dimensions.get("lengths_widths")
+    cpw_S = line_dimensions.get("S")
+
+    print(f"lengths_widths:{lengths_widths} cpw_S:{cpw_S}")
+
+    lu_S = lu_dimensions.get("lu_S")
+    lu_WH = lu_dimensions.get("lu_WH")
+    lu_LH = lu_dimensions.get("lu_LH")
+    lu_LL = lu_dimensions.get("lu_LL")
+
+    print(f"lu_S:{lu_S} lu_WH:{lu_WH} lu_LH:{lu_LH} lu_LL:{lu_LL}")
 
 
-    er =  super_conductor.get()
-    height = super_conductor.get()
-    ts = super_conductor.get()
-    gt = super_conductor.get()
-    op_temp = super_conductor.get()
-    tc = super_conductor.get()
-    ic = super_conductor.get()
-    pn =  super_conductor.get()
-    tan_d = super_conductor.get()
 
 
-    lengths_widths =
-    cpw_S =
+    start_frequency = frequency_range.get("Start Frequency")
+    end_frequency = frequency_range.get("End Frequency")
+    resolution = frequency_range.get("Resolution")
+    n_repeated_cells = frequency_range.get("n_repeated_cells")
 
-    start_frequency =
-    end_frequency =
-    resolution =
-    n_repeated_cells =
+    print(f"start_frequency:{start_frequency} end_frequency:{end_frequency} resolution:{resolution} n_repeated_cells:{n_repeated_cells}")
 
-    should_calc_gain =
-    s_amp_0 =
-    i_amp_0 =
-    p_amp_0 =
-    pump_freq =
 
-    lu_S =
-    lu_WH =
-    lu_LH =
-    lu_LL =
+    should_calc_gain = bool(int(gain_properties.get('calc_gain')))
+    s_amp_0 = gain_properties.get('Signal Amplitude')
+    i_amp_0 = gain_properties.get('Idler Amplitude')
+    p_amp_0 = gain_properties.get('Pump Amplitude')
+    pump_freq = gain_properties.get('Pump Frequency')
+    print(f"should_calc_gain:{should_calc_gain} s_amp_0:{s_amp_0} i_amp_0:{i_amp_0} p_amp_0:{p_amp_0} pump_freq:{pump_freq}")
 
+    exit(1)
 
     model_type = line_model.type
 
