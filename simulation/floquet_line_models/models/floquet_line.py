@@ -28,8 +28,13 @@ class FloquetLine(floquet_abs, floquet_base):
         self.__unit_cell_segments = line_models
         self.__unit_cell_length = sum([line.get_length() for line in line_models])
 
+        print([line.get_length() for line in line_models])
+
     def get_unit_cell_length(self):
         return self.__unit_cell_length
+
+    def get_n_repeated_cells(self):
+        return self.__n_repeated_cells
 
     def __simulate_at_frequency(self, frequency):
 
@@ -42,12 +47,9 @@ class FloquetLine(floquet_abs, floquet_base):
         # get the sub ABCD mats for each line in the unit cell
         segment_abcd_mats = []
 
-        # todo vectorize?
         for idx in range(len(self.__unit_cell_segments)):
             # 3) for each  line segment of unit cell make sub ABCD matrices
-
-            segment_gamma, segment_Zc = self.get_segment_gamma_and_Zc(idx, frequency,
-                                                                      surface_impedance)
+            segment_gamma, segment_Zc = self.__unit_cell_segments[idx].get_gamma_Zc(frequency, surface_impedance)
             segment_abcd_mat = self.ABCD_Mat(segment_Zc, segment_gamma, self.__unit_cell_segments[idx].get_length())
             segment_abcd_mats.append(segment_abcd_mat)
 
@@ -63,7 +65,7 @@ class FloquetLine(floquet_abs, floquet_base):
         floquet_transmission = Transmission_Db(self.__n_repeated_cells, 50, ZB, floquet_gamma_d)
 
         # calculate central line alpha and beta
-        central_line_gamma, central_line_Zc = self.get_segment_gamma_and_Zc(0, frequency, surface_impedance)
+        central_line_gamma, central_line_Zc = self.__unit_cell_segments[0].get_gamma_Zc(frequency, surface_impedance)
         central_line_ABCD = self.ABCD_Mat(central_line_Zc, central_line_gamma, self.__unit_cell_length)
 
         central_line_gamma = self.gamma_d(central_line_ABCD)
@@ -72,17 +74,13 @@ class FloquetLine(floquet_abs, floquet_base):
 
         return floquet_gamma_d, ZB, alpha_d_CL, beta_d_CL, floquet_transmission
 
-    def get_segment_gamma_and_Zc(self, segment_idx, frequency, zs):
-        return self.__unit_cell_segments[segment_idx].get_propagation_constant_characteristic_impedance(
-            frequency, zs)
 
     # TODO move this into base class ???
-    def simulate_over_frequency_range(self, start_frequency: float, end_frequency: float, delta_frequency: int):
+    def simulate_over_frequency_range(self, frequency_range:[float]):
         '''
 
-        :param start_frequency: frequency to start simulating at
-        :param end_freq_GHz: frequency to end simulating at
-        :param delta_f: step amount between simulation frequency's
+        :param frequency_range: list of frequencsy to evaluate at
+
 
         :return: list of siulated outputs
         '''
@@ -97,8 +95,6 @@ class FloquetLine(floquet_abs, floquet_base):
 
         # ---------------------------- simulation over frequency's-------------------
 
-        frequency_range = np.arange(start_frequency, end_frequency, delta_frequency)
-
         for frequency in frequency_range:
             floquet_gamma_d, floquet_bloch_impedance, alpha_d_CL, beta_d_CL, transmission = self.__simulate_at_frequency(
                 frequency)
@@ -108,4 +104,4 @@ class FloquetLine(floquet_abs, floquet_base):
             bloch_impedance.append(floquet_bloch_impedance)
             floquet_transmission.append(transmission)
 
-        return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission
+        return gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission

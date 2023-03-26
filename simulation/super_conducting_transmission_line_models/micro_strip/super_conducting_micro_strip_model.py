@@ -26,10 +26,10 @@ class MicroStripSC(AbstractSCTL):
         self.__g1 = self.__G1(self.__line_width, self.__sc_height, self.__sc_thickness)
         self.__g2 = self.__G2(self.__line_width, self.__sc_height, self.__sc_thickness, self.__g1)
 
-    def get_line_length(self):
+    def get_length(self):
         return self.__line_length
 
-    def get_line_width(self):
+    def get_width(self):
         return self.__line_width
 
     def __G1(self, sc_width, sc_height, sc_thickness):

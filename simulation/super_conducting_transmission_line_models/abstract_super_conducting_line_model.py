@@ -6,14 +6,14 @@ class AbstractSCTL(ABC):
 
 
     @abstractmethod
-    def get_line_length(self):
+    def get_length(self):
         '''
         :return: the length of the line
         '''
 
 
     @abstractmethod
-    def get_line_width(self):
+    def get_width(self):
         '''
         :return: the width of the line
         '''

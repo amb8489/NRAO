@@ -5,7 +5,7 @@ from simulation.floquet_line_models.models.abstract_floquet_line import floquet_
 from simulation.super_conductor_model.super_conductor_model import SuperConductivity
 from simulation.super_conducting_transmission_line_models.abstract_super_conducting_line_model import AbstractSCTL
 from simulation.utills.constants import PI2, SPEED_OF_LIGHT
-from simulation.utills.functions import Transmission_Db, micro_meters_to_meters, beta_unfold, mult_mats
+from simulation.utills.functions import Transmission_Db, microns_to_meters, beta_unfold, mult_mats
 
 # calc transmission todo add these inputs to UI
 impedance = 50
@@ -28,11 +28,11 @@ class pre_sim_floquet_line(floquet_abs, floquet_base):
         self.Lu_length = Lu_microns
         if is_art_cpw_line:
             self.line_lengths = np.array([float(n[0]) for n in dimensions])
-            self.Lu = micro_meters_to_meters(self.Lu_length)
+            self.Lu = microns_to_meters(self.Lu_length)
             self.line_lengths *= self.Lu
         else:
             # make sure the inuts line lengths are right dimensions
-            self.line_lengths = np.array([micro_meters_to_meters(float(n[0])) for n in dimensions])
+            self.line_lengths = np.array([microns_to_meters(float(n[0])) for n in dimensions])
 
         self.unit_cell_length = sum(self.line_lengths)
 

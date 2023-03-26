@@ -13,11 +13,11 @@ def hertz_to_GHz(frequency):
     return frequency * 1e9
 
 
-def micro_meters_to_meters(micro_meter):
+def microns_to_meters(micro_meter):
     return micro_meter / 1e+6
 
 
-def nano_meters_to_meters(nm):
+def nano_to_meters(nm):
     return nm / 1e+9
 
 
