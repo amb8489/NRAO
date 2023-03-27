@@ -24,7 +24,7 @@ from simulation.utills.functions import beta_unfold, RLGC_circuit_factors, hertz
 
 
 def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission,
-             gain_data):
+             gain_data, fl):
     gamma_d = np.array(gamma_d)
     bloch_impedance = np.array(bloch_impedance)
 
@@ -126,11 +126,19 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, ce
 
     # todo does jav use beta*d or just beta and do we unfold beta before putting in RLGC_circuit_factors
 
-    gamma_unfolded = beta_unfold(gamma_d)
-    R, L, G, C = RLGC_circuit_factors(gamma_unfolded, bloch_impedance)
-    I = .1
+
+
+
+
+    # from javiar code
     omega = PI2 * frequency_range
-    EngTerm1 = np.abs(gamma_unfolded ** 2 * I)
+    b = 2 * beta_unfold(gamma_d)
+    a = 2 * floquet_alpha
+    gd = a + 1j * b
+    R, L, G, C = RLGC_circuit_factors(gd, bloch_impedance, omega)
+    I = .1
+
+    EngTerm1 = np.abs(beta_unfold(gamma_d / fl.get_unit_cell_length()) ** 2 * I)
     EngTerm2 = np.abs(C * L * omega ** 2 * I)
     EngTerm3 = np.abs(C * R * omega * I)
     EngTerm4 = np.abs(G * L * omega * I)
@@ -160,7 +168,7 @@ def pre_sim(line_model):
     floquet_line = floquet_line_from_line_model(line_model)
 
     if line_model.type == "HFSS_TOUCHSTONE_FILE":
-        frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range()
+        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range()
     else:
         inputs = line_model.get_inputs()
         frequecy_data = inputs.get("Frequency_Range", {})
@@ -169,12 +177,33 @@ def pre_sim(line_model):
         delta_f = hertz_to_GHz(float(frequecy_data.get("Resolution")))
         frequency_range = np.arange(start_frequency, end_frequency, delta_f)
 
-        frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range(
+        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range(
             frequency_range)
 
+    # todo refactor this into a new gain function
+    inputs = line_model.get_inputs()
+    gain_properties = inputs.get("gain_properties", {})
+    should_calc_gain = bool(int(gain_properties.get('calc_gain')))
+    s_amp_0 = float(gain_properties.get('Signal Amplitude'))
+    i_amp_0 = float(gain_properties.get('Idler Amplitude'))
+    p_amp_0 = float(gain_properties.get('Pump Amplitude'))
+    pump_frequency = hertz_to_GHz(float(gain_properties.get('Pump Frequency')))
     gain_data = None
+    if should_calc_gain:
+        unit_cell_length = floquet_line.get_unit_cell_length()
+        n_unit_cells = floquet_line.get_n_repeated_cells()
+        init_amplitudes = [s_amp_0 + 0j, i_amp_0 + 0j, p_amp_0 + 0j]
+        I_star = 1
 
-    return frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data
+        res = len(frequency_range)
+        gain, pump_range = simulate_gain_multiprocessing(res, unit_cell_length, n_unit_cells,
+                                                         frequency_range,
+                                                         pump_frequency, init_amplitudes, I_star,
+                                                         gamma_d, bloch_impedance)
+
+        gain_data = (gain, (pump_range, pump_frequency, n_unit_cells, init_amplitudes[2]))
+
+    return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data, floquet_line
 
 
 def simulate(line_model):
@@ -187,15 +216,15 @@ def simulate(line_model):
     :return: matpltlib figures 1d list
     """
     if line_model.type in ["HFSS_TOUCHSTONE_FILE", "PRE_SIM_FILE"]:
-        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data = pre_sim(
+        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data, fl = pre_sim(
             line_model)
 
     else:
         frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-        central_line_beta_d, floquet_transmission, gain_data = __simulate_floquet_line(line_model)
+        central_line_beta_d, floquet_transmission, gain_data, fl = __simulate_floquet_line(line_model)
 
     return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d,
-                    floquet_transmission, gain_data)
+                    floquet_transmission, gain_data, fl)
 
 
 def __simulate_floquet_line(line_model):
@@ -250,4 +279,4 @@ def __simulate_floquet_line(line_model):
         gain_data = (gain, (pump_range, pump_frequency, n_unit_cells, init_amplitudes[2]))
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-           central_line_beta_d, floquet_transmission, gain_data
+           central_line_beta_d, floquet_transmission, gain_data, floquet_line

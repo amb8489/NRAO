@@ -110,7 +110,7 @@ class sim_file(QtWidgets.QWidget):
     def get_inputs(self):
         return {
             "Lu_length": self.Lu_length.get_value(),
-            "gain_models": self.WidgetGainInputs.getValues(),
+            "gain_properties": self.WidgetGainInputs.getValues(),
             "Frequency_Range": self.freqRangeWidget.getValues(),
             "Dimensions_inputs": self.dimensionsInputWidget.getValues(),
             "using_art_line": int(self.use_art_line_inputs.isChecked()),
@@ -124,7 +124,7 @@ class sim_file(QtWidgets.QWidget):
 
     def set_values(self, input: dict):
         self.Lu_length.setValue(float(input.get("Lu_length", 0)))
-        self.WidgetGainInputs.setValues(input.get("gain_models", []))
+        self.WidgetGainInputs.setValues(input.get("gain_properties", []))
         self.freqRangeWidget.setValues(input["Frequency_Range"])
         self.dimensionsInputWidget.setValues(input["Dimensions_inputs"])
         self.use_art_line_inputs.setChecked(bool(int(input.get("using_art_line", 0))))
