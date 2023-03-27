@@ -17,8 +17,12 @@ class hfss_touchstone_floquet_line(floquet_abs, floquet_base):
     def get_resolution(self):
         return len(self.frequency_range_simulated_over)
 
+
     def get_unit_cell_length(self):
         return self.unit_cell_length
+
+    def get_n_repeated_cells(self):
+        return self.n_repeated_unit_cells
 
     def get_abcd_mats_and_frequency_range_from_hfss_touchstone_file(self, hfss_touchstone_file_path: str,
                                                                     n_interp_points: int = 1000):

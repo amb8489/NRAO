@@ -2,6 +2,7 @@ import cmath
 import math
 import numpy as np
 import scipy
+from matplotlib import pyplot as plt
 
 
 # Computes the hyperbolic tangent of 𝑥 if x is floquet_alpha complex number
@@ -90,18 +91,21 @@ def Transmission_Db(N, z0, ZB, floquet_gamma_d):
     return toDb(abs(s21))
 
 
-def RLGC_circuit_factors(gammas_d: [complex], Zbs: [complex]):
+def RLGC_circuit_factors(gammas_d: [complex], Zbs: [complex],omega):
+
+
     gammas_d = np.array(gammas_d)
     Zbs = np.array(Zbs)
 
-    Z = gammas_d * Zbs
+    Z = Zbs * gammas_d
     Y = gammas_d / Zbs
 
     R = np.real(Z)
-    L = np.imag(Z)
-
     G = np.real(Y)
-    C = np.imag(Y)
+
+    L = np.imag(Z)/omega
+    C = np.imag(Y)/omega
+
     return R, L, G, C
 
 

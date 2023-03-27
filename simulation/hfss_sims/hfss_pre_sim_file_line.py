@@ -39,12 +39,13 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
     def get_unit_cell_length(self):
         return self.unit_cell_length
 
+    def get_n_repeated_cells(self):
+        return self.n_repeated_cells
+
     def simulate_at_frequency(self, frequency):
         pass
 
     def simulate_over_frequency_range(self, frequency_range):
-
-        # todo could do some type of interpolation if value not in list
 
         gammas_d = []
         ZBs = []
@@ -52,9 +53,12 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
         central_line_alpha_d = []
         central_line_beta_d = []
 
-        # index in data where the wanted widths are ...
-        Wu_idx = self.csv_data[:, 0].tolist().index(self.wu)
-        Wl_idx = self.csv_data[:, 0].tolist().index(self.wl)
+        # index in data where the wanted widths are ... could do interp between simulated points
+        try:
+            Wu_idx = self.csv_data[:, 0].tolist().index(self.wu)
+            Wl_idx = self.csv_data[:, 0].tolist().index(self.wl)
+        except:
+            raise Exception("ERROR: must choose a wu and wl that is in provided file")
 
         # getting the Zc and gammas for the central line width and load widths
 
@@ -71,13 +75,11 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
                 unit_cell_segment_zc.append(self.csv_data[Wu_idx][1])
             is_load = not is_load
 
-
-
         unit_cell_segment_gammas = 1 / np.array(line_gammas) * 1j
         unit_cell_segment_zc = np.array(unit_cell_segment_zc) + 0j
 
         # facotors to turn Beta/C into beta
-        Vs = ((PI2 * frequency_range) / SPEED_OF_LIGHT)
+        fd = ((PI2 * frequency_range) / SPEED_OF_LIGHT)
 
         for i in range(len(frequency_range)):
 
@@ -85,7 +87,7 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
             seg_abcds = []
             for j in range(len(unit_cell_segment_gammas)):
                 seg_abcds.append(
-                    self.ABCD_Mat(unit_cell_segment_zc[j], (unit_cell_segment_gammas[j]) * Vs[i], self.line_lengths[j]))
+                    self.ABCD_Mat(unit_cell_segment_zc[j], (unit_cell_segment_gammas[j]) * fd[i], self.line_lengths[j]))
 
             unit_cell_mat = mult_mats(seg_abcds)
 
@@ -93,7 +95,7 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
             ZB = self.bloch_impedance_Zb(unit_cell_mat)
 
             CL_gamma = self.gamma_d(
-                self.ABCD_Mat(unit_cell_segment_zc[0], unit_cell_segment_gammas[0] * Vs[i], self.unit_cell_length))
+                self.ABCD_Mat(unit_cell_segment_zc[0], unit_cell_segment_gammas[0] * fd[i], self.unit_cell_length))
 
             floquet_transmission = Transmission_Db(self.n_repeated_cells, impedance, ZB, floquet_gamma_d)
 
