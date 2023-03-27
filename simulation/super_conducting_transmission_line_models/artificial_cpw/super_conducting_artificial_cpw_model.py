@@ -62,8 +62,6 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
             self.number_of_finger_sections = total_line_length // self.Lu
             self.total_line_length = (total_line_length // self.Lu) * self.Lu
 
-            # print("calculating number_of_finger_sections based om line length and Lu")
-
             if self.number_of_finger_sections < 1:
                 raise Exception("Lu is greater than total line length")
 
@@ -82,8 +80,11 @@ class SuperConductingArtificialCPWLine(AbstractSCTL):
         self.capacitance = self.calc_capacitance(nf, epsilon_r, S / 2, S / 2, S / 2, 10 * S, height, lg, thickness,
                                                  model_type=1)
 
-        # print(
-        #     f"line #{0} Length:{total_line_length}   N:{self.number_of_finger_sections}   Lu:{self.central_line_length_LH + (2 * S) + self.load_length_LL}   S:{S}   WH:{self.central_line_width_WH}   LH:{self.central_line_length_LH}   WL:{self.load_width_WL}   LL:{self.load_length_LL}")
+    def get_length(self):
+        pass
+
+    def get_width(self):
+        pass
 
     def __L_aprox(self, Zo, beta_so, l):
         return Zo * beta_so * (l / SPEED_OF_LIGHT)

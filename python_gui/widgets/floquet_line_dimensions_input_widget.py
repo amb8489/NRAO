@@ -16,21 +16,16 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
     def __init__(self, column_names, input_names,row_name = "Load", *args, **kwargs):
         super(WidgetFLineDimensionsInputs, self).__init__(*args, **kwargs)
 
-        self.HideLine = False
-
         # main layout
         self.setLayout(QGridLayout())
 
         # component title
-
         self.title = QLabel("Unit Cell Dimensions")
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
         # materials_table for load widths and lengths inputs
         self.tableInput = TableInputWidget(column_names,row_name=row_name)
-
-
         self.layout().addWidget(self.tableInput, 0, 0,2,2, Qt.AlignTop)
 
 
@@ -43,7 +38,7 @@ class WidgetFLineDimensionsInputs(QtWidgets.QWidget):
             input_widget = WidgetDoubleInput(self.inputnames[i].get_name(), unit_type=self.inputnames[i].get_unit(),color=DIMS_WIDGET_COLOR)
             x = i % 2
             y = i // 2
-            self.layout().addWidget(input_widget, 1+y,x)
+            self.layout().addWidget(input_widget, 2+y,x)
             self.inputs.append(input_widget)
 
 

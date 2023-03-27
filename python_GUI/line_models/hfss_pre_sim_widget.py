@@ -18,7 +18,7 @@ class sim_file(QtWidgets.QWidget):
 
         self.csv_data = None
 
-        self.type = "SIM_FILE"
+        self.type = "PRE_SIM_FILE"
 
         self.setLayout(QGridLayout())
 
@@ -46,7 +46,7 @@ class sim_file(QtWidgets.QWidget):
 
 
 
-        self.Lu_length = WidgetDoubleInput("Lu length [microns]", MinVal=0, Decimals=2)
+        self.Lu_length = WidgetDoubleInput("Lu length [microns]", MinVal=0, Decimals=3,DefaultVal=1)
         self.layout().addWidget(self.Lu_length, 1, 1)
 
         self.dimensionsInputWidget = WidgetCPWARTDimensionsInputs(

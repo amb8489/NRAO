@@ -23,8 +23,8 @@ from simulation.utills.functions import beta_unfold, RLGC_circuit_factors, hertz
 # ---------------------------- unit cell inputs from paper
 
 
-def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-             central_line_beta_d, floquet_transmission, gain_data, unit_cell_len):
+def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission,
+             gain_data):
     gamma_d = np.array(gamma_d)
     bloch_impedance = np.array(bloch_impedance)
 
@@ -154,6 +154,29 @@ def mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
     return figs
 
 
+def pre_sim(line_model):
+    # todo add in gain
+
+    floquet_line = floquet_line_from_line_model(line_model)
+
+    if line_model.type == "HFSS_TOUCHSTONE_FILE":
+        frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range()
+    else:
+        inputs = line_model.get_inputs()
+        frequecy_data = inputs.get("Frequency_Range", {})
+        start_frequency = hertz_to_GHz(float(frequecy_data.get("Start Frequency")))
+        end_frequency = hertz_to_GHz(float(frequecy_data.get("End Frequency")))
+        delta_f = hertz_to_GHz(float(frequecy_data.get("Resolution")))
+        frequency_range = np.arange(start_frequency, end_frequency, delta_f)
+
+        frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission = floquet_line.simulate_over_frequency_range(
+            frequency_range)
+
+    gain_data = None
+
+    return frequency_range_simulated_over, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data
+
+
 def simulate(line_model):
     """
 
@@ -163,12 +186,16 @@ def simulate(line_model):
     :param line_model: from the GUI that holds all the user inputs from the GUI
     :return: matpltlib figures 1d list
     """
+    if line_model.type in ["HFSS_TOUCHSTONE_FILE", "PRE_SIM_FILE"]:
+        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d, floquet_transmission, gain_data = pre_sim(
+            line_model)
 
-    frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-    central_line_beta_d, floquet_transmission, gain_data, unit_cell_len = __simulate_floquet_line(line_model)
+    else:
+        frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
+        central_line_beta_d, floquet_transmission, gain_data = __simulate_floquet_line(line_model)
 
-    return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d,
-                    central_line_beta_d, floquet_transmission, gain_data, unit_cell_len)
+    return mk_plots(frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, central_line_beta_d,
+                    floquet_transmission, gain_data)
 
 
 def __simulate_floquet_line(line_model):
@@ -196,8 +223,7 @@ def __simulate_floquet_line(line_model):
     i_amp_0 = float(gain_properties.get('Idler Amplitude'))
     p_amp_0 = float(gain_properties.get('Pump Amplitude'))
     pump_frequency = hertz_to_GHz(float(gain_properties.get('Pump Frequency')))
-    frequency_range = np.arange(start_frequency,end_frequency,delta_f)
-
+    frequency_range = np.arange(start_frequency, end_frequency, delta_f)
 
     floquet_line = floquet_line_from_line_model(line_model)
 
@@ -224,4 +250,4 @@ def __simulate_floquet_line(line_model):
         gain_data = (gain, (pump_range, pump_frequency, n_unit_cells, init_amplitudes[2]))
 
     return frequency_range, gamma_d, bloch_impedance, central_line_alpha_d, \
-           central_line_beta_d, floquet_transmission, gain_data, floquet_line.get_unit_cell_length()
+           central_line_beta_d, floquet_transmission, gain_data

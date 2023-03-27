@@ -62,7 +62,7 @@ class WidgetCPWARTDimensionsInputs(QtWidgets.QWidget):
         return self.inputs[1].get_value()
 
     def setValues(self, inputs):
-        lens_widths = inputs['lengths_widths']
+        lens_widths = inputs.get('lengths_widths',[])
         self.tableInput.setData(lens_widths)
 
         for i, input in enumerate(self.inputs):

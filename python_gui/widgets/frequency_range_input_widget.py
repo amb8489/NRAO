@@ -21,16 +21,26 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
         self.title.setFont(QFont('Arial', 16))
         self.layout().addWidget(self.title, 0, 0)
 
-        self.inputs = []
-
         # inputs for frequency range and res
-        self.inputnames = [start_frequency, end_frequency, resolution, n_repeated_cells]
-        for j in range(len(self.inputnames)):
-            input_widget = WidgetDoubleInput(self.inputnames[j].get_name(),unit_type=self.inputnames[j].get_unit(),color=FREQ_WIDGET_COLOR)
-            self.layout().addWidget(input_widget, 1+(j//2), j%2)
-            self.inputs.append(input_widget)
+        [start_frequency, end_frequency, resolution, n_repeated_cells]
 
+        self.start_f = WidgetDoubleInput(start_frequency.get_name(), unit_type=start_frequency.get_unit(),
+                                         color=FREQ_WIDGET_COLOR, MinVal=1, DefaultVal=1)
+        self.layout().addWidget(self.start_f, 1, 0)
 
+        self.end_f = WidgetDoubleInput(end_frequency.get_name(), unit_type=end_frequency.get_unit(),
+                                       color=FREQ_WIDGET_COLOR, MinVal=1, DefaultVal=40)
+        self.layout().addWidget(self.end_f, 1, 1)
+
+        self.step_f = WidgetDoubleInput(resolution.get_name(), unit_type="GHz", color=FREQ_WIDGET_COLOR, MinVal=.000001,
+                                        DefaultVal=.1)
+        self.layout().addWidget(self.step_f, 2, 0)
+
+        self.n_repeated_cells = WidgetDoubleInput(n_repeated_cells.get_name(), unit_type=n_repeated_cells.get_unit(),
+                                                  color=FREQ_WIDGET_COLOR, Decimals=0, MinVal=1, DefaultVal=150)
+        self.layout().addWidget(self.n_repeated_cells, 2, 1)
+
+        self.inputs = [self.start_f, self.end_f, self.step_f, self.n_repeated_cells]
 
         # set widget color
         self.setBackGroundColor(FREQ_WIDGET_COLOR)
@@ -46,4 +56,4 @@ class WidgetFrequencyInputs(QtWidgets.QWidget):
 
     def setValues(self, values):
         for i, input in enumerate(self.inputs):
-            input.setValue(values.get(input.objectName(),"0"))
+            input.setValue(values.get(input.objectName(), "0"))

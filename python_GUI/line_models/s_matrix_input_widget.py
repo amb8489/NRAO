@@ -62,20 +62,20 @@ class SMatrixInputsWidget(QtWidgets.QWidget):
             "unit_cell_length": self.unit_cell_length.get_value(),
             "n_interpt_points": self.n_interp_points.get_value(),
             "n_repeated_cells": self.n_repeated_cells.get_value(),
-            "gain_models": self.WidgetGainInputs.getValues()
+            "gain_properties": self.WidgetGainInputs.getValues()
         }
-
-    def set_setting(self, setting: GUI_setting):
-        self.title.setText(f"Current setting: {setting.name}")
 
     def set_values(self, input: dict):
         self.file_path = input["hfss_touchstone_file_path"]
-        file_path = input["hfss_touchstone_file_path"]
-        self.file_name_display.setText(f"File selected: {file_path}")
+        self.file_name_display.setText(f"File selected: {self.file_path}")
         self.n_interp_points.setValue(int(input.get("n_interpt_points", 1000)))
         self.unit_cell_length.setValue(float(input.get("unit_cell_length", 0)))
         self.n_repeated_cells.setValue(int(input.get("n_repeated_cells", 1)))
-        self.WidgetGainInputs.setValues(input.get("gain_models", []))
+        self.WidgetGainInputs.setValues(input.get("gain_properties", []))
+
+
+    def set_setting(self, setting: GUI_setting):
+        self.title.setText(f"Current setting: {setting.name}")
 
     def setBackGroundColor(self, hex_color: str):
         palette = self.palette()

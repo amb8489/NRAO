@@ -52,6 +52,8 @@ class WidgetGainInputs(QtWidgets.QWidget):
 
     def setValues(self, values):
         for i, input in enumerate(self.inputs):
+
+            print(values,input.objectName())
             input.setValue(values[input.objectName()])
 
         self.calc_gain.setChecked(bool(int(values.get("calc_gain", 0))))
