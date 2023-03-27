@@ -57,15 +57,24 @@ class PreSimFloquetLine(floquet_abs, floquet_base):
         Wl_idx = self.csv_data[:, 0].tolist().index(self.wl)
 
         # getting the Zc and gammas for the central line width and load widths
-        unit_cell_segment_gammas = 1 / np.array(
-            [self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2],
-             self.csv_data[Wl_idx][2], self.csv_data[Wu_idx][2], self.csv_data[Wl_idx][2],
-             self.csv_data[Wu_idx][2]]) * 1j
 
-        unit_cell_segment_zc = np.array(
-            [self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1],
-             self.csv_data[Wl_idx][1], self.csv_data[Wu_idx][1], self.csv_data[Wl_idx][1],
-             self.csv_data[Wu_idx][1]]) + 0j
+        is_load = False
+        line_gammas = []
+        unit_cell_segment_zc = []
+        for i in range(len(self.line_lengths)):
+
+            if is_load:
+                line_gammas.append(self.csv_data[Wl_idx][2])
+                unit_cell_segment_zc.append(self.csv_data[Wl_idx][1])
+            else:
+                line_gammas.append(self.csv_data[Wu_idx][2])
+                unit_cell_segment_zc.append(self.csv_data[Wu_idx][1])
+            is_load = not is_load
+
+
+
+        unit_cell_segment_gammas = 1 / np.array(line_gammas) * 1j
+        unit_cell_segment_zc = np.array(unit_cell_segment_zc) + 0j
 
         # facotors to turn Beta/C into beta
         Vs = ((PI2 * frequency_range) / SPEED_OF_LIGHT)
