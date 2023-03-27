@@ -100,16 +100,18 @@ def floquet_line_from_line_model(line_model):
 
         elif model_type == "PRE_SIM_FILE":
 
+            # should be values found in csv data widths
             wl = float(inputs.get("wl_len"))
             wu = float(inputs.get("wu_len"))
+
             n_repeated_cells = int(inputs.get("Frequency_Range")["n_repeated_cells"])
             is_art_cpw_line = bool(int(inputs.get("using_art_line")))
             lu_length = microns_to_meters(float(inputs.get("Lu_length")))
             print(inputs)
             line_lengths = np.array([float(n[0]) for n in inputs.get("Dimensions_inputs")["lengths_widths"]])
-            csv_data= line_model.csv_data
+            csv_data = line_model.csv_data
 
-            return PreSimFloquetLine(csv_data, wl, wu, lu_length, line_lengths, is_art_cpw_line,n_repeated_cells)
+            return PreSimFloquetLine(csv_data, wl, wu, lu_length, line_lengths, is_art_cpw_line, n_repeated_cells)
 
     else:
         raise NotImplementedError(
